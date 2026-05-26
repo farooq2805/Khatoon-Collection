@@ -29,6 +29,12 @@ export default function HeaderMobile({ items }: { items?: MenuItem[] }) {
   const rawData = items?.length ? items : menu;
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isBeforeEid, setIsBeforeEid] = useState(true);
+
+  useEffect(() => {
+    const eidDate = new Date("2026-05-29T23:59:59+05:30");
+    setIsBeforeEid(new Date() < eidDate);
+  }, []);
   
   const { isMiniCartOpen, setMiniCartOpen } = useCart();
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -144,6 +150,22 @@ const closeAll = () => {
     <>
       {/* ================= HEADER ================= */}
       <header className="lg:hidden sticky top-0 z-[70]">
+        {/* Dynamic Offer bar on mobile */}
+        <Link
+          href="/products"
+          className="block bg-[#5C3825] text-white hover:opacity-95 transition-opacity"
+        >
+          <div className="mx-auto w-full px-4 py-2">
+            <div className="text-[10px] sm:text-[11px] tracking-[0.15em] font-semibold text-center uppercase">
+              {isBeforeEid ? (
+                <span>THANK U FOR YOUR LOVE! Eid-ul-adha 2026 Bookings OPEN</span>
+              ) : (
+                <span>We ship worldwide | Easy Exchange available</span>
+              )}
+            </div>
+          </div>
+        </Link>
+
         <div className="bg-white shadow border-b border-black/10">
           <div className="relative h-[74px] flex items-center justify-between px-4">
 
@@ -297,26 +319,6 @@ const closeAll = () => {
         className="flex items-center justify-between px-4 py-4 text-[15px] font-medium"
       >
         Contact Us
-      </Link>
-    </div>
-
-    <div className="border-b">
-      <Link
-        href="#"
-        onClick={closeAll}
-        className="flex items-center justify-between px-4 py-4 text-[15px] font-medium"
-      >
-        Blog
-      </Link>
-    </div>
-
-    <div className="border-b">
-      <Link
-        href="#"
-        onClick={closeAll}
-        className="flex items-center justify-between px-4 py-4 text-[15px] font-medium"
-      >
-        Career
       </Link>
     </div>
 

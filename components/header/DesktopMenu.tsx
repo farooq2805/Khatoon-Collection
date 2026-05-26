@@ -16,8 +16,6 @@ export default function DesktopMenu() {
 
   const extraLinks = [
     { label: "Contact Us", href: "/contact" },
-    { label: "Blog", href: "#" },
-    { label: "Career", href: "#" },
   ];
 
   return (

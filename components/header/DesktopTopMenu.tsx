@@ -15,8 +15,6 @@ export default function DesktopTopMenu() {
 
   const bottomLinks = [
     { label: "Contact", href: "/contact" },
-    { label: "Blog", href: "#" },
-    { label: "Career", href: "#" },
   ];
 
   return (

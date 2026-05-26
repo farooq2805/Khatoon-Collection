@@ -29,9 +29,7 @@ export const MENU: MenuItem[] = [
   { label: "fragrances", href: "/category/fragrance" },
   { label: "gifting", href: "/category/gifting" },
   { label: "makeup", href: "/category/makeup" },
-  { label: "blogs & newsletters", href: "/blog" },
   { label: "get to know us", href: "/about" },
   { label: "help", href: "/help" },
-  { label: "careers", href: "/careers" },
   { label: "bulk orders", href: "/bulk-orders" },
 ];

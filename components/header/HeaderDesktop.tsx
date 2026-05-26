@@ -20,7 +20,7 @@ export default function HeaderDesktop() {
   const { cartCount } = useCart();
 
   const [q, setQ] = useState("");
-  const [timeLeft, setTimeLeft] = useState({ h: 22, m: 48, s: 56 }); // demo like screenshot
+  const [isBeforeEid, setIsBeforeEid] = useState(true);
 
   // ✅ Local auth state (desktop header will react instantly)
   const [token, setToken] = useState<string | null>(null);
@@ -73,25 +73,10 @@ export default function HeaderDesktop() {
     router.push("/");
   };
 
-  // Countdown (optional; remove if you want static)
+  // Dynamic Eid booking offer check (runs once on client load)
   useEffect(() => {
-    const t = setInterval(() => {
-      setTimeLeft((p) => {
-        let h = p.h,
-          m = p.m,
-          s = p.s - 1;
-        if (s < 0) {
-          s = 59;
-          m -= 1;
-        }
-        if (m < 0) {
-          m = 59;
-          h = Math.max(0, h - 1);
-        }
-        return { h, m, s };
-      });
-    }, 1000);
-    return () => clearInterval(t);
+    const eidDate = new Date("2026-05-29T23:59:59+05:30");
+    setIsBeforeEid(new Date() < eidDate);
   }, []);
 
   useEffect(() => {
@@ -123,29 +108,22 @@ useEffect(() => {
       }`}
     >
       {/* TOP OFFER BAR */}
-      <div className="bg-[#f57bb4] text-white">
+      <Link
+        href="/products"
+        className="block bg-[#5C3825] text-white hover:opacity-95 transition-opacity"
+      >
         <div className="mx-auto max-w-[1400px] px-6">
-          <div className="relative flex items-center justify-center py-3">
-            <div className="text-[15px] tracking-wide uppercase">
-              We ship worldwide
-            </div>
-
-            {/* Countdown (right) */}
-            <div className="absolute right-0 flex items-end gap-2">
-              <div className="text-[28px] font-bold tracking-wider tabular-nums leading-none">
-                {pad2(timeLeft.h)}:{pad2(timeLeft.m)}:{pad2(timeLeft.s)}
-              </div>
-              <div className="pb-[2px] text-[11px] leading-none opacity-90">
-                <div className="flex gap-6">
-                  <span>Hrs</span>
-                  <span>Mins</span>
-                  <span>Secs</span>
-                </div>
-              </div>
+          <div className="relative flex items-center justify-center py-2.5">
+            <div className="text-[12px] md:text-[13px] tracking-[0.2em] font-semibold text-center uppercase">
+              {isBeforeEid ? (
+                <span>THANK U FOR YOUR LOVE! Eid-ul-adha 2026 Bookings OPEN</span>
+              ) : (
+                <span>We ship worldwide | Easy Exchange available</span>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* ROW 2: SEARCH + LOGO + ICONS */}
       <div className="border-b border-black/10">
@@ -216,16 +194,6 @@ useEffect(() => {
                 )}
               </Link>
 
-              {/* Store */}
-              <Link
-                href="/contact"
-                className="hover:opacity-80"
-                aria-label="Store"
-              >
-                <span className="inline-flex h-[22px] w-[22px] items-center justify-center border border-black/40 rounded-[3px] text-[11px]">
-                  🏬
-                </span>
-              </Link>
 
               {/* Auth area */}
               {!token ? (
