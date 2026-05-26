@@ -12,6 +12,8 @@ import Script from "next/script";
 //   }
 // }
 
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api").replace(/\/+$/, "");
+
 export default function BuyNowCheckoutPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -34,7 +36,7 @@ export default function BuyNowCheckoutPage() {
     const loadOrder = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/buy-now/${id}`
+          `${API_BASE}/buy-now/${id}`
         );
         const data = await res.json();
 
@@ -56,7 +58,7 @@ export default function BuyNowCheckoutPage() {
      const token = localStorage.getItem("token");
 
 const res = await fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/razorpay/create-order`,
+  `${API_BASE}/razorpay/create-order`,
   {
     method: "POST",
     headers: {
@@ -91,7 +93,7 @@ const res = await fetch(
         description: "Buy Now Payment",
         handler: async (response: any) => {
          const verify = await fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/razorpay/verify-payment`,
+  `${API_BASE}/razorpay/verify-payment`,
   {
     method: "POST",
     headers: {
@@ -188,7 +190,7 @@ const confirmOrder = async (
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/buy-now/confirm`,
+      `${API_BASE}/buy-now/confirm`,
       {
         method: "POST",
         headers: {

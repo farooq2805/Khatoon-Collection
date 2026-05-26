@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const API_URL =
-  `${process.env.NEXT_PUBLIC_API_URL}/cart`;
+  `${process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api"}/cart`;
 
 function getAuthHeaders() {
   const token =
