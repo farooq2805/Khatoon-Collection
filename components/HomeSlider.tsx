@@ -211,7 +211,17 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
   const slides = useMemo(() => {
     if (error) return null;
     if (!desktopSlides || !mobileSlides) return null;
-    return isMobile ? mobileSlides : desktopSlides;
+    
+    if (isMobile) {
+      return [
+        {
+          imageUrl: "/slider/khatoon_mobile_banner.png",
+          ctaHref: "/products",
+        }
+      ];
+    }
+    
+    return desktopSlides;
   }, [isMobile, desktopSlides, mobileSlides, error]);
 
   if (!slides || slides.length === 0) return null;
