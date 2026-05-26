@@ -11,16 +11,14 @@ export const revalidate = 3600;
 
 async function getHomeData() {
   const api = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
-  const beholdUrl = process.env.NEXT_PUBLIC_BEHOLD_API_URL || "";
 
   try {
     // Parallel fetching on the server with revalidate tag (cache-friendly)
-    const [sliderRes, catRes, bannerRes, productsRes, reelsRes] = await Promise.all([
+    const [sliderRes, catRes, bannerRes, productsRes] = await Promise.all([
       fetch(`${api}/home-slider`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       fetch(`${api}/categories`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       fetch(`${api}/banner-grid`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       fetch(`${api}/publicproducts?limit=40`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
-      beholdUrl ? fetch(beholdUrl, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null) : null
     ]);
 
     return {
@@ -28,7 +26,6 @@ async function getHomeData() {
       categoriesData: Array.isArray(catRes?.data) ? catRes.data : [],
       bannerData: bannerRes?.data || null,
       productsData: Array.isArray(productsRes?.data) ? productsRes.data : [],
-      reelsData: Array.isArray(reelsRes) ? reelsRes : null,
     };
   } catch (e) {
     console.error("❌ Failed to pre-fetch home data on server:", e);
@@ -37,13 +34,12 @@ async function getHomeData() {
       categoriesData: [],
       bannerData: null,
       productsData: [],
-      reelsData: null,
     };
   }
 }
 
 export default async function HomePage() {
-  const { sliderData, categoriesData, bannerData, productsData, reelsData } = await getHomeData();
+  const { sliderData, categoriesData, bannerData, productsData } = await getHomeData();
 
   return (
     <main>
@@ -51,10 +47,9 @@ export default async function HomePage() {
       <CategoryStrip initialData={categoriesData} />
       <TwoBannerGrid initialData={bannerData} />
       <NewArrivalsClearance initialData={productsData} />
-      <InstagramReels initialReels={reelsData} />
+      <InstagramReels />
       <ReviewsSection />
       <ServicePaymentSection />
     </main>
   );
 }
-
