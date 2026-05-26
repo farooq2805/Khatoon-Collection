@@ -345,7 +345,8 @@ function OverlayPanel({
   sort:
     | "latest"
     | "price_asc"
-    | "price_desc";
+    | "price_desc"
+    | "clearance";
 
   setQueryParam: (
     key: string,
@@ -439,6 +440,20 @@ function OverlayPanel({
               >
                 Price: High to Low
               </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setQueryParam(
+                    "sort",
+                    "clearance"
+                  );
+                  onClose();
+                }}
+                className="flex w-full items-center justify-between px-4 py-5"
+              >
+                Clearance Sale
+              </button>
             </div>
           )}
         </div>
@@ -480,7 +495,8 @@ export default function ProductsListingClient({
     ) as any) as
       | "latest"
       | "price_asc"
-      | "price_desc") ||
+      | "price_desc"
+      | "clearance") ||
     "latest";
 
   function setQueryParam(
@@ -547,6 +563,17 @@ export default function ProductsListingClient({
       );
 
       return items;
+    }
+
+    if (sort === "clearance") {
+      return items
+        .map((p) => {
+          const { sale, mrp } = getSaleAndMrp(p);
+          const discountPercent = getDiscountPercent(mrp, sale) || 0;
+          return { ...p, discountPercent };
+        })
+        .filter((p) => p.discountPercent > 0)
+        .sort((a, b) => b.discountPercent - a.discountPercent);
     }
 
     return items;
@@ -630,6 +657,10 @@ export default function ProductsListingClient({
 
               <option value="price_desc">
                 Price High to Low
+              </option>
+
+              <option value="clearance">
+                Clearance Sale
               </option>
             </select>
 

@@ -83,8 +83,8 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
         <div className="grid gap-6 md:grid-cols-2">
           
           {/* LEFT BANNER: NEW ARRIVAL PAKISTANI */}
-          <div 
-            onClick={() => scrollToSection(newArrivalsRef)}
+          <Link 
+            href="/products?sort=newest"
             className="
               relative 
               aspect-[4/3] 
@@ -95,6 +95,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               shadow-sm 
               cursor-pointer 
               group
+              block
             "
           >
             <Image
@@ -138,11 +139,11 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
                 Explore Collection
               </button>
             </div>
-          </div>
+          </Link>
 
           {/* RIGHT BANNER: CLEARANCE */}
-          <div 
-            onClick={() => scrollToSection(clearanceRef)}
+          <Link 
+            href="/products?sort=clearance"
             className="
               relative 
               aspect-[4/3] 
@@ -153,6 +154,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               shadow-sm 
               cursor-pointer 
               group
+              block
             "
           >
             <Image
@@ -192,7 +194,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
                 Shop Collection
               </button>
             </div>
-          </div>
+          </Link>
 
         </div>
       </section>
@@ -232,38 +234,36 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
       </section>
 
       {/* ===================== CLEARANCE PRODUCTS SECTION ===================== */}
-      <section ref={clearanceRef} className="w-full bg-[#fdfafb] py-12 border-t border-b border-gray-100 scroll-mt-24">
-        <div className="mx-auto max-w-[1500px] px-4">
-          <div className="text-center mb-10">
-            <span className="text-[11px] tracking-[0.2em] text-red-500 uppercase font-bold block mb-1">
-              Limited Stock
-            </span>
-            <h2 className="font-serif text-[24px] sm:text-[32px] tracking-[0.1em] text-black uppercase">
-              Clearance Sale
-            </h2>
-            <div className="w-12 h-0.5 bg-red-500 mx-auto mt-3" />
-          </div>
+      {clearanceProducts.length > 0 && (
+        <section ref={clearanceRef} className="w-full bg-[#fdfafb] py-12 border-t border-b border-gray-100 scroll-mt-24">
+          <div className="mx-auto max-w-[1500px] px-4">
+            <div className="text-center mb-10">
+              <span className="text-[11px] tracking-[0.2em] text-red-500 uppercase font-bold block mb-1">
+                Limited Stock
+              </span>
+              <h2 className="font-serif text-[24px] sm:text-[32px] tracking-[0.1em] text-black uppercase">
+                Clearance Sale
+              </h2>
+              <div className="w-12 h-0.5 bg-red-500 mx-auto mt-3" />
+            </div>
 
-          {clearanceProducts.length === 0 ? (
-            <p className="text-center text-gray-500 text-sm py-8">No clearance products on sale right now.</p>
-          ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {clearanceProducts.map((p) => (
                 <ProductCard key={String(p.id)} product={p} isClearance />
               ))}
             </div>
-          )}
 
-          <div className="mt-10 flex justify-center">
-            <Link
-              href="/products?sort=price_asc"
-              className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-8 py-2.5 text-[12px] md:text-[13px] font-bold tracking-[0.15em] uppercase transition duration-300"
-            >
-              View All Clearance Deals
-            </Link>
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/products?sort=clearance"
+                className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-8 py-2.5 text-[12px] md:text-[13px] font-bold tracking-[0.15em] uppercase transition duration-300"
+              >
+                View All Clearance Deals
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
     </div>
   );
