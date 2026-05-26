@@ -748,6 +748,34 @@ export default function ProductDetailsDesktop(props: any) {
         Checkout Now
       </button>
 
+      {/* 4 Trust Symbols Row */}
+      <div className="mt-8 grid grid-cols-4 gap-2 text-center border-t border-gray-100 pt-6">
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-1">
+            <i className="ri-vip-diamond-line text-lg"></i>
+          </div>
+          <span className="text-[8px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Premium Quality</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-1">
+            <i className="ri-leaf-line text-lg"></i>
+          </div>
+          <span className="text-[8px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Premium Fabrics</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-1">
+            <i className="ri-pencil-ruler-line text-lg"></i>
+          </div>
+          <span className="text-[8px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Unique Designs</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-1">
+            <i className="ri-shield-check-line text-lg"></i>
+          </div>
+          <span className="text-[8px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Trustworthy Brand</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -843,6 +871,39 @@ export default function ProductDetailsDesktop(props: any) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Full-width Craftsmanship Brand Story Banner */}
+        <div className="mt-12 w-full rounded-[24px] overflow-hidden bg-[#faf8f6] border border-[#f57bb4]/10 relative flex flex-col items-center gap-6 p-6 shadow-sm">
+          
+          {/* Circular Embroidery Badge */}
+          <div className="w-full flex justify-center">
+            <div className="relative w-[240px] h-[240px] rounded-full overflow-hidden shadow-md border-4 border-white bg-white">
+              <Image
+                src="/demo/khatoon_craftsmanship.png"
+                alt="Khatoon Collection Authentic Craftsmanship"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          </div>
+
+          {/* Boxed Story */}
+          <div className="w-full flex justify-center">
+            <div className="max-w-[420px] bg-white border border-[#2b2b2b]/10 p-5 rounded-xl shadow-sm text-center">
+              <span className="text-[9px] tracking-[0.25em] text-[#f57bb4] font-bold uppercase block mb-1">
+                Locally Crafted
+              </span>
+              <h3 className="font-serif text-[18px] tracking-[0.08em] font-normal text-gray-900 uppercase mb-3">
+                Made In India
+              </h3>
+              <p className="text-[11px] leading-relaxed text-gray-600">
+                We have always believed in the power of locally made goods. The supreme quality of the craftsmanship and the local artisans we support are what make Khatoon Collection our mission in life.
+              </p>
+            </div>
+          </div>
+
         </div>
 
         {/* ===================== RELATED ===================== */}

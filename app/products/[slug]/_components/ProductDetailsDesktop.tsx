@@ -716,6 +716,34 @@ export default function ProductDetailsDesktop(props: any) {
         Checkout Now
       </button>
 
+      {/* 4 Trust Symbols Row */}
+      <div className="mt-8 grid grid-cols-4 gap-2 text-center border-t border-gray-100 pt-6">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-2">
+            <i className="ri-vip-diamond-line text-xl"></i>
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Premium Quality</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-2">
+            <i className="ri-leaf-line text-xl"></i>
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Premium Fabrics</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-2">
+            <i className="ri-pencil-ruler-line text-xl"></i>
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Unique Designs</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full bg-[#f57bb4]/10 text-[#f57bb4] flex items-center justify-center mb-2">
+            <i className="ri-shield-check-line text-xl"></i>
+          </div>
+          <span className="text-[9px] md:text-[10px] font-bold text-gray-900 tracking-wider uppercase leading-tight">Trustworthy Brand</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -787,11 +815,44 @@ export default function ProductDetailsDesktop(props: any) {
                 </Accordion>
 
               </div>
-            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Full-width Craftsmanship Brand Story Banner */}
+      <div className="mt-16 w-full rounded-[32px] overflow-hidden bg-[#faf8f6] border border-[#f57bb4]/10 relative flex flex-col md:flex-row items-center gap-8 p-6 md:p-10 shadow-sm">
+        
+        {/* Left Side: Circular Embroidery Badge */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+          <div className="relative w-[280px] h-[280px] md:w-[320px] md:h-[320px] rounded-full overflow-hidden shadow-lg border-4 border-white bg-white">
+            <Image
+              src="/demo/khatoon_craftsmanship.png"
+              alt="Khatoon Collection Authentic Craftsmanship"
+              fill
+              className="object-cover"
+              unoptimized
+            />
           </div>
         </div>
 
-        {/* ===================== RELATED ===================== */}
+        {/* Right Side: Fine Bordered Boxed Story */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-start">
+          <div className="max-w-[420px] bg-white border border-[#2b2b2b]/10 p-6 md:p-8 rounded-2xl shadow-sm text-center md:text-left">
+            <span className="text-[10px] md:text-[11px] tracking-[0.25em] text-[#f57bb4] font-bold uppercase block mb-2">
+              Locally Crafted
+            </span>
+            <h3 className="font-serif text-[22px] md:text-[28px] tracking-[0.08em] font-normal text-gray-900 uppercase mb-4">
+              Made In India
+            </h3>
+            <p className="text-[12px] md:text-[13px] leading-relaxed text-gray-600">
+              We have always believed in the power of locally made goods. The supreme quality of the craftsmanship and the local artisans we support are what make Khatoon Collection our mission in life.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ===================== RELATED ===================== */}
         {related?.length ? (
           <div className="mt-20">
             <h2 className="text-center text-[28px] font-semibold uppercase tracking-[0.08em] text-[#3a2c2c]">
