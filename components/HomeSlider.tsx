@@ -217,7 +217,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className="w-full relative aspect-[21/9] md:aspect-[25/8] overflow-hidden bg-gray-100">
+    <div className="w-full relative aspect-[2/3] md:aspect-[25/8] overflow-hidden bg-gray-100">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation
