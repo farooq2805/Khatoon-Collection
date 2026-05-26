@@ -29,23 +29,17 @@ export default function ContactPage() {
 
             <div className="space-y-5 text-gray-700">
               <div className="flex items-start gap-4">
-                <FiMail className="text-[#f57bb4] text-xl mt-1" />
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p className="text-sm">sale@khatooncollection.in
-
-</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
                 <FiPhone className="text-[#f57bb4] text-xl mt-1" />
                 <div>
                   <p className="font-medium">Phone</p>
-                  <p className="text-sm">+91 98671 96860
-
-</p>
-                  
+                  <p className="text-sm">
+                    <a
+                      href="tel:+919867196860"
+                      className="hover:text-[#f57bb4] font-semibold transition-colors"
+                    >
+                      +91 98671 96860
+                    </a>
+                  </p>
                 </div>
               </div>
 
@@ -53,10 +47,20 @@ export default function ContactPage() {
                 <FiMapPin className="text-[#f57bb4] text-xl mt-1" />
                 <div>
                   <p className="font-medium">Address</p>
-                  <p className="text-sm">
-                   Shop No. 4, Building No. 19,
-Yogi Vaishali, Vaishali Market,
-Jogeshwari (West), Mumbai – 400102
+                  <p className="text-sm leading-relaxed">
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Khatoon+Collection+no+19+yogi+vaishali+vaishali+market+Shop+no+4+building+opp+castle+tower+Jogeshwari+West+Mumbai+Maharashtra+400102"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-[#f57bb4] hover:underline transition-colors"
+                      title="Open in Google Maps"
+                    >
+                      Shop No. 4, Building No. 19,
+                      <br />
+                      Yogi Vaishali, Vaishali Market,
+                      <br />
+                      Jogeshwari (West), Mumbai – 400102
+                    </a>
                   </p>
                 </div>
               </div>
