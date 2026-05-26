@@ -30,6 +30,8 @@ import {
 
 
 import RelatedFashionCard from "../_components/RelatedFashionCard";
+import ProductReviews from "./ProductReviews";
+
 
 /* ===================== UI HELPERS ===================== */
 
@@ -371,7 +373,14 @@ export default function ProductDetailsDesktop(props: any) {
               </h1>
 
               {/* RATING */}
-              <div className="mt-3 flex items-center gap-2">
+              <div
+                className="mt-3 flex items-center gap-2 cursor-pointer hover:opacity-80 transition"
+                onClick={() =>
+                  document
+                    .getElementById("reviews-section")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
                 <Stars value={rating} />
 
                 <span className="text-[12px] text-gray-600">
@@ -804,6 +813,13 @@ export default function ProductDetailsDesktop(props: any) {
               </div>
           </div>
         </div>
+
+        {/* Customer Reviews Section */}
+        <ProductReviews
+          slug={product.slug}
+          productImage={mainImage}
+          productName={title}
+        />
       </div>
 
       {/* Full-width Craftsmanship Brand Story Banner */}

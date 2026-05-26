@@ -511,7 +511,7 @@ export default function ProductDetailsClient({
   /* ===================== RENDER ===================== */
 
   return (
-    <div className="bg-white">
+    <div className="bg-white relative">
       <ZoomModal
         open={zoomOpen}
         image={mainImage}
@@ -520,6 +520,21 @@ export default function ProductDetailsClient({
           setZoomOpen(false)
         }
       />
+
+      {/* Floating vertical "★ REVIEWS" sticky tab on the right side of the screen */}
+      <button
+        onClick={() => {
+          document
+            .getElementById("reviews-section")
+            ?.scrollIntoView({ behavior: "smooth" });
+        }}
+        className="fixed right-0 top-[40%] -translate-y-1/2 z-40 bg-[#58604d] hover:bg-[#4a5141] text-white px-2 py-5 rounded-l-2xl shadow-xl transition-all duration-300 flex flex-col items-center gap-1.5 cursor-pointer hover:-translate-x-1"
+      >
+        <span className="text-[14px] text-white leading-none">★</span>
+        <span className="text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-white uppercase [writing-mode:vertical-lr] select-none">
+          REVIEWS
+        </span>
+      </button>
 
       {/* MOBILE */}
       
