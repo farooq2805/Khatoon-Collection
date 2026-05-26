@@ -1,23 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
+import Script from "next/script";
 
-interface InstagramReelsProps {
-  initialReels?: any[] | null;
-}
-
-export default function InstagramReels({ initialReels }: InstagramReelsProps) {
-  useEffect(() => {
-    // Dynamically inject the Behold widget script so it loads only on client-side
-    if (document.querySelector("script[data-behold-widget]")) return;
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = "https://w.behold.so/widget.js";
-    script.setAttribute("data-behold-widget", "true");
-    document.head.appendChild(script);
-  }, []);
-
+export default function InstagramReels() {
   return (
     <section className="w-full bg-white py-12 md:py-16 border-t border-gray-100">
       <div className="mx-auto w-full max-w-[1500px] px-4 md:px-8">
@@ -35,9 +22,9 @@ export default function InstagramReels({ initialReels }: InstagramReelsProps) {
           </p>
         </div>
 
-        {/* Behold Instagram Widget — auto-updates daily when new reels are published */}
-        <div className="behold-widget-wrapper w-full">
-          {/* @ts-ignore - behold-widget is a custom HTML element from Behold.so */}
+        {/* Behold Instagram Widget — exact embed code from Behold.so */}
+        <div className="w-full">
+          {/* @ts-ignore - behold-widget is a custom HTML element registered by Behold.so */}
           <behold-widget feed-id="GWoyi7QRoH11ALrrLqg6"></behold-widget>
         </div>
 
@@ -83,6 +70,20 @@ export default function InstagramReels({ initialReels }: InstagramReelsProps) {
         </div>
 
       </div>
+
+      {/* Exact Behold.so embed script — loaded after page is interactive */}
+      <Script
+        id="behold-widget-script"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            (() => {
+              const d=document,s=d.createElement("script");s.type="module";
+              s.src="https://w.behold.so/widget.js";d.head.append(s);
+            })();
+          `,
+        }}
+      />
     </section>
   );
 }
