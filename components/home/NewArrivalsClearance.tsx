@@ -102,7 +102,6 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               src="/demo/new_arrival_pakistani.png"
               alt="New Arrival Pakistani"
               fill
-              priority
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Dark overlay */}
@@ -161,7 +160,6 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               src="/demo/clearance_sale.png"
               alt="Clearance Sale"
               fill
-              priority
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Dark overlay */}
@@ -285,7 +283,6 @@ function ProductCard({ product, isClearance = false }: { product: Product; isCle
             className="object-cover transition-transform duration-500 hover:scale-[1.03]"
             sizes="(max-width: 768px) 50vw, 25vw"
             priority={false}
-            unoptimized
           />
           {discountPercent > 0 && (
             <span 

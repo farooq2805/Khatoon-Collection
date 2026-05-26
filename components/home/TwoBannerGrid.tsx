@@ -124,7 +124,6 @@ export default function TwoBannerGrid({ initialData }: { initialData?: any }) {
                 height={600}
                 className="h-auto w-full object-contain"
                 sizes="(max-width: 768px) 100vw, 50vw"
-                priority
               />
             </Link>
           ))}

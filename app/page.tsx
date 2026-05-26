@@ -19,7 +19,7 @@ async function getHomeData() {
       fetch(`${api}/home-slider`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       fetch(`${api}/categories`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       fetch(`${api}/banner-grid`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
-      fetch(`${api}/publicproducts`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
+      fetch(`${api}/publicproducts?limit=40`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
       beholdUrl ? fetch(beholdUrl, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null) : null
     ]);
 
