@@ -110,9 +110,12 @@ export default function ContactPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">Call Support</p>
-                  <p className="text-[#333333] text-base font-semibold">
+                  <p className="text-[#333333] text-base font-semibold flex flex-col gap-1">
                     <a href="tel:+919867196860" className="hover:text-[#f57bb4] transition-colors">
                       +91 98671 96860
+                    </a>
+                    <a href="tel:+919136868443" className="hover:text-[#f57bb4] transition-colors">
+                      +91 91368 68443
                     </a>
                   </p>
                   <p className="text-gray-400 text-xs font-medium">Available for orders and queries</p>
