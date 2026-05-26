@@ -82,7 +82,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
       <section className="mx-auto max-w-[1500px] px-4 py-8">
         <div className="grid gap-6 md:grid-cols-2">
           
-          {/* LEFT BANNER: NEW ARRIVAL PAKISTANI */}
+          {/* LEFT BANNER: NEW ARRIVAL ETHNIC WEAR */}
           <Link 
             href="/products?sort=newest"
             className="
@@ -100,7 +100,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
           >
             <Image
               src="/demo/new_arrival_pakistani.png"
-              alt="New Arrival Pakistani"
+              alt="New Arrival Ethnic Wear"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
@@ -113,7 +113,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
                 New Arrival
               </span>
               <h3 className="font-serif text-[28px] md:text-[44px] tracking-[0.12em] font-normal uppercase drop-shadow-lg mb-6">
-                Pakistani
+                Ethnic Wear
               </h3>
               <button
                 type="button"
