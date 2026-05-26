@@ -7,7 +7,6 @@ import {
   FiGrid,
   FiTag,
   FiUser,
-  FiDownload,
 } from "react-icons/fi";
 
 export default function MobileBottomNav() {
@@ -64,17 +63,6 @@ export default function MobileBottomNav() {
           />
           <span className={`text-[10px] ${textClass("/login")}`}>
             Account
-          </span>
-        </Link>
-
-        {/* Get App */}
-        <Link href="/get-app" className="flex flex-col items-center gap-[2px]">
-          <FiDownload
-            className="text-[18px] text-gray-400"
-            strokeWidth={1.6}
-          />
-          <span className="text-[10px] text-gray-400">
-            Get App
           </span>
         </Link>
       </div>
