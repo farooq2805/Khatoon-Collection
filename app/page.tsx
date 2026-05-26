@@ -1,7 +1,7 @@
 import HomeSlider from "@/components/HomeSlider";
 import CategoryStrip from "@/components/home/CategoryStrip";
 import TwoBannerGrid from "@/components/home/TwoBannerGrid";
-import BestSellingSection from "@/components/home/BestSellingSection";
+import NewArrivalsClearance from "@/components/home/NewArrivalsClearance";
 import ServicePaymentSection from "@/components/ServicePaymentSection";
 import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
@@ -50,11 +50,11 @@ export default async function HomePage() {
       <HomeSlider initialData={sliderData} />
       <CategoryStrip initialData={categoriesData} />
       <TwoBannerGrid initialData={bannerData} />
-      <BestSellingSection initialData={productsData} />
-      <TwoBannerGrid initialData={bannerData} />
+      <NewArrivalsClearance initialData={productsData} />
       <InstagramReels initialReels={reelsData} />
       <ReviewsSection />
       <ServicePaymentSection />
     </main>
   );
 }
+
