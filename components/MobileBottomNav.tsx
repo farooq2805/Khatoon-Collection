@@ -1,0 +1,83 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  FiHome,
+  FiGrid,
+  FiTag,
+  FiUser,
+  FiDownload,
+} from "react-icons/fi";
+
+export default function MobileBottomNav() {
+  const pathname = usePathname();
+
+  const isActive = (path: string) =>
+    pathname === path ||
+    (path !== "/" && pathname.startsWith(path));
+
+  const iconClass = (path: string) =>
+    isActive(path) ? "text-[#f57bb4]" : "text-gray-400";
+
+  const textClass = (path: string) =>
+    isActive(path)
+      ? "text-[#f57bb4] font-medium"
+      : "text-gray-400";
+
+  return (
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-black/10">
+      <div className="flex items-center justify-around py-2">
+        {/* Home */}
+        <Link href="/" className="flex flex-col items-center gap-[2px]">
+          <FiHome className={`text-[18px] ${iconClass("/")}`} strokeWidth={1.6} />
+          <span className={`text-[10px] ${textClass("/")}`}>Home</span>
+        </Link>
+
+        {/* Products */}
+        <Link href="/products" className="flex flex-col items-center gap-[2px]">
+          <FiGrid
+            className={`text-[18px] ${iconClass("/products")}`}
+            strokeWidth={1.6}
+          />
+          <span className={`text-[10px] ${textClass("/products")}`}>
+            Products
+          </span>
+        </Link>
+
+        {/* Offers */}
+        <Link href="/offers" className="flex flex-col items-center gap-[2px]">
+          <FiTag
+            className={`text-[18px] ${iconClass("/offers")}`}
+            strokeWidth={1.6}
+          />
+          <span className={`text-[10px] ${textClass("/offers")}`}>
+            Offers
+          </span>
+        </Link>
+
+        {/* Profile */}
+        <Link href="/login" className="flex flex-col items-center gap-[2px]">
+          <FiUser
+            className={`text-[18px] ${iconClass("/login")}`}
+            strokeWidth={1.6}
+          />
+          <span className={`text-[10px] ${textClass("/login")}`}>
+            Account
+          </span>
+        </Link>
+
+        {/* Get App */}
+        <Link href="/get-app" className="flex flex-col items-center gap-[2px]">
+          <FiDownload
+            className="text-[18px] text-gray-400"
+            strokeWidth={1.6}
+          />
+          <span className="text-[10px] text-gray-400">
+            Get App
+          </span>
+        </Link>
+      </div>
+    </nav>
+  );
+}

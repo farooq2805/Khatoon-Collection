@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #f57bb4;
+  --color-brand-dark: #b34d6b;
+  --color-brandDark: #990077;
+}
+
+/* =========================
+   HERO / GLOBAL STYLES
+========================= */
+
+.brand-bg { background: #f57bb4; }
+.brand-text { color: #f57bb4; }
+.brand-border { border-color: #f57bb4; }
+
+
+.hero-title {
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+.hero-subtitle {
+  font-family: "Poppins", sans-serif;
+  line-height: 1.6;
+  text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.hero-btn {
+  box-shadow: 0 8px 24px rgba(255, 191, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.hero-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(255, 191, 0, 0.4);
+}
+
+.hero p {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+a {
+  transition: all 0.3s ease;
+}
+
+/* Overlay */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.logo-width {
+  max-width: 120px;
+}
+
+.bg-gold-400 {
+  background-color: #dc9314;
+}
+
+.gold-text-color {
+  color: #93620d;
+}
+
+/* Hide Scrollbar but keep scroll working */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.product-nav {
+  margin-top: 90px;
+}
+
+.product-nav-details {
+  margin-top: 40px;
+}
+
+.cart-pad {
+  margin-top: 80px;
+}
+
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+.ticker {
+  background-color: #f57bb4 !important;
+}
+
+.theme {
+  background-color: #f57bb4 !important;
+}
+
+.logo-footer {
+  max-width: 250px;
+  /* margin-left: -85px; */
+}
+
+/* =========================
+   INPUT (NO @apply - Tailwind v4 safe)
+========================= */
+
+.input {
+  width: 100%;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.75rem 1rem; /* px-4 py-3 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  color: #111827; /* gray-900 */
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.input::placeholder {
+  color: #9ca3af; /* gray-400 */
+}
+
+.input:focus {
+  outline: none;
+  border-color: #f57bb4;
+  box-shadow: 0 0 0 2px rgba(179, 0, 143, 0.3); /* ring */
+}
+
+@media (min-width: 768px) {
+  .input {
+    font-size: 1rem; /* text-base */
+    line-height: 1.5rem;
+  }
+}
+
+
+
+/* Mobile filter/sort sticky bar */
+.mobile-filterbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+            /* adjust if header height differs */
+  z-index: 9999;
+  background: #f5f6f8;
+  padding: 12px 12px;
+}
+
+/* Give content space so it doesn't hide behind the fixed bar */
+.mobile-filterbar-space {
+  padding-top: 68px;      /* roughly bar height */
+}
+
+@media (min-width: 1024px) {
+  .mobile-filterbar,
+  .mobile-filterbar-space {
+    position: static;
+    padding-top: 0;
+  }
+}
+
+
+.mobile-filter{
+      margin-top: 38px;
+      
+}
+.pfilter-top{
+  margin-top: 35px;
+}
+
+.mobile-filterbar{
+  position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    z-index: 9999;
+    background: #f5f6f8;
+    padding: 12px 12px;
+}
+
+.pfilter-text{
+  font-size: 15px;
+}
+.filtersidebar{
+z-index: 99999 !important;
+}
+
+@media (max-width: 768px) {
+  /* Mobile CSS here */
+  .swiper-button-prev, .swiper-button-next {
+    height: 30% !important;
+  }
+  
+}
+
+@media (max-width: 480px) {
+  /* Small mobile CSS */
+}
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Mobile portrait */
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Mobile landscape */
+}
+
+
+.mobile-cart{
+ 
+  z-index: 999999;
+}
+
+.bottom-menu-mob{
+ margin-top: 180px;
+}
+html {
+  scroll-behavior: auto; /* do not use native smooth */
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+.mobile-logo{
+  margin-right: 30px;
+}
+
+.menu-item{
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.mobile-logo{
+  margin-left: -15px;
+}
+
+.aside-menu{
+  max-width: 330px;
+}
