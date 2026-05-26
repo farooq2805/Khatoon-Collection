@@ -2,6 +2,7 @@
 
 import React from "react";
 import { FiStar } from "react-icons/fi";
+import Link from "next/link";
 
 type ReviewItem = {
   id: string;
@@ -12,6 +13,7 @@ type ReviewItem = {
   title: string;
   comment: string;
   productName: string;
+  productSlug: string;
 };
 
 const REVIEWS: ReviewItem[] = [
@@ -21,9 +23,10 @@ const REVIEWS: ReviewItem[] = [
     location: "Mumbai, MH",
     rating: 5,
     date: "2 days ago",
-    title: "Absolutely Beautiful! ✨",
-    comment: "I am in love with the Pastel Salwar Suit Set! The fabric is incredibly soft, breathable, and the pastel colors are so elegant. The stitching was perfect. Received so many compliments at a family dinner!",
-    productName: "Pastel Salwar Suit"
+    title: "Stunning Kashmiri Embroidery! ✨",
+    comment: "I am absolutely in love with this Navy Blue Rayon Suit! The Kashmiri embroidery is so intricate and colorful. Fabric is incredibly soft and comfortable. Perfect for family events!",
+    productName: "Navy Blue Kashmiri Rayon Suit",
+    productSlug: "elegant-navi-blue-rayon-suit-set-featuring-intricate-kashmiri-embroidery-work-in-vibrant-floral-patterns"
   },
   {
     id: "rev_2",
@@ -31,9 +34,10 @@ const REVIEWS: ReviewItem[] = [
     location: "New Delhi, DL",
     rating: 5,
     date: "1 week ago",
-    title: "High Quality & Quick Delivery 🌸",
-    comment: "Ordered the Embroidered Anarkali Kurti and it got delivered within 3 days. The embroidery is very detailed and premium. Fits like a glove. Highly recommend Khatoon Collection for ethnic wear!",
-    productName: "Anarkali Kurti Set"
+    title: "Exquisite Neck & Daman Cutwork 🌸",
+    comment: "Ordered the Black and White Rayon Suit with neck cutwork and it is so beautiful! The material is very premium and breathable. Fits perfectly and looks super elegant. Quick delivery too!",
+    productName: "Black & White Rayon Cutwork Suit",
+    productSlug: "black-and-white-rayon-suit-with-neck-cutwork-and-daman-cutwork-with-comfortable-pant-with-pattern"
   },
   {
     id: "rev_3",
@@ -41,9 +45,10 @@ const REVIEWS: ReviewItem[] = [
     location: "Bangalore, KA",
     rating: 5,
     date: "5 days ago",
-    title: "Luxurious Velvet Suit! 👑",
-    comment: "The Royal Velvet Suit exceeded my expectations. The velvet is extremely premium and heavy, perfect for weddings. The deep colors are absolutely royal. It feels like high-end luxury designer wear.",
-    productName: "Royal Velvet Suit"
+    title: "Gorgeous Crimson Red Suit! 👑",
+    comment: "This Crimson Red three-piece suit is spectacular! The solid kurta-dupatta set has an extremely premium feel. Perfect fit and the fabric feels like pure luxury. Highly recommended!",
+    productName: "Crimson Red Kurta Dupatta Set",
+    productSlug: "crimson-red-three-piece-traditional-ethnic-suit-consisting-of-a-solid-kurta-dupatta"
   },
   {
     id: "rev_4",
@@ -51,9 +56,10 @@ const REVIEWS: ReviewItem[] = [
     location: "Ahmedabad, GJ",
     rating: 5,
     date: "3 days ago",
-    title: "Perfect Chikankari Suit 💫",
-    comment: "Lucknowi Chikankari suit is beautiful! The intricate hand-embroidered look is spectacular. The cotton lining is very comfortable for daily wear. Extremely happy with my purchase.",
-    productName: "Lucknowi Chikankari"
+    title: "Classy Embroidery Work 💫",
+    comment: "The Black and Magenta Pink thread embroidery suit is simply stunning! The thread work is clean and has a beautiful classy ethnic design. Extremely comfortable for daily wear.",
+    productName: "Black Magenta Thread Embroidery Suit",
+    productSlug: "black-magenta-pink-thread-embroidery-work-with-a-classy-ethnic-design"
   }
 ];
 
@@ -124,7 +130,7 @@ export default function ReviewsSection() {
                 <div className="w-full h-px bg-gray-50 my-4" />
 
                 {/* Reviewer Details */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between text-left">
                   <div>
                     <div className="text-[11px] font-bold text-gray-900 flex items-center gap-1.5">
                       <span>{rev.name}</span>
@@ -138,9 +144,12 @@ export default function ReviewsSection() {
                   </div>
 
                   <div className="text-right">
-                    <span className="text-[9px] bg-gray-100 text-gray-500 font-bold px-2 py-1 rounded-md block">
+                    <Link
+                      href={`/products/${rev.productSlug}`}
+                      className="text-[9px] bg-[#f57bb4]/10 text-[#f57bb4] hover:bg-[#f57bb4] hover:text-white transition-all duration-200 font-bold px-2 py-1.5 rounded-md block"
+                    >
                       {rev.productName}
-                    </span>
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -32,14 +32,10 @@ const Footer = () => {
               <a
                 href="https://www.instagram.com/khatooncollection25/?hl=en"
                 className="w-10 h-10 flex items-center justify-center bg-white rounded-full  transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <i className="ri-instagram-line text-[#f57bb4]"></i>
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 flex items-center justify-center bg-white rounded-full  transition-colors"
-              >
-                <i className="ri-twitter-fill text-[#f57bb4]"></i>
               </a>
             </div>
           </div>
