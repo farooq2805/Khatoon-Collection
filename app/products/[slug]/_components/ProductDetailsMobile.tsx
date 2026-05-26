@@ -189,6 +189,7 @@ export default function ProductDetailsDesktop(props: any) {
     if (!html || typeof html !== "string") return "";
 
     return html
+      .replace(/&nbsp;/gi, " ")
       .replace(/<[^>]*>/g, " ")
       .replace(/\s+/g, " ")
       .trim();
