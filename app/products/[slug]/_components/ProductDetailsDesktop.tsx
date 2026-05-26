@@ -499,20 +499,6 @@ export default function ProductDetailsDesktop(props: any) {
         <h3 className="text-sm font-medium text-gray-900">
           Size
         </h3>
-
-        <button
-          type="button"
-          className="
-            text-sm
-            font-medium
-            text-gray-500
-            underline
-            underline-offset-2
-            hover:text-black
-          "
-        >
-          View Size Chart
-        </button>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -644,7 +630,7 @@ export default function ProductDetailsDesktop(props: any) {
       <div className="flex items-center gap-3 text-sm text-gray-700">
         <FiCreditCard className="text-black" />
         <span>
-          
+          Shipping will be calculated at checkout
         </span>
       </div>
 
