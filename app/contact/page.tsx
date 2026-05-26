@@ -49,7 +49,7 @@ export default function ContactPage() {
                   <p className="font-medium">Address</p>
                   <p className="text-sm leading-relaxed">
                     <a
-                      href="https://www.google.com/maps/search/?api=1&query=Khatoon+Collection+no+19+yogi+vaishali+vaishali+market+Shop+no+4+building+opp+castle+tower+Jogeshwari+West+Mumbai+Maharashtra+400102"
+                      href="https://maps.app.goo.gl/ZtYg2vXTmpFuPQRB8"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-[#f57bb4] hover:underline transition-colors"
