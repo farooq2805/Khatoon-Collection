@@ -170,10 +170,8 @@ export function CatalogMenuProvider({ children }: { children: React.ReactNode })
 
     (async () => {
       try {
-        const api = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
+        const api = (process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api").replace(/\/$/, "");
         console.log("API BASE:", api);
-
-        if (!api) throw new Error("Missing NEXT_PUBLIC_API_URL in .env.local");
 
         const [catRes, subRes] = await Promise.all([
           fetchJson(`${api}/categories`),

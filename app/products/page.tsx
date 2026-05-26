@@ -5,7 +5,7 @@ import ProductsListingClient from "./ProductsListingClient";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "https://khatooncollection.in/api"; // ✅ fixed https://
+  "https://api.khatooncollection.in/api";
 
 type SearchParams = {
   page?: string;

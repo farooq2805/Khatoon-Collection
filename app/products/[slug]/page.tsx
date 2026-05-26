@@ -8,7 +8,7 @@ import ProductDetailsClient from "./ProductDetailsClient";
 export const revalidate = 3600;
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://khatooncollection.in/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
 
 type ApiResponse = { success: boolean; data?: any };
 

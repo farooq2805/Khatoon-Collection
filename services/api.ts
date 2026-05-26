@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "";
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api").replace(/\/+$/, "");
 
 // Helper: parse API errors
 async function parseError(res: Response) {

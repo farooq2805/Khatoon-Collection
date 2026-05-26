@@ -4,7 +4,7 @@
 import { getToken } from "./storage";
 import type { ApiError, ApiResult } from "./types";
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api").replace(/\/+$/, "");
 
 async function parseBody(res: Response) {
   const text = await res.text();

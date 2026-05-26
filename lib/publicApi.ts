@@ -3,11 +3,7 @@
 type AnyObj = Record<string, any>;
 
 export function getApiBase() {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base) {
-    // don’t crash build; show clear error in runtime
-    return "";
-  }
+  const base = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
   return base.replace(/\/+$/, "");
 }
 
