@@ -799,13 +799,13 @@ export default function ProductDetailsDesktop(props: any) {
                     
                     <div className="pt-2">
                       <a
-                        href="https://wa.me/919022668127?text=Hi%20Khatoon%20Collection,%20I%20would%20like%20to%20request%20an%20exchange."
+                        href="https://wa.me/919867196860?text=Hi%20Khatoon%20Collection,%20I%20would%20like%20to%20request%20an%20exchange."
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-[#25D366] text-white hover:bg-[#20ba5a] transition px-5 py-2.5 rounded-xl font-semibold shadow-sm text-[10px] tracking-wide"
                       >
                         <i className="ri-whatsapp-line text-sm"></i>
-                        CONNECT ON WHATSAPP (+91 90226 68127)
+                        CONNECT ON WHATSAPP (+91 98671 96860)
                       </a>
                     </div>
                   </div>
@@ -836,7 +836,7 @@ export default function ProductDetailsDesktop(props: any) {
   </ul>
 
   <p>
-    For shipping-related queries, please connect with us on WhatsApp (+91 90226 68127).
+    For shipping-related queries, please connect with us on WhatsApp (+91 98671 96860).
   </p>
 </div>
                 </Accordion>
