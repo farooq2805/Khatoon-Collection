@@ -45,7 +45,7 @@ export default function ContactPage() {
   }, []);
 
   const instagramUrl = "https://www.instagram.com/khatooncollection25/";
-  const whatsappUrl = "https://wa.me/919867196860";
+  const whatsappUrl = "https://chat.whatsapp.com/DWVZo8CgyOm9CO4VHUutDy";
   const mapsUrl = "https://maps.app.goo.gl/ZtYg2vXTmpFuPQRB8";
 
   return (
@@ -57,8 +57,8 @@ export default function ContactPage() {
           <h1 className="text-4xl md:text-5xl font-serif font-semibold text-[#1A1A1A] tracking-wide mb-4">
             Connect With Us
           </h1>
-          <p className="text-gray-500 max-w-xl mx-auto font-medium text-sm md:text-base">
-            Visit our boutique in Mumbai, speak with our customer support, or follow our journey on Instagram for the newest South Asian modest fashion.
+          <p className="text-gray-500 max-w-xl mx-auto font-medium text-sm md:text-base leading-relaxed">
+            Visit our boutique in Mumbai, connect with our dedicated customer support, or explore our journey on Instagram to discover our latest collections of premium modest fashion and exquisite ethnic wear.
           </p>
         </div>
 
