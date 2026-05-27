@@ -170,7 +170,7 @@ useEffect(() => {
             <div className="flex justify-center">
               <Link href="/" className="inline-flex items-center">
                 <img
-                  src="https://res.cloudinary.com/techsrow/image/upload/v1770492215/main-logo-kh_wzsgtu.png"
+                  src="/logo.png"
                   alt="Khatoon Collection"
                   className="h-20 w-auto"
                   draggable={false}

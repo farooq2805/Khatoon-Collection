@@ -179,8 +179,8 @@ const closeAll = () => {
             <div className="absolute left-1/2 -translate-x-1/2">
               <Link href="/" onClick={closeAll}>
                 <img
-                  src="https://res.cloudinary.com/techsrow/image/upload/v1770492215/main-logo-kh_wzsgtu.png"
-                  className="h-18 w-auto"
+                  src="/logo.png"
+                  className="h-14 w-auto"
                   alt="logo"
                 />
               </Link>

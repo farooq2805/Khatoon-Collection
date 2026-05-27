@@ -53,9 +53,9 @@ export default function DesktopDrawerMenu({ open, onClose }: Props) {
 
           <Link href="/" onClick={onClose} className="flex items-center">
             <img
-              src="https://res.cloudinary.com/techsrow/image/upload/v1770199315/kc-main-logo-1_nnrif8.png"
+              src="/logo.png"
               alt="Khatoon Collection"
-              className="w-40 h-auto"
+              className="h-12 w-auto"
             />
           </Link>
 
