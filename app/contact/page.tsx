@@ -82,7 +82,7 @@ export default function ContactPage() {
                   <FiMapPin className="text-[#f57bb4] text-xl" />
                 </div>
                 <div className="space-y-3">
-                  <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">Our Store Address</p>
+                  <p className="text-xs uppercase tracking-wider text-[#f57bb4] font-bold">Our Store - Yogi Vaishali (Branch 1)</p>
                   <p className="text-[#333333] text-sm md:text-base font-medium leading-relaxed">
                     Shop No. 4, Building No. 19,
                     <br />
@@ -93,6 +93,33 @@ export default function ContactPage() {
                   
                   <a
                     href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-bold text-[#f57bb4] hover:text-[#990077] transition-colors group mt-1"
+                  >
+                    Get Directions on Google Maps 
+                    <FiExternalLink className="text-xs group-hover:translate-x-0.5 duration-200" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Address details 2 */}
+              <div className="flex gap-4 items-start border-t border-gray-50 pt-6">
+                <div className="bg-[#FAF8F5] p-3 rounded-2xl flex-none">
+                  <FiMapPin className="text-[#f57bb4] text-xl" />
+                </div>
+                <div className="space-y-3">
+                  <p className="text-xs uppercase tracking-wider text-[#f57bb4] font-bold">Our Store - Rabia Hub (Branch 2)</p>
+                  <p className="text-[#333333] text-sm md:text-base font-medium leading-relaxed">
+                    Rabia Shopping Hub,
+                    <br />
+                    Opposite Lady Hub, Near Nexus Medical,
+                    <br />
+                    Vaishali Nagar Market, Jogeshwari West, Mumbai - 400102
+                  </p>
+                  
+                  <a
+                    href="https://maps.google.com/?q=Rabia+Shopping+Hub,Vaishali+Nagar+Market,Jogeshwari+West,Mumbai+400102"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-xs font-bold text-[#f57bb4] hover:text-[#990077] transition-colors group mt-1"
@@ -216,7 +243,7 @@ export default function ContactPage() {
                   <p className="text-gray-400 text-[10px] font-bold">Women&apos;s Fashion</p>
                   <p className="mt-1">✨ Modest Wear, Premium Rayon Suits & Dupattas</p>
                   <p>💬 Whatsapp Group - 9867196860</p>
-                  <p>📍 Add- Shop Number 4 Building Number 19Yogi Vaishali , Vaishali market Jogeshwari west,... <span className="text-gray-400 cursor-pointer font-bold">more</span></p>
+                  <p>📍 2 Stores in Mumbai (Yogi Vaishali & Rabia Shopping Hub) ... <span className="text-gray-400 cursor-pointer font-bold">more</span></p>
                 </div>
               </div>
 

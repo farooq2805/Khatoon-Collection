@@ -166,7 +166,7 @@ const Footer = () => {
                   </svg>
                 </span>
                 <div className="space-y-2">
-                  <p className="text-[11px] uppercase tracking-widest text-white/50 font-bold">Our Store</p>
+                  <p className="text-[11px] uppercase tracking-widest text-white/50 font-bold">Our Store - Branch 1</p>
                   <p className="text-white/80 text-sm leading-relaxed">
                     Shop No. 4, Building No. 19,<br />
                     Yogi Vaishali, Vaishali Market,<br />
@@ -175,6 +175,34 @@ const Footer = () => {
                   </p>
                   <a
                     href="https://maps.app.goo.gl/ZtYg2vXTmpFuPQRB8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[#f57bb4] hover:text-white text-xs font-bold transition-colors group"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Get Directions on Google Maps
+                  </a>
+                </div>
+              </li>
+
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-[#f57bb4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </span>
+                <div className="space-y-2">
+                  <p className="text-[11px] uppercase tracking-widest text-white/50 font-bold">Our Store - Branch 2</p>
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    Rabia Shopping Hub, Opposite Lady Hub,<br />
+                    Near Nexus Medical, Vaishali Nagar Market,<br />
+                    Jogeshwari West, Mumbai - 400102
+                  </p>
+                  <a
+                    href="https://maps.google.com/?q=Rabia+Shopping+Hub,Vaishali+Nagar+Market,Jogeshwari+West,Mumbai+400102"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-[#f57bb4] hover:text-white text-xs font-bold transition-colors group"
@@ -198,7 +226,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Khatoon Collection. All rights reserved.
           </p>
           <p className="text-white/40 text-xs text-center">
-            Shop No. 4, Yogi Vaishali, Jogeshwari (West), Mumbai – 400102
+            Branch 1: Shop No. 4, Yogi Vaishali, Jogeshwari (West), Mumbai – 400102 | Branch 2: Rabia Shopping Hub, Jogeshwari West, Mumbai - 400102
           </p>
         </div>
       </div>
