@@ -136,7 +136,7 @@ const Footer = () => {
               {/* Phone Numbers */}
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-[#f57bb4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </span>
@@ -144,13 +144,13 @@ const Footer = () => {
                   <p className="text-[11px] uppercase tracking-widest text-white/50 font-bold">Call / WhatsApp</p>
                   <a
                     href="tel:+919867196860"
-                    className="block text-white hover:text-[#f57bb4] transition-colors text-sm font-medium"
+                    className="block text-white hover:text-white/80 transition-colors text-sm font-medium"
                   >
                     +91 98671 96860
                   </a>
                   <a
                     href="tel:+919136868443"
-                    className="block text-white hover:text-[#f57bb4] transition-colors text-sm font-medium"
+                    className="block text-white hover:text-white/80 transition-colors text-sm font-medium"
                   >
                     +91 91368 68443
                   </a>
@@ -160,7 +160,7 @@ const Footer = () => {
               {/* Store Address with Google Maps link */}
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-[#f57bb4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -177,9 +177,9 @@ const Footer = () => {
                     href="https://maps.app.goo.gl/ZtYg2vXTmpFuPQRB8"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[#f57bb4] hover:text-white text-xs font-bold transition-colors group"
+                    className="inline-flex items-center gap-1.5 text-white hover:text-white/80 text-xs font-bold underline transition-colors group"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                     Get Directions on Google Maps
@@ -189,7 +189,7 @@ const Footer = () => {
 
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-[#f57bb4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -205,9 +205,9 @@ const Footer = () => {
                     href="https://maps.google.com/?q=Rabia+Shopping+Hub,Vaishali+Nagar+Market,Jogeshwari+West,Mumbai+400102"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[#f57bb4] hover:text-white text-xs font-bold transition-colors group"
+                    className="inline-flex items-center gap-1.5 text-white hover:text-white/80 text-xs font-bold underline transition-colors group"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                     Get Directions on Google Maps
