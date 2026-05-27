@@ -10,17 +10,18 @@ const Footer = () => {
 
           {/* Brand + About */}
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
-            <div className="flex items-left mb-4">
-              <span
-                className="text-2xl font-bold"
-                style={{ fontFamily: "Pacifico, serif" }}
-              >
-                <img
-                  src="https://res.cloudinary.com/techsrow/image/upload/v1770499740/final-white-logo_fxfnae.png"
-                  className="logo-footer"
-                  alt="Khatoon Collection"
-                />
-              </span>
+            <div className="mb-5">
+              <Link href="/">
+                {/* White rounded card so the pink logo is clearly visible on dark footer */}
+                <div className="inline-block bg-white rounded-2xl px-4 py-3 shadow-lg">
+                  <img
+                    src="/logo.png"
+                    alt="Khatoon Collection"
+                    className="h-14 w-auto max-w-[200px] object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              </Link>
             </div>
 
             <p className="text-white-400 mb-6 max-w-md">
