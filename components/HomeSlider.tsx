@@ -13,12 +13,6 @@ import "swiper/css/pagination";
 type Slide = {
   desktopImageUrl: string;
   mobileImageUrl: string;
-  /** Natural pixel dimensions of the desktop image */
-  desktopW: number;
-  desktopH: number;
-  /** Natural pixel dimensions of the mobile image */
-  mobileW: number;
-  mobileH: number;
   ctaHref: string;
 };
 
@@ -27,11 +21,6 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
     {
       desktopImageUrl: "/slider/khatoon_desktop_banner_clean.png",
       mobileImageUrl:  "/slider/khatoon_mobile_banner.png",
-      // actual image dimensions — drives natural aspect ratio (no cropping)
-      desktopW: 1920,
-      desktopH: 680,
-      mobileW:  1024,
-      mobileH:  1330,
       ctaHref: "/products",
     },
   ], []);
@@ -39,72 +28,114 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
   if (!slides.length) return null;
 
   return (
-    <div className="w-full overflow-hidden">
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        navigation={slides.length > 1}
-        pagination={slides.length > 1 ? { clickable: true } : false}
-        autoplay={slides.length > 1 ? { delay: 4000, disableOnInteraction: false } : false}
-        loop={slides.length > 1}
-        className="w-full"
-      >
-        {slides.map((slide, index) => {
-          const href = slide.ctaHref || "#";
+    <>
+      <style>{`
+        /*
+         * Banner fills exactly one viewport so the next section arrives
+         * on a single scroll — desktop uses vh, mobile uses dvh.
+         */
+        .kc-banner {
+          width: 100%;
+          height: calc(100vh - 102px);   /* desktop: minus desktop header */
+          overflow: hidden;
+          position: relative;
+        }
+        @media (max-width: 767px) {
+          .kc-banner {
+            height: calc(100dvh - 92px); /* mobile: minus mobile header */
+          }
+        }
 
-          return (
-            <SwiperSlide key={index} className="w-full">
-              {href !== "#" ? (
-                <Link href={href} className="block w-full">
-                  {/* ── Desktop image (hidden on mobile) ── */}
-                  <Image
-                    src={slide.desktopImageUrl}
-                    alt={`Khatoon Collection Banner ${index + 1}`}
-                    width={slide.desktopW}
-                    height={slide.desktopH}
-                    priority={index === 0}
-                    sizes="100vw"
-                    className="hidden md:block w-full h-auto"
-                    style={{ display: undefined }} /* let className control display */
-                  />
+        /* Swiper fills the wrapper */
+        .kc-banner .swiper,
+        .kc-banner .swiper-wrapper,
+        .kc-banner .swiper-slide {
+          height: 100% !important;
+          width: 100%;
+        }
 
-                  {/* ── Mobile image (hidden on desktop) ── */}
-                  <Image
-                    src={slide.mobileImageUrl}
-                    alt={`Khatoon Collection Banner Mobile ${index + 1}`}
-                    width={slide.mobileW}
-                    height={slide.mobileH}
-                    priority={index === 0}
-                    sizes="100vw"
-                    className="block md:hidden w-full h-auto"
-                    style={{ display: undefined }}
-                  />
-                </Link>
-              ) : (
-                <>
-                  <Image
-                    src={slide.desktopImageUrl}
-                    alt={`Khatoon Collection Banner ${index + 1}`}
-                    width={slide.desktopW}
-                    height={slide.desktopH}
-                    priority={index === 0}
-                    sizes="100vw"
-                    className="hidden md:block w-full h-auto"
-                  />
-                  <Image
-                    src={slide.mobileImageUrl}
-                    alt={`Khatoon Collection Banner Mobile ${index + 1}`}
-                    width={slide.mobileW}
-                    height={slide.mobileH}
-                    priority={index === 0}
-                    sizes="100vw"
-                    className="block md:hidden w-full h-auto"
-                  />
-                </>
-              )}
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </div>
+        /* Each slide is a positioned container */
+        .kc-banner .swiper-slide {
+          position: relative;
+        }
+
+        /* Desktop image: visible ≥ 768px */
+        .kc-banner-img-desktop {
+          display: block;
+          object-fit: cover;
+          object-position: top center;
+        }
+        @media (max-width: 767px) {
+          .kc-banner-img-desktop { display: none; }
+        }
+
+        /* Mobile image: visible < 768px */
+        .kc-banner-img-mobile {
+          display: none;
+          object-fit: cover;
+          object-position: top center;
+        }
+        @media (max-width: 767px) {
+          .kc-banner-img-mobile { display: block; }
+        }
+      `}</style>
+
+      <div className="kc-banner">
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          navigation={slides.length > 1}
+          pagination={slides.length > 1 ? { clickable: true } : false}
+          autoplay={
+            slides.length > 1
+              ? { delay: 4500, disableOnInteraction: false }
+              : false
+          }
+          loop={slides.length > 1}
+        >
+          {slides.map((slide, index) => {
+            const href = slide.ctaHref || "#";
+            const inner = (
+              <>
+                {/* Desktop banner */}
+                <Image
+                  src={slide.desktopImageUrl}
+                  alt="Khatoon Collection — Premium Ethnic Wear"
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  className="kc-banner-img-desktop"
+                />
+                {/* Mobile banner */}
+                <Image
+                  src={slide.mobileImageUrl}
+                  alt="Khatoon Collection — Premium Ethnic Wear"
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  className="kc-banner-img-mobile"
+                />
+              </>
+            );
+
+            return (
+              <SwiperSlide key={index}>
+                {href !== "#" ? (
+                  <Link
+                    href={href}
+                    style={{ display: "block", width: "100%", height: "100%", position: "relative" }}
+                  >
+                    {inner}
+                  </Link>
+                ) : (
+                  <div style={{ width: "100%", height: "100%", position: "relative" }}>
+                    {inner}
+                  </div>
+                )}
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </div>
+    </>
   );
 }
