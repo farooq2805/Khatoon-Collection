@@ -232,7 +232,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className="w-full relative h-[calc(100dvh-92px)] md:h-auto md:aspect-[25/8] overflow-hidden bg-gray-100">
+    <div className={`w-full relative overflow-hidden bg-gray-100 ${isMobile ? "h-[calc(100dvh-92px)]" : "h-auto"}`}>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation
@@ -250,24 +250,40 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
             <SwiperSlide key={`${slide.imageUrl}-${index}`} className="relative w-full h-full">
               {clickable ? (
                 <Link href={href} className="block relative w-full h-full">
+                  {isMobile ? (
+                    <Image
+                      src={slide.imageUrl}
+                      alt={`Slide ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="100vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={slide.imageUrl}
+                      alt={`Slide ${index + 1}`}
+                      className="w-full h-auto block"
+                    />
+                  )}
+                </Link>
+              ) : (
+                isMobile ? (
                   <Image
                     src={slide.imageUrl}
                     alt={`Slide ${index + 1}`}
                     fill
                     priority={index === 0}
                     sizes="100vw"
-                    className={isMobile ? "object-cover" : "object-cover object-center"}
+                    className="object-cover"
                   />
-                </Link>
-              ) : (
-                <Image
-                  src={slide.imageUrl}
-                  alt={`Slide ${index + 1}`}
-                  fill
-                  priority={index === 0}
-                  sizes="100vw"
-                  className={isMobile ? "object-cover" : "object-cover object-center"}
-                />
+                ) : (
+                  <img
+                    src={slide.imageUrl}
+                    alt={`Slide ${index + 1}`}
+                    className="w-full h-auto block"
+                  />
+                )
               )}
 
               {/* Responsive Text Overlay for Clean Desktop Banner */}
