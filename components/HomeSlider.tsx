@@ -225,10 +225,6 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
       {
         imageUrl: "/slider/khatoon_desktop_banner_clean.png",
         ctaHref: "/products",
-      },
-      {
-        imageUrl: "/slider/khatoon_desktop_banner_full.png",
-        ctaHref: "/products",
       }
     ];
   }, [isMobile, desktopSlides, mobileSlides, error]);
@@ -239,16 +235,15 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
     <div className={`w-full relative overflow-hidden bg-gray-100 ${isMobile ? "h-[calc(100dvh-92px)]" : "h-[calc(100vh-102px)]"}`}>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
-        navigation
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        loop
+        navigation={slides.length > 1}
+        pagination={slides.length > 1 ? { clickable: true } : false}
+        autoplay={slides.length > 1 ? { delay: 4000, disableOnInteraction: false } : false}
+        loop={slides.length > 1}
         className="w-full h-full"
       >
         {slides.map((slide, index) => {
           const href = slide.ctaHref || "#";
           const clickable = href !== "#";
-          const isCleanDesktop = !isMobile && slide.imageUrl.includes("khatoon_desktop_banner_clean.png");
 
           return (
             <SwiperSlide key={`${slide.imageUrl}-${index}`} className="relative w-full h-full">
@@ -272,30 +267,6 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                   sizes="100vw"
                   className={isMobile ? "object-cover" : "object-cover object-center"}
                 />
-              )}
-
-              {/* Responsive Text Overlay for Clean Desktop Banner */}
-              {isCleanDesktop && (
-                <div className="absolute right-[8%] lg:right-[12%] top-[50%] -translate-y-1/2 z-20 max-w-[45%] pointer-events-none select-none text-left">
-                  <h2 
-                    className="text-white text-5xl md:text-6xl lg:text-[76px] font-extrabold tracking-wider leading-[1.05] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" 
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    KHATOON
-                  </h2>
-                  <h3 
-                    className="text-[#d4af37] text-3xl md:text-4xl lg:text-[54px] italic font-semibold tracking-wide leading-none mt-2 mb-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    Collection
-                  </h3>
-                  <p className="text-white/95 text-xs md:text-sm lg:text-base tracking-[0.3em] font-medium uppercase mb-8 drop-shadow-md">
-                    EMBRACE MODEST ELEGANCE
-                  </p>
-                  <div className="inline-flex items-center border border-white text-white px-8 py-3.5 tracking-[0.25em] text-xs lg:text-sm font-semibold uppercase hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto rounded-none drop-shadow-md">
-                    EXPLORE NOW <span className="ml-2">&gt;</span>
-                  </div>
-                </div>
               )}
             </SwiperSlide>
           );
