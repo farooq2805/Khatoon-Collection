@@ -1,39 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import Script from "next/script";
 
 export default function InstagramReels() {
+  // Load the Instagram embed script once after mount
+  useEffect(() => {
+    // If the script is already loaded, just ask Instagram to process new embeds
+    if ((window as any).instgrm) {
+      (window as any).instgrm.Embeds.process();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://www.instagram.com/embed.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if ((window as any).instgrm) {
+        (window as any).instgrm.Embeds.process();
+      }
+    };
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <section className="w-full bg-white py-10 md:py-16 border-t border-gray-100">
-
-      {/* Mobile-responsive styles for the Behold widget */}
-      <style>{`
-        /* Ensure the behold div fills its container and is block-level */
-        [data-behold-id] {
-          display: block;
-          width: 100%;
-          min-height: 200px;
-        }
-
-        /* Mobile: limit to full width, prevent horizontal overflow */
-        @media (max-width: 639px) {
-          .behold-wrapper {
-            max-width: 100%;
-            overflow: hidden;
-          }
-          /* Force 2-column grid on mobile if behold renders internal grid */
-          [data-behold-id] > * {
-            max-width: 100% !important;
-          }
-        }
-      `}</style>
 
       <div className="mx-auto w-full max-w-6xl px-3 md:px-8">
 
         {/* Title Heading */}
-        <div className="text-center mb-6 md:mb-10">
+        <div className="text-center mb-8 md:mb-12">
           <span className="text-[11px] md:text-[13px] tracking-[0.25em] text-[#f57bb4] uppercase font-bold block mb-2">
             Social Showcase
           </span>
@@ -41,19 +38,113 @@ export default function InstagramReels() {
             Follow Us on <span className="text-[#f57bb4]">Instagram</span>
           </h2>
           <p className="text-gray-400 text-xs md:text-sm mt-2 max-w-md mx-auto leading-relaxed">
-            Tap any photo to explore our latest reels &amp; collections on Instagram.
+            Watch our latest reels &amp; explore our newest collections.
           </p>
         </div>
 
-        {/* Behold Instagram Feed Widget
-            Uses data-behold-id div format — Behold.so detects this div and
-            renders the feed inside it. Container-aware: responds to parent width. */}
-        <div className="behold-wrapper w-full overflow-hidden rounded-xl">
-          <div data-behold-id="GWoyi7QRoH11ALrrLqg6"></div>
+        {/* Instagram Reels Embeds Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+
+          {/* Reel 1 */}
+          <div className="w-full max-w-[340px]">
+            <blockquote
+              className="instagram-media"
+              data-instgrm-captioned
+              data-instgrm-permalink="https://www.instagram.com/reel/DY1l59OM6FT/?utm_source=ig_embed&amp;utm_campaign=loading"
+              data-instgrm-version="14"
+              style={{
+                background: "#FFF",
+                border: 0,
+                borderRadius: "12px",
+                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
+                margin: "0",
+                maxWidth: "100%",
+                minWidth: "280px",
+                padding: 0,
+                width: "100%",
+              }}
+            >
+              <div style={{ padding: "16px" }}>
+                <a
+                  href="https://www.instagram.com/reel/DY1l59OM6FT/?utm_source=ig_embed&amp;utm_campaign=loading"
+                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View this post on Instagram
+                </a>
+              </div>
+            </blockquote>
+          </div>
+
+          {/* Reel 2 */}
+          <div className="w-full max-w-[340px]">
+            <blockquote
+              className="instagram-media"
+              data-instgrm-captioned
+              data-instgrm-permalink="https://www.instagram.com/reel/DYuiPLcM7Xd/?utm_source=ig_embed&amp;utm_campaign=loading"
+              data-instgrm-version="14"
+              style={{
+                background: "#FFF",
+                border: 0,
+                borderRadius: "12px",
+                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
+                margin: "0",
+                maxWidth: "100%",
+                minWidth: "280px",
+                padding: 0,
+                width: "100%",
+              }}
+            >
+              <div style={{ padding: "16px" }}>
+                <a
+                  href="https://www.instagram.com/reel/DYuiPLcM7Xd/?utm_source=ig_embed&amp;utm_campaign=loading"
+                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View this post on Instagram
+                </a>
+              </div>
+            </blockquote>
+          </div>
+
+          {/* Reel 3 */}
+          <div className="w-full max-w-[340px] sm:col-span-2 lg:col-span-1 sm:max-w-[340px]">
+            <blockquote
+              className="instagram-media"
+              data-instgrm-captioned
+              data-instgrm-permalink="https://www.instagram.com/reel/DYsYHidMenm/?utm_source=ig_embed&amp;utm_campaign=loading"
+              data-instgrm-version="14"
+              style={{
+                background: "#FFF",
+                border: 0,
+                borderRadius: "12px",
+                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
+                margin: "0",
+                maxWidth: "100%",
+                minWidth: "280px",
+                padding: 0,
+                width: "100%",
+              }}
+            >
+              <div style={{ padding: "16px" }}>
+                <a
+                  href="https://www.instagram.com/reel/DYsYHidMenm/?utm_source=ig_embed&amp;utm_campaign=loading"
+                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View this post on Instagram
+                </a>
+              </div>
+            </blockquote>
+          </div>
+
         </div>
 
         {/* Follow CTA Button */}
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-10">
           <Link
             href="https://www.instagram.com/khatooncollection25/"
             target="_blank"
@@ -76,20 +167,6 @@ export default function InstagramReels() {
         </div>
 
       </div>
-
-      {/* Exact Behold.so embed script — function() IIFE format, loaded after page interactive */}
-      <Script
-        id="behold-widget-script"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const d=document,s=d.createElement("script");s.type="module";
-              s.src="https://w.behold.so/widget.js";d.head.append(s);
-            })();
-          `,
-        }}
-      />
     </section>
   );
 }
