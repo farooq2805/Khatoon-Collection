@@ -260,7 +260,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                     fill
                     priority={index === 0}
                     sizes="100vw"
-                    className={isMobile ? "object-cover" : "object-contain object-right bg-white"}
+                    className={isMobile ? "object-cover" : "object-cover object-[center_35%]"}
                   />
                 </Link>
               ) : (
@@ -270,22 +270,31 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                   fill
                   priority={index === 0}
                   sizes="100vw"
-                  className={isMobile ? "object-cover" : "object-contain object-right bg-white"}
+                  className={isMobile ? "object-cover" : "object-cover object-[center_35%]"}
                 />
               )}
 
               {/* Responsive Text Overlay for Clean Desktop Banner */}
               {isCleanDesktop && (
-                <div className="absolute left-[8%] top-[50%] -translate-y-1/2 z-20 max-w-[50%] pointer-events-none select-none">
+                <div className="absolute right-[8%] lg:right-[12%] top-[50%] -translate-y-1/2 z-20 max-w-[45%] pointer-events-none select-none text-left">
                   <h2 
-                    className="text-[#b28236] text-4xl md:text-5xl lg:text-[72px] font-bold tracking-wider leading-[1.1] mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)]" 
+                    className="text-white text-5xl md:text-6xl lg:text-[76px] font-extrabold tracking-wider leading-[1.05] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" 
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    KHATOON<br />COLLECTION
+                    KHATOON
                   </h2>
-                  <p className="text-gray-800 text-xs md:text-sm lg:text-lg tracking-[0.25em] font-semibold uppercase drop-shadow-sm">
+                  <h3 
+                    className="text-[#d4af37] text-3xl md:text-4xl lg:text-[54px] italic font-semibold tracking-wide leading-none mt-2 mb-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    Collection
+                  </h3>
+                  <p className="text-white/95 text-xs md:text-sm lg:text-base tracking-[0.3em] font-medium uppercase mb-8 drop-shadow-md">
                     EMBRACE MODEST ELEGANCE
                   </p>
+                  <div className="inline-flex items-center border border-white text-white px-8 py-3.5 tracking-[0.25em] text-xs lg:text-sm font-semibold uppercase hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto rounded-none drop-shadow-md">
+                    EXPLORE NOW <span className="ml-2">&gt;</span>
+                  </div>
                 </div>
               )}
             </SwiperSlide>
