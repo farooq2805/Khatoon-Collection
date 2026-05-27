@@ -260,7 +260,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                     fill
                     priority={index === 0}
                     sizes="100vw"
-                    className={isMobile ? "object-cover" : "object-cover object-[center_35%]"}
+                    className={isMobile ? "object-cover" : "object-cover object-center"}
                   />
                 </Link>
               ) : (
@@ -270,7 +270,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                   fill
                   priority={index === 0}
                   sizes="100vw"
-                  className={isMobile ? "object-cover" : "object-cover object-[center_35%]"}
+                  className={isMobile ? "object-cover" : "object-cover object-center"}
                 />
               )}
 
