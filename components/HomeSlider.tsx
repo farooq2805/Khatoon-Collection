@@ -221,7 +221,12 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
       ];
     }
     
-    return desktopSlides;
+    return [
+      {
+        imageUrl: "/slider/khatoon_desktop_banner.png",
+        ctaHref: "/products",
+      }
+    ];
   }, [isMobile, desktopSlides, mobileSlides, error]);
 
   if (!slides || slides.length === 0) return null;
