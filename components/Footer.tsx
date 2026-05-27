@@ -16,9 +16,8 @@ const Footer = () => {
                 style={{ fontFamily: "Pacifico, serif" }}
               >
                 <img
-                  src="/logo.png"
+                  src="https://res.cloudinary.com/techsrow/image/upload/v1770499740/final-white-logo_fxfnae.png"
                   className="logo-footer"
-                  style={{ filter: "brightness(0) invert(1)" }}
                   alt="Khatoon Collection"
                 />
               </span>

@@ -41,7 +41,7 @@ export default function DesktopDrawerMenu({ open, onClose }: Props) {
         aria-modal="true"
         aria-label="Desktop Menu"
       >
-        <div className="h-[74px] bg-[#f5d8cf] flex items-center justify-between px-4 border-b border-black/10">
+        <div className="h-[74px] bg-white flex items-center justify-between px-4 border-b border-black/10">
           <button
             type="button"
             onClick={onClose}
