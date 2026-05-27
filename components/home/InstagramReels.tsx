@@ -1,35 +1,29 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 
+/*
+  Instagram Reels Section
+  ───────────────────────
+  Uses the official Instagram /embed iframe URL format:
+    https://www.instagram.com/reel/{shortcode}/embed/
+  This shows ONLY the video player — no captions, no comments, no like button.
+
+  To add/change reels, edit the REELS array below.
+*/
+const REELS = [
+  "DY1l59OM6FT",
+  // Add more reel shortcodes here, e.g.:
+  // "ABC123xyz",
+];
+
 export default function InstagramReels() {
-  // Load the Instagram embed script once after mount
-  useEffect(() => {
-    // If the script is already loaded, just ask Instagram to process new embeds
-    if ((window as any).instgrm) {
-      (window as any).instgrm.Embeds.process();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://www.instagram.com/embed.js";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if ((window as any).instgrm) {
-        (window as any).instgrm.Embeds.process();
-      }
-    };
-    document.body.appendChild(script);
-  }, []);
-
   return (
     <section className="w-full bg-white py-10 md:py-16 border-t border-gray-100">
-
       <div className="mx-auto w-full max-w-6xl px-3 md:px-8">
 
-        {/* Title Heading */}
+        {/* Section heading */}
         <div className="text-center mb-8 md:mb-12">
           <span className="text-[11px] md:text-[13px] tracking-[0.25em] text-[#f57bb4] uppercase font-bold block mb-2">
             Social Showcase
@@ -42,108 +36,42 @@ export default function InstagramReels() {
           </p>
         </div>
 
-        {/* Instagram Reels Embeds Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-
-          {/* Reel 1 */}
-          <div className="w-full max-w-[340px]">
-            <blockquote
-              className="instagram-media"
-              data-instgrm-captioned
-              data-instgrm-permalink="https://www.instagram.com/reel/DY1l59OM6FT/?utm_source=ig_embed&amp;utm_campaign=loading"
-              data-instgrm-version="14"
-              style={{
-                background: "#FFF",
-                border: 0,
-                borderRadius: "12px",
-                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
-                margin: "0",
-                maxWidth: "100%",
-                minWidth: "280px",
-                padding: 0,
-                width: "100%",
-              }}
+        {/* Reels grid — each reel is a clean video-only iframe */}
+        <div
+          className={`
+            grid gap-4 justify-items-center
+            ${REELS.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : ""}
+            ${REELS.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto" : ""}
+            ${REELS.length >= 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : ""}
+          `}
+        >
+          {REELS.map((shortcode) => (
+            <div
+              key={shortcode}
+              className="w-full overflow-hidden rounded-xl shadow-md"
+              style={{ maxWidth: 340 }}
             >
-              <div style={{ padding: "16px" }}>
-                <a
-                  href="https://www.instagram.com/reel/DY1l59OM6FT/?utm_source=ig_embed&amp;utm_campaign=loading"
-                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View this post on Instagram
-                </a>
+              {/*
+                aspect-ratio 9/16 keeps the reel player at portrait proportion.
+                The iframe fills 100% of width and 100% of this fixed-height wrapper.
+              */}
+              <div className="relative w-full" style={{ paddingTop: "177.78%" /* 16:9 inverted = 9:16 */ }}>
+                <iframe
+                  src={`https://www.instagram.com/reel/${shortcode}/embed/`}
+                  title={`Instagram Reel ${shortcode}`}
+                  frameBorder="0"
+                  scrolling="no"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  className="absolute inset-0 w-full h-full rounded-xl"
+                  loading="lazy"
+                />
               </div>
-            </blockquote>
-          </div>
-
-          {/* Reel 2 */}
-          <div className="w-full max-w-[340px]">
-            <blockquote
-              className="instagram-media"
-              data-instgrm-captioned
-              data-instgrm-permalink="https://www.instagram.com/reel/DYuiPLcM7Xd/?utm_source=ig_embed&amp;utm_campaign=loading"
-              data-instgrm-version="14"
-              style={{
-                background: "#FFF",
-                border: 0,
-                borderRadius: "12px",
-                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
-                margin: "0",
-                maxWidth: "100%",
-                minWidth: "280px",
-                padding: 0,
-                width: "100%",
-              }}
-            >
-              <div style={{ padding: "16px" }}>
-                <a
-                  href="https://www.instagram.com/reel/DYuiPLcM7Xd/?utm_source=ig_embed&amp;utm_campaign=loading"
-                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View this post on Instagram
-                </a>
-              </div>
-            </blockquote>
-          </div>
-
-          {/* Reel 3 */}
-          <div className="w-full max-w-[340px] sm:col-span-2 lg:col-span-1 sm:max-w-[340px]">
-            <blockquote
-              className="instagram-media"
-              data-instgrm-captioned
-              data-instgrm-permalink="https://www.instagram.com/reel/DYsYHidMenm/?utm_source=ig_embed&amp;utm_campaign=loading"
-              data-instgrm-version="14"
-              style={{
-                background: "#FFF",
-                border: 0,
-                borderRadius: "12px",
-                boxShadow: "0 2px 16px 0 rgba(0,0,0,0.12)",
-                margin: "0",
-                maxWidth: "100%",
-                minWidth: "280px",
-                padding: 0,
-                width: "100%",
-              }}
-            >
-              <div style={{ padding: "16px" }}>
-                <a
-                  href="https://www.instagram.com/reel/DYsYHidMenm/?utm_source=ig_embed&amp;utm_campaign=loading"
-                  style={{ background: "#FFFFFF", lineHeight: 0, padding: 0, textAlign: "center", textDecoration: "none", width: "100%" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View this post on Instagram
-                </a>
-              </div>
-            </blockquote>
-          </div>
-
+            </div>
+          ))}
         </div>
 
-        {/* Follow CTA Button */}
+        {/* Follow CTA */}
         <div className="flex justify-center mt-10">
           <Link
             href="https://www.instagram.com/khatooncollection25/"
