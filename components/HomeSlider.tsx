@@ -73,7 +73,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
         .kc-banner-img-mobile {
           display: none;
           object-fit: cover;
-          object-position: top center;
+          object-position: center center;
         }
         @media (max-width: 767px) {
           .kc-banner-img-mobile { display: block; }
