@@ -110,7 +110,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -120,119 +120,28 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-type SliderItem = {
-  id: string;
-  imageUrl: string;
-  isActive: boolean;
-  sortOrder: number;
+type Slide = {
+  desktopImageUrl: string;
+  mobileImageUrl: string;
   ctaHref: string;
 };
 
-type ApiResponse = {
-  success: boolean;
-  data: {
-    desktop: SliderItem[];
-    mobile: SliderItem[];
-  };
-};
-
-type Slide = {
-  imageUrl: string;
-  ctaHref?: string;
-};
-
 export default function HomeSlider({ initialData }: { initialData?: any }) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [desktopSlides, setDesktopSlides] = useState<Slide[] | null>(null);
-  const [mobileSlides, setMobileSlides] = useState<Slide[] | null>(null);
-  const [error, setError] = useState(false);
-
-  // 📱 Detect device
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  // 🌐 Load slider data (either from props or client-side fallback)
-  useEffect(() => {
-    if (initialData) {
-      const normalize = (items: SliderItem[] | undefined): Slide[] =>
-        (Array.isArray(items) ? items : [])
-          .filter((x) => x?.isActive === true && !!x?.imageUrl)
-          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-          .map((x) => ({
-            imageUrl: x.imageUrl,
-            ctaHref: (x.ctaHref || "").trim(),
-          }));
-
-      setDesktopSlides(normalize(initialData?.desktop));
-      setMobileSlides(normalize(initialData?.mobile));
-      return;
-    }
-
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch("https://api.khatooncollection.in/api/home-slider", {
-          cache: "no-store",
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const json = (await res.json()) as ApiResponse;
-
-        const normalize = (items: SliderItem[] | undefined): Slide[] =>
-          (Array.isArray(items) ? items : [])
-            .filter((x) => x?.isActive === true && !!x?.imageUrl)
-            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-            .map((x) => ({
-              imageUrl: x.imageUrl,
-              ctaHref: (x.ctaHref || "").trim(),
-            }));
-
-        if (!mounted) return;
-
-        setDesktopSlides(normalize(json?.data?.desktop));
-        setMobileSlides(normalize(json?.data?.mobile));
-      } catch (e) {
-        if (!mounted) return;
-        setError(true);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [initialData]);
-
-  // ⏳ Wait until API resolves
-  const slides = useMemo(() => {
-    if (error) return null;
-    if (!desktopSlides || !mobileSlides) return null;
-    
-    if (isMobile) {
-      return [
-        {
-          imageUrl: "/slider/khatoon_mobile_banner.png",
-          ctaHref: "/products",
-        }
-      ];
-    }
-    
+  // 🚀 Core responsive slides (designed & crop-protected files)
+  const slides = useMemo<Slide[]>(() => {
     return [
       {
-        imageUrl: "/slider/khatoon_desktop_banner_clean.png",
+        desktopImageUrl: "/slider/khatoon_desktop_banner_clean.png",
+        mobileImageUrl: "/slider/khatoon_mobile_banner.png",
         ctaHref: "/products",
       }
     ];
-  }, [isMobile, desktopSlides, mobileSlides, error]);
+  }, []);
 
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className={`w-full relative overflow-hidden bg-gray-100 ${isMobile ? "h-[calc(100dvh-92px)]" : "h-[calc(100vh-102px)]"}`}>
+    <div className="w-full relative overflow-hidden bg-gray-100 h-[calc(100dvh-92px)] md:h-[calc(100vh-102px)]">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation={slides.length > 1}
@@ -246,27 +155,59 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
           const clickable = href !== "#";
 
           return (
-            <SwiperSlide key={`${slide.imageUrl}-${index}`} className="relative w-full h-full">
+            <SwiperSlide key={`${index}`} className="relative w-full h-full">
               {clickable ? (
                 <Link href={href} className="block relative w-full h-full">
-                  <Image
-                    src={slide.imageUrl}
-                    alt={`Slide ${index + 1}`}
-                    fill
-                    priority={index === 0}
-                    sizes="100vw"
-                    className={isMobile ? "object-cover" : "object-cover object-center"}
-                  />
+                  {/* Widescreen Desktop / Tablet Banner Layout (Optimized, full-bleed & crop-safe) */}
+                  <div className="hidden md:block relative w-full h-full">
+                    <Image
+                      src={slide.desktopImageUrl}
+                      alt={`Desktop Slide ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
+
+                  {/* Portrait Mobile Banner Layout (Optimized & crop-safe) */}
+                  <div className="block md:hidden relative w-full h-full">
+                    <Image
+                      src={slide.mobileImageUrl}
+                      alt={`Mobile Slide ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
                 </Link>
               ) : (
-                <Image
-                  src={slide.imageUrl}
-                  alt={`Slide ${index + 1}`}
-                  fill
-                  priority={index === 0}
-                  sizes="100vw"
-                  className={isMobile ? "object-cover" : "object-cover object-center"}
-                />
+                <div className="relative w-full h-full">
+                  {/* Widescreen Desktop / Tablet Banner Layout */}
+                  <div className="hidden md:block relative w-full h-full">
+                    <Image
+                      src={slide.desktopImageUrl}
+                      alt={`Desktop Slide ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
+
+                  {/* Portrait Mobile Banner Layout */}
+                  <div className="block md:hidden relative w-full h-full">
+                    <Image
+                      src={slide.mobileImageUrl}
+                      alt={`Mobile Slide ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  </div>
+                </div>
               )}
             </SwiperSlide>
           );
