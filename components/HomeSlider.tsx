@@ -225,6 +225,10 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
       {
         imageUrl: "/slider/khatoon_desktop_banner_clean.png",
         ctaHref: "/products",
+      },
+      {
+        imageUrl: "/slider/khatoon_desktop_banner_full.png",
+        ctaHref: "/products",
       }
     ];
   }, [isMobile, desktopSlides, mobileSlides, error]);
