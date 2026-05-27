@@ -180,8 +180,9 @@ const closeAll = () => {
               <Link href="/" onClick={closeAll}>
                 <img
                   src="/logo.png"
-                  className="h-14 w-auto"
-                  alt="logo"
+                  className="h-11 w-auto max-w-[160px] object-contain"
+                  alt="Khatoon Collection"
+                  loading="eager"
                 />
               </Link>
             </div>
