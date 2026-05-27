@@ -256,7 +256,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                     fill
                     priority={index === 0}
                     sizes="100vw"
-                    className={isMobile ? "object-cover" : "object-cover object-[center_15%]"}
+                    className={isMobile ? "object-cover" : "object-contain object-right bg-white"}
                   />
                 </Link>
               ) : (
@@ -266,7 +266,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                   fill
                   priority={index === 0}
                   sizes="100vw"
-                  className={isMobile ? "object-cover" : "object-cover object-[center_15%]"}
+                  className={isMobile ? "object-cover" : "object-contain object-right bg-white"}
                 />
               )}
 
