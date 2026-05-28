@@ -681,7 +681,7 @@ export default function ProductsListingClient({
         </div>
 
         {/* PRODUCT GRID */}
-        <div className="mt-4 grid grid-cols-2 gap-x-1 gap-y-2 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-x-0.5 gap-y-1 sm:grid-cols-3 sm:gap-x-1 sm:gap-y-2 lg:grid-cols-4">
           {sorted.map((p) => {
             const slug =
               getProductSlug(p);
@@ -722,7 +722,7 @@ export default function ProductsListingClient({
 
                   {(soldOut ||
                     mrp > sale) && (
-                    <div className="absolute bottom-2 left-2 rounded bg-black/70 px-2 py-0.5 text-[10px] font-medium text-white">
+                    <div className="absolute top-2 left-2 rounded bg-black/70 px-2 py-0.5 text-[10px] font-medium text-white">
                       {soldOut
                         ? "SOLD OUT"
                         : "SALE"}

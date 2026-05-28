@@ -167,7 +167,7 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-[#fce4ec] shadow border-b border-pink-200/60">
-          <div className="relative h-[74px] flex items-center justify-between px-4">
+          <div className="relative h-[80px] flex items-center justify-between px-4">
 
             <button
               onClick={() => setMenuOpen(true)}
@@ -180,7 +180,7 @@ const closeAll = () => {
               <Link href="/" onClick={closeAll}>
                 <img
                   src="/logo.png"
-                  className="h-12 w-auto max-w-[180px] object-contain"
+                  className="h-14 w-auto max-w-[220px] object-contain"
                   alt="Khatoon Collection"
                   loading="eager"
                 />
