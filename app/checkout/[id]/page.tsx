@@ -499,30 +499,64 @@ const confirmOrder = async (
             Pay Now
           </button>
 
-          <div className="rounded-2xl border bg-white p-5 text-xs text-gray-600 shadow-sm border-gray-100 mt-4">
-            <div className="font-semibold text-gray-800 flex items-center gap-1.5 mb-2.5">
-              <span className="text-[#f57bb4] text-base">🛡️</span> Secure & Trusted Checkout
-            </div>
-            <div className="space-y-2.5 mt-2">
-              <div className="flex gap-2">
-                <span className="text-[#f57bb4] font-bold">✓</span>
+          <div className="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm mt-4">
+            <h4 className="font-semibold text-gray-800 text-sm flex items-center gap-2 mb-4 border-b border-gray-100 pb-2.5">
+              <svg className="h-4 w-4 text-[#f57bb4]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Khatoon Brand Promises
+            </h4>
+            
+            <div className="space-y-4">
+              {/* Item 1: Original Products */}
+              <div className="flex gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.47 3.47 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.47 3.47 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.47 3.47 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.47 3.47 0 013.138-3.138z" />
+                  </svg>
+                </div>
                 <div>
-                  <strong className="text-gray-700">100% Secure Payments</strong>
-                  <p className="text-gray-500 mt-0.5">Encrypted transactions processed securely via Razorpay (UPI, Cards, Wallets, NetBanking).</p>
+                  <h5 className="font-semibold text-gray-800 text-xs text-left">100% Hand-Curated Originals</h5>
+                  <p className="text-gray-500 text-[11px] mt-0.5 leading-relaxed text-left">Direct from premium designers. Exquisite craftsmanship, premium fabrics, and intricate embroidery guaranteed.</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <span className="text-[#f57bb4] font-bold">✓</span>
+
+              {/* Item 2: Secure Payments */}
+              <div className="flex gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
                 <div>
-                  <strong className="text-gray-700">Real-Time Order Locking</strong>
-                  <p className="text-gray-500 mt-0.5">We instantly secure your inventory and protect against duplicate transactions once initiated.</p>
+                  <h5 className="font-semibold text-gray-800 text-xs text-left">100% Encrypted Secure Checkout</h5>
+                  <p className="text-gray-500 text-[11px] mt-0.5 leading-relaxed text-left">Your transaction is fully secured by Razorpay via standard 256-bit SSL encryption. All card details are kept completely secure.</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <span className="text-[#f57bb4] font-bold">✓</span>
+
+              {/* Item 3: Returns & Exchange */}
+              <div className="flex gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18" />
+                  </svg>
+                </div>
                 <div>
-                  <strong className="text-gray-700">Active Order Protection</strong>
-                  <p className="text-gray-500 mt-0.5">Every order is backed by premium tracked shipping and direct WhatsApp assistance.</p>
+                  <h5 className="font-semibold text-gray-800 text-xs text-left">Easy Size Exchange Assistance</h5>
+                  <p className="text-gray-500 text-[11px] mt-0.5 leading-relaxed text-left">Worried about the fit? Get absolute peace of mind with our dedicated size exchange help via WhatsApp support.</p>
+                </div>
+              </div>
+
+              {/* Item 4: Delivery */}
+              <div className="flex gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                  </svg>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-gray-800 text-xs text-left">Insured Tracked Shipping</h5>
+                  <p className="text-gray-500 text-[11px] mt-0.5 leading-relaxed text-left">Quick and reliable delivery with trusted nationwide courier partners. Get real-time updates directly on your phone.</p>
                 </div>
               </div>
             </div>
