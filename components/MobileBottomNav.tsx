@@ -12,9 +12,18 @@ import {
 export default function MobileBottomNav() {
   const pathname = usePathname();
 
-  const isActive = (path: string) =>
-    pathname === path ||
-    (path !== "/" && pathname.startsWith(path));
+  const isActive = (path: string) => {
+    if (typeof window !== "undefined") {
+      const search = window.location.search;
+      if (path === "/products?sort=clearance") {
+        return pathname === "/products" && search.includes("sort=clearance");
+      }
+      if (path === "/products") {
+        return pathname === "/products" && !search.includes("sort=clearance");
+      }
+    }
+    return pathname === path || (path !== "/" && pathname.startsWith(path));
+  };
 
   const iconClass = (path: string) =>
     isActive(path) ? "text-[#f57bb4]" : "text-gray-400";
@@ -45,12 +54,12 @@ export default function MobileBottomNav() {
         </Link>
 
         {/* Offers */}
-        <Link href="/offers" className="flex flex-col items-center gap-[2px]">
+        <Link href="/products?sort=clearance" className="flex flex-col items-center gap-[2px]">
           <FiTag
-            className={`text-[18px] ${iconClass("/offers")}`}
+            className={`text-[18px] ${iconClass("/products?sort=clearance")}`}
             strokeWidth={1.6}
           />
-          <span className={`text-[10px] ${textClass("/offers")}`}>
+          <span className={`text-[10px] ${textClass("/products?sort=clearance")}`}>
             Offers
           </span>
         </Link>
