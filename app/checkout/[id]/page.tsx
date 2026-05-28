@@ -173,6 +173,8 @@ const confirmOrder = async (
 ) => {
   e?.preventDefault();
 
+  toast.dismiss();
+
   // VALIDATION
   if (!name.trim()) {
     toast.error("Name required");
@@ -496,6 +498,35 @@ const confirmOrder = async (
           >
             Pay Now
           </button>
+
+          <div className="rounded-2xl border bg-white p-5 text-xs text-gray-600 shadow-sm border-gray-100 mt-4">
+            <div className="font-semibold text-gray-800 flex items-center gap-1.5 mb-2.5">
+              <span className="text-[#f57bb4] text-base">🛡️</span> Secure & Trusted Checkout
+            </div>
+            <div className="space-y-2.5 mt-2">
+              <div className="flex gap-2">
+                <span className="text-[#f57bb4] font-bold">✓</span>
+                <div>
+                  <strong className="text-gray-700">100% Secure Payments</strong>
+                  <p className="text-gray-500 mt-0.5">Encrypted transactions processed securely via Razorpay (UPI, Cards, Wallets, NetBanking).</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-[#f57bb4] font-bold">✓</span>
+                <div>
+                  <strong className="text-gray-700">Real-Time Order Locking</strong>
+                  <p className="text-gray-500 mt-0.5">We instantly secure your inventory and protect against duplicate transactions once initiated.</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-[#f57bb4] font-bold">✓</span>
+                <div>
+                  <strong className="text-gray-700">Active Order Protection</strong>
+                  <p className="text-gray-500 mt-0.5">Every order is backed by premium tracked shipping and direct WhatsApp assistance.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
 
         {/* MOBILE STICKY PAY */}
