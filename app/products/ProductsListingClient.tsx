@@ -681,7 +681,7 @@ export default function ProductsListingClient({
         </div>
 
         {/* PRODUCT GRID */}
-        <div className="mt-4 grid grid-cols-2 gap-x-0.5 gap-y-1 sm:grid-cols-3 sm:gap-x-1 sm:gap-y-2 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-[2px] sm:grid-cols-3 lg:grid-cols-4">
           {sorted.map((p) => {
             const slug =
               getProductSlug(p);

@@ -13,10 +13,9 @@ const Footer = () => {
             <div className="mb-5">
               <Link href="/">
                 <img
-                  src="/logo.png"
+                  src="/logo_white.png"
                   alt="Khatoon Collection"
-                  className="h-20 w-auto object-contain"
-                  style={{ filter: "brightness(0) invert(1) drop-shadow(0 0 1px rgba(255,255,255,0.5))" }}
+                  className="h-28 w-auto object-contain"
                   loading="lazy"
                 />
               </Link>

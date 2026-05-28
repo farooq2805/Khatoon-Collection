@@ -102,8 +102,9 @@ export default function SalesNotification() {
     <div 
       className="
         fixed 
-        bottom-20 
+        top-[136px] 
         left-4 
+        md:top-auto 
         md:bottom-6 
         md:left-6 
         z-50 

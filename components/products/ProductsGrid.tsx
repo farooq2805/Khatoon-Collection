@@ -65,7 +65,7 @@ export default function ProductsGrid({ items }: { items: any[] }) {
   // tablet: 3 cols
   // desktop: 4 cols
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-[2px] md:grid-cols-3 lg:grid-cols-4">
       {items.map((p, idx) => (
         <div key={String(p.id)} className="min-w-0 w-full">
           <PlumProductCard product={p} index={idx} />

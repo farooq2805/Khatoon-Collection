@@ -179,7 +179,7 @@ const closeAll = () => {
             <Link href="/" onClick={closeAll} className="flex-1 flex justify-center px-2">
               <img
                 src="/logo.png"
-                className="h-[60px] w-auto object-contain"
+                className="h-[85px] w-auto object-contain mobile-logo"
                 alt="Khatoon Collection"
                 loading="eager"
               />

@@ -213,7 +213,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
           {newArrivals.length === 0 ? (
             <p className="text-center text-gray-500 text-sm py-8">No new products available.</p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[2px]">
               {newArrivals.map((p) => (
                 <ProductCard key={String(p.id)} product={p} />
               ))}
@@ -245,7 +245,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               <div className="w-12 h-0.5 bg-red-500 mx-auto mt-3" />
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[2px]">
               {clearanceProducts.map((p) => (
                 <ProductCard key={String(p.id)} product={p} isClearance />
               ))}
