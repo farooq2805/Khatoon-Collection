@@ -15,8 +15,8 @@ const Footer = () => {
                 <img
                   src="/logo.png"
                   alt="Khatoon Collection"
-                  className="h-16 w-auto max-w-[220px] object-contain"
-                  style={{ filter: "brightness(0) invert(1)" }}
+                  className="h-20 w-auto object-contain"
+                  style={{ filter: "brightness(0) invert(1) drop-shadow(0 0 1px rgba(255,255,255,0.5))" }}
                   loading="lazy"
                 />
               </Link>

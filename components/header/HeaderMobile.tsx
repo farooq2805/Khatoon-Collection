@@ -167,25 +167,23 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-white shadow border-b border-black/10">
-          <div className="relative h-[80px] flex items-center justify-between px-4">
+          <div className="flex items-center justify-between px-3 h-[90px]">
 
             <button
               onClick={() => setMenuOpen(true)}
-              className="h-11 w-11 grid place-items-center"
+              className="h-11 w-11 flex-shrink-0 grid place-items-center"
             >
               <FiMenu className="text-2xl" />
             </button>
 
-            <div className="absolute left-1/2 -translate-x-1/2">
-              <Link href="/" onClick={closeAll}>
-                <img
-                  src="/logo.png"
-                  className="h-14 w-auto max-w-[220px] object-contain"
-                  alt="Khatoon Collection"
-                  loading="eager"
-                />
-              </Link>
-            </div>
+            <Link href="/" onClick={closeAll} className="flex-1 flex justify-center px-2">
+              <img
+                src="/logo.png"
+                className="h-[60px] w-auto object-contain"
+                alt="Khatoon Collection"
+                loading="eager"
+              />
+            </Link>
 
             <div className="flex gap-2">
               <button
