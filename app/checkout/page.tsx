@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 
 import { moneyINR } from "@/lib/money";
 import { loadScript } from "@/lib/loadScript";
+import { checkPincodeServiceability } from "@/lib/pincodeData";
 import {
   checkoutGuest,
   checkoutUser,
@@ -92,21 +93,28 @@ const [draftLoaded, setDraftLoaded] =
     };
   }, [cartItems]);
 
-  // const shippingAmount = totals.subtotal >= 500 ? 0 : 50;
-  
-  const quantity =
-  totals.itemsCount;
+  const pincodeStatus = useMemo(() => {
+    const pin = (form.pincode || "").trim();
+    if (!/^\d{6}$/.test(pin)) {
+      return "incomplete";
+    }
+    return checkPincodeServiceability(pin);
+  }, [form.pincode]);
 
-const shippingAmount =
-  quantity <= 2
-    ? 120
-    : quantity <= 4
-    ? 240
-    : quantity <= 7
-    ? 360
-    : quantity <= 10
-    ? 480
-    : 480;
+  const shippingAmount = useMemo(() => {
+    const qty = totals.itemsCount;
+    if (qty === 0) return 0;
+
+    if (pincodeStatus === "mumbai") {
+      return 80 * qty;
+    }
+    if (pincodeStatus === "outside") {
+      return 160 * qty;
+    }
+    // Default fallback rate (160 per product) before pincode is fully entered
+    return 160 * qty;
+  }, [pincodeStatus, totals.itemsCount]);
+
   const taxAmount = 0;
   const previewTotal = totals.subtotal + shippingAmount + taxAmount;
 
@@ -154,6 +162,14 @@ function redirectToLoginForRazorpay() {
     if (!form.state.trim()) return (toast.error("State is required."), false);
     if (!isValidPincode(form.pincode))
       return (toast.error("Enter a valid 6-digit pincode."), false);
+
+    const serviceability = checkPincodeServiceability(form.pincode);
+    if (serviceability === "unserviceable") {
+      return (
+        toast.error("We do not ship to this pincode. Please enter a serviceable pincode."),
+        false
+      );
+    }
 
     if (showGuestFields) {
       if (guestEmail && !/^\S+@\S+\.\S+$/.test(guestEmail)) {
@@ -671,12 +687,29 @@ const timer =
                 value={form.state}
                 onChange={(e) => updateField("state", e.target.value)}
               />
-              <input
-                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#f57bb4]/30"
-                placeholder="Pincode"
-                value={form.pincode}
-                onChange={(e) => updateField("pincode", e.target.value)}
-              />
+              <div className="flex flex-col">
+                <input
+                  className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#f57bb4]/30"
+                  placeholder="Pincode"
+                  value={form.pincode}
+                  onChange={(e) => updateField("pincode", e.target.value)}
+                />
+                {pincodeStatus === "unserviceable" && (
+                  <span className="text-red-500 text-xs mt-1 font-semibold">
+                    ⚠️ We do not ship to this pincode
+                  </span>
+                )}
+                {pincodeStatus === "mumbai" && (
+                  <span className="text-emerald-600 text-xs mt-1 font-semibold">
+                    ✓ Mumbai Delivery (₹80/product)
+                  </span>
+                )}
+                {pincodeStatus === "outside" && (
+                  <span className="text-emerald-600 text-xs mt-1 font-semibold">
+                    ✓ Outside Mumbai Delivery (₹160/product)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

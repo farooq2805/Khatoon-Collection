@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Script from "next/script";
+import { checkPincodeServiceability } from "@/lib/pincodeData";
 
 // declare global {
 //   interface Window {
@@ -30,6 +31,46 @@ export default function BuyNowCheckoutPage() {
   const [country, setCountry] = useState("India");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryTimeSlot, setDeliveryTimeSlot] = useState("");
+
+  const buyNowSubtotal = useMemo(() => {
+    if (!order?.items) return 0;
+    return order.items.reduce(
+      (sum: number, it: any) => sum + Number(it.unitPrice * it.quantity),
+      0
+    );
+  }, [order]);
+
+  const buyNowQty = useMemo(() => {
+    if (!order?.items) return 0;
+    return order.items.reduce(
+      (sum: number, it: any) => sum + Number(it.quantity),
+      0
+    );
+  }, [order]);
+
+  const pincodeStatus = useMemo(() => {
+    const pin = (postal || "").trim();
+    if (!/^\d{6}$/.test(pin)) {
+      return "incomplete";
+    }
+    return checkPincodeServiceability(pin);
+  }, [postal]);
+
+  const shippingAmount = useMemo(() => {
+    if (buyNowQty === 0) return 0;
+    if (pincodeStatus === "mumbai") {
+      return 80 * buyNowQty;
+    }
+    if (pincodeStatus === "outside") {
+      return 160 * buyNowQty;
+    }
+    // Default fallback rate (160 per product) before pincode is entered
+    return 160 * buyNowQty;
+  }, [pincodeStatus, buyNowQty]);
+
+  const dynamicTotal = useMemo(() => {
+    return buyNowSubtotal + shippingAmount;
+  }, [buyNowSubtotal, shippingAmount]);
 
   // 🔹 Load Buy-Now Order
   useEffect(() => {
@@ -174,6 +215,12 @@ const confirmOrder = async (
     return;
   }
 
+  const serviceability = checkPincodeServiceability(postal);
+  if (serviceability === "unserviceable") {
+    toast.error("We do not ship to this pincode. Please enter a serviceable pincode.");
+    return;
+  }
+
   if (!deliveryDate) {
     toast.error(
       "Select delivery date"
@@ -294,11 +341,19 @@ const confirmOrder = async (
             ))}
           </div>
 
-          <div className="border-t mt-4 pt-4 flex justify-between font-bold text-base">
-            <span>Total</span>
-            <span className="text-[#f57bb4]">
-              ₹{order.totalAmount}
-            </span>
+          <div className="border-t mt-4 pt-4 space-y-2 text-sm">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>₹{buyNowSubtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>Delivery Charge</span>
+              <span>₹{shippingAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-base text-gray-900 pt-2 border-t">
+              <span>Total (Estimated)</span>
+              <span className="text-[#f57bb4]">₹{dynamicTotal.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 
@@ -364,12 +419,29 @@ const confirmOrder = async (
               <label className="text-xs font-medium text-gray-600">
                 Postal Code
               </label>
-              <input
-                className="input"
-                required
-                value={postal}
-                onChange={(e) => setPostal(e.target.value)}
-              />
+              <div className="flex flex-col">
+                <input
+                  className="input"
+                  required
+                  value={postal}
+                  onChange={(e) => setPostal(e.target.value)}
+                />
+                {pincodeStatus === "unserviceable" && (
+                  <span className="text-red-500 text-xs mt-1 font-semibold">
+                    ⚠️ We do not ship to this pincode
+                  </span>
+                )}
+                {pincodeStatus === "mumbai" && (
+                  <span className="text-emerald-600 text-xs mt-1 font-semibold">
+                    ✓ Mumbai Delivery (₹80/product)
+                  </span>
+                )}
+                {pincodeStatus === "outside" && (
+                  <span className="text-emerald-600 text-xs mt-1 font-semibold">
+                    ✓ Outside Mumbai Delivery (₹160/product)
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-1">
