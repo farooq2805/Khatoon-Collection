@@ -109,7 +109,7 @@ useEffect(() => {
     >
       {/* TOP OFFER BAR */}
       <Link
-        href="/products"
+        href="/products?sort=clearance"
         className="block bg-[#5C3825] text-white hover:opacity-95 transition-opacity"
       >
         <div className="mx-auto max-w-[1400px] px-6">
@@ -172,7 +172,7 @@ useEffect(() => {
                 <img
                   src="/logo.png"
                   alt="Khatoon Collection"
-                  className="h-14 w-auto max-w-[240px] object-contain"
+                  className="h-16 w-auto max-w-[280px] object-contain"
                   draggable={false}
                   loading="eager"
                 />

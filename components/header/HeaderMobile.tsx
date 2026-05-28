@@ -152,7 +152,7 @@ const closeAll = () => {
       <header className="lg:hidden sticky top-0 z-[70]">
         {/* Dynamic Offer bar on mobile */}
         <Link
-          href="/products"
+          href="/products?sort=clearance"
           className="block bg-[#5C3825] text-white hover:opacity-95 transition-opacity"
         >
           <div className="mx-auto w-full px-4 py-2">
@@ -166,7 +166,7 @@ const closeAll = () => {
           </div>
         </Link>
 
-        <div className="bg-white shadow border-b border-black/10">
+        <div className="bg-[#fce4ec] shadow border-b border-pink-200/60">
           <div className="relative h-[74px] flex items-center justify-between px-4">
 
             <button
@@ -180,7 +180,7 @@ const closeAll = () => {
               <Link href="/" onClick={closeAll}>
                 <img
                   src="/logo.png"
-                  className="h-10 w-auto max-w-[150px] object-contain"
+                  className="h-12 w-auto max-w-[180px] object-contain"
                   alt="Khatoon Collection"
                   loading="eager"
                 />

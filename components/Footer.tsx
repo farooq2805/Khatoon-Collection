@@ -223,12 +223,9 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center gap-3">
-          <p className="text-white/60 text-sm text-center md:text-left">
+        <div className="border-t border-white/20 mt-10 pt-8 flex flex-col md:flex-row justify-center items-center gap-3">
+          <p className="text-white/60 text-sm text-center">
             © {new Date().getFullYear()} Khatoon Collection. All rights reserved.
-          </p>
-          <p className="text-white/40 text-xs text-center">
-            Branch 1: Shop No. 4, Yogi Vaishali, Jogeshwari (West), Mumbai – 400102 | Branch 2: Rabia Shopping Hub, Jogeshwari West, Mumbai - 400102
           </p>
         </div>
       </div>
