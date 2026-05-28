@@ -12,15 +12,13 @@ const Footer = () => {
           <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <div className="mb-5">
               <Link href="/">
-                {/* White rounded card so the pink logo is clearly visible on dark footer */}
-                <div className="inline-block bg-white rounded-2xl px-4 py-3 shadow-lg">
-                  <img
-                    src="/logo.png"
-                    alt="Khatoon Collection"
-                    className="h-14 w-auto max-w-[200px] object-contain"
-                    loading="lazy"
-                  />
-                </div>
+                <img
+                  src="/logo.png"
+                  alt="Khatoon Collection"
+                  className="h-16 w-auto max-w-[220px] object-contain"
+                  style={{ filter: "brightness(0) invert(1)" }}
+                  loading="lazy"
+                />
               </Link>
             </div>
 

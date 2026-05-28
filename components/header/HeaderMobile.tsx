@@ -166,7 +166,7 @@ const closeAll = () => {
           </div>
         </Link>
 
-        <div className="bg-[#fce4ec] shadow border-b border-pink-200/60">
+        <div className="bg-white shadow border-b border-black/10">
           <div className="relative h-[80px] flex items-center justify-between px-4">
 
             <button
