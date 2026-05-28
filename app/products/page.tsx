@@ -12,6 +12,7 @@ type SearchParams = {
   q?: string;
   category?: string;
   subcategory?: string;
+  sort?: string;
 };
 
 async function getProducts(params: {
@@ -54,7 +55,11 @@ export default async function ProductsPage({
   const sp = (await searchParams) ?? {};
 
   const page = Math.max(1, Number(sp.page ?? "1"));
-  const limit = 16;
+  const sort = sp.sort?.trim() || "latest";
+  
+  // Set limit to 200 when sort=clearance to ensure we load all products
+  // and can filter/sort every discounted item in the database.
+  const limit = sort === "clearance" ? 200 : 16;
 
   const q = sp.q?.trim() || "";
   const category = sp.category?.trim() || "";
