@@ -149,6 +149,36 @@ export default function DesktopDrawerMenu({ open, onClose }: Props) {
             ))}
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4">
+          {username ? (
+            <div className="flex items-center justify-between text-white/90">
+              <div className="flex items-center gap-2">
+                <FiUser />
+                <span className="text-sm font-semibold">Hi, {username}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  onClose();
+                }}
+                className="text-sm font-semibold underline hover:opacity-90"
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="flex items-center gap-2 text-white/90 font-semibold"
+            >
+              <FiUser />
+              <span>Log in</span>
+            </Link>
+          )}
+        </div>
       </aside>
     </>
   );

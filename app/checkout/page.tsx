@@ -17,7 +17,7 @@ import {
   razorpayCreateOrder,
   razorpayVerifyPayment,
 } from "@/services/checkoutApi";
-import { loginUser } from "@/lib/auth";
+import { loginUser, registerUser } from "@/lib/auth";
 
 const THEME = "#f57bb4";
 const DRAFT_KEY = "checkoutDraft_v1";
@@ -99,6 +99,13 @@ const [draftLoaded, setDraftLoaded] =
   const [modalPassword, setModalPassword] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
 
+  // Dual-mode modal states
+  const [modalAuthMode, setModalAuthMode] = useState<"login" | "register" | "pending-verify">("login");
+  const [regFirstName, setRegFirstName] = useState("");
+  const [regLastName, setRegLastName] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+
   async function handleModalLogin(e: React.FormEvent) {
     e.preventDefault();
     if (!modalEmail.trim() || !modalPassword) {
@@ -131,6 +138,76 @@ const [draftLoaded, setDraftLoaded] =
       }, 500);
     } catch (err: any) {
       toast.error(err?.message || "Login failed");
+    } finally {
+      setModalLoading(false);
+    }
+  }
+
+  async function handleModalRegister(e: React.FormEvent) {
+    e.preventDefault();
+    if (!regFirstName.trim() || !regLastName.trim() || !modalEmail.trim() || !regPassword) {
+      toast.error("First Name, Last Name, Email and Password are required");
+      return;
+    }
+    if (regPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setModalLoading(true);
+    try {
+      const res = await registerUser({
+        firstName: regFirstName.trim(),
+        lastName: regLastName.trim(),
+        email: modalEmail.trim().toLowerCase(),
+        phone: regPhone.trim() || undefined,
+        password: regPassword,
+      });
+
+      if (!res?.data?.success) {
+        throw new Error(res?.data?.message || "Registration failed");
+      }
+
+      toast.success(res?.data?.message || "Registered successfully! 📩 Please verify your email.");
+      setModalAuthMode("pending-verify");
+    } catch (err: any) {
+      toast.error(err?.message || "Registration failed");
+    } finally {
+      setModalLoading(false);
+    }
+  }
+
+  async function handleModalVerifyAndPay() {
+    if (!modalEmail.trim() || !regPassword) {
+      toast.error("Email and password are required to verify account state");
+      return;
+    }
+
+    setModalLoading(true);
+    try {
+      const res = await loginUser({
+        email: modalEmail.trim().toLowerCase(),
+        password: regPassword,
+      });
+
+      if (!res?.data?.success) {
+        throw new Error("Account not verified yet or credentials invalid. Please check your email and click the verification link.");
+      }
+
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+
+      if (!tokenVal) throw new Error("Missing token from server");
+
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Account verified & logged in! Launching payment gateway...");
+      setShowLoginModal(false);
+
+      setTimeout(() => {
+        void handleRazorpay();
+      }, 500);
+    } catch (err: any) {
+      toast.error(err?.message || "Verification check failed. Please verify your email first.");
     } finally {
       setModalLoading(false);
     }
@@ -1097,9 +1174,9 @@ const timer =
         </div>
       </div>
 
-      {/* GORGEOUS INLINE LOGIN MODAL FOR ONLINE PAYMENT */}
+      {/* GORGEOUS INLINE LOGIN / REGISTER MODAL FOR ONLINE PAYMENT */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-pink-100 flex flex-col relative animate-in fade-in zoom-in duration-300">
             <button
               onClick={() => setShowLoginModal(false)}
@@ -1107,44 +1184,240 @@ const timer =
             >
               ✕
             </button>
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Secure Online Payment</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                To secure your online payment, please enter your Khatoon Collection password.
-              </p>
-            </div>
-            <form onSubmit={handleModalLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Email Address</label>
-                <input
-                  type="email"
-                  value={modalEmail}
-                  onChange={(e) => setModalEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
-                  required
-                />
+
+            {modalAuthMode === "login" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-2xl font-bold text-gray-900">Secure Online Payment</h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Sign in to your Khatoon Collection account to complete your payment securely.
+                  </p>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-gray-100 mb-5">
+                  <button
+                    type="button"
+                    className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalAuthMode("register")}
+                    className="flex-1 pb-2.5 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600"
+                  >
+                    Create Account
+                  </button>
+                </div>
+
+                <form onSubmit={handleModalLogin} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Email Address</label>
+                    <input
+                      type="email"
+                      value={modalEmail}
+                      onChange={(e) => setModalEmail(e.target.value)}
+                      placeholder="name@example.com"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Password</label>
+                    <input
+                      type="password"
+                      value={modalPassword}
+                      onChange={(e) => setModalPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={modalLoading}
+                    className="w-full text-white font-semibold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-75"
+                    style={{ backgroundColor: THEME }}
+                  >
+                    {modalLoading ? "Authenticating..." : "Verify & Pay"}
+                  </button>
+                </form>
+
+                <div className="text-center text-xs text-gray-500 mt-5">
+                  New to Khatoon Collection?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setModalAuthMode("register")}
+                    className="font-bold text-[#f57bb4] hover:underline"
+                  >
+                    Create an account
+                  </button>
+                </div>
+              </>
+            )}
+
+            {modalAuthMode === "register" && (
+              <>
+                <div className="text-center mb-5">
+                  <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Create your account to unlock secure online payments and real-time order tracking.
+                  </p>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-gray-100 mb-5">
+                  <button
+                    type="button"
+                    onClick={() => setModalAuthMode("login")}
+                    className="flex-1 pb-2.5 text-sm font-semibold text-gray-400 border-b-2 border-transparent hover:text-gray-600"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]"
+                  >
+                    Create Account
+                  </button>
+                </div>
+
+                <form onSubmit={handleModalRegister} className="space-y-3.5">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">First Name</label>
+                      <input
+                        type="text"
+                        value={regFirstName}
+                        onChange={(e) => setRegFirstName(e.target.value)}
+                        placeholder="First"
+                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Last Name</label>
+                      <input
+                        type="text"
+                        value={regLastName}
+                        onChange={(e) => setRegLastName(e.target.value)}
+                        placeholder="Last"
+                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Email Address</label>
+                    <input
+                      type="email"
+                      value={modalEmail}
+                      onChange={(e) => setModalEmail(e.target.value)}
+                      placeholder="name@example.com"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Phone (optional)</label>
+                      <input
+                        type="tel"
+                        value={regPhone}
+                        onChange={(e) => setRegPhone(e.target.value)}
+                        placeholder="10 digits"
+                        maxLength={10}
+                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase text-left">Password</label>
+                      <input
+                        type="password"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        placeholder="min 6 chars"
+                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={modalLoading}
+                    className="w-full text-white font-semibold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-75"
+                    style={{ backgroundColor: THEME }}
+                  >
+                    {modalLoading ? "Creating Account..." : "Register & Verify"}
+                  </button>
+                </form>
+
+                <div className="text-center text-xs text-gray-500 mt-5">
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setModalAuthMode("login")}
+                    className="font-bold text-[#f57bb4] hover:underline"
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </>
+            )}
+
+            {modalAuthMode === "pending-verify" && (
+              <div className="text-center py-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto mb-4 animate-bounce">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-2.25-1.5a2 2 0 00-2.25 0L9 14.5" />
+                  </svg>
+                </div>
+
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Verify Your Email</h3>
+                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                  We have sent a verification link to <strong className="text-gray-900">{modalEmail}</strong>.
+                </p>
+
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-xs text-left mb-6 space-y-1.5">
+                  <p className="font-semibold flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    What to do next:
+                  </p>
+                  <ol className="list-decimal pl-4 space-y-1">
+                    <li>Open your email inbox in a new tab.</li>
+                    <li>Click on the verification link sent by <strong>Khatoon Collection</strong>.</li>
+                    <li>Once successfully verified, return to this tab and click the button below to pay!</li>
+                  </ol>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleModalVerifyAndPay}
+                    disabled={modalLoading}
+                    className="w-full text-white font-semibold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-75"
+                    style={{ backgroundColor: "#10b981" }}
+                  >
+                    {modalLoading ? "Checking Verification..." : "✓ I Have Verified & Want to Pay"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setModalAuthMode("register")}
+                    className="w-full border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold py-2.5 rounded-xl text-xs transition"
+                  >
+                    ← Back to Registration Details
+                  </button>
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Password</label>
-                <input
-                  type="password"
-                  value={modalPassword}
-                  onChange={(e) => setModalPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={modalLoading}
-                className="w-full text-white font-semibold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-75"
-                style={{ backgroundColor: THEME }}
-              >
-                {modalLoading ? "Authenticating..." : "Verify & Pay"}
-              </button>
-            </form>
+            )}
           </div>
         </div>
       )}

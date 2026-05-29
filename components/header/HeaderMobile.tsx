@@ -321,6 +321,45 @@ const closeAll = () => {
       </Link>
     </div>
 
+    {/* AUTH LINKS */}
+    <div className="border-b bg-gray-50/50">
+      {username ? (
+        <div className="px-4 py-4 flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-gray-700 text-sm font-semibold">
+            <FiUser className="text-[#f57bb4] text-lg" />
+            <span>Hi, {username}</span>
+          </div>
+          <div className="flex gap-4 mt-2">
+            <Link
+              href="/account"
+              onClick={closeAll}
+              className="text-xs font-semibold uppercase text-black hover:underline"
+            >
+              My Account
+            </Link>
+            <button
+              onClick={() => {
+                logout();
+                closeAll();
+              }}
+              className="text-xs font-semibold uppercase text-red-500 hover:underline"
+            >
+              Log out
+            </button>
+          </div>
+        </div>
+      ) : (
+        <Link
+          href="/login"
+          onClick={closeAll}
+          className="flex items-center gap-2.5 px-4 py-4 text-[15px] font-semibold text-[#f57bb4]"
+        >
+          <FiUser className="text-lg" />
+          <span>Login / Register</span>
+        </Link>
+      )}
+    </div>
+
   </div>
 </aside>
 
