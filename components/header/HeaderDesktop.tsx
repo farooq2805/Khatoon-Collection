@@ -195,45 +195,7 @@ useEffect(() => {
                 )}
               </Link>
 
-
-              {/* Auth area */}
-              {!token ? (
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={`/login?next=${encodeURIComponent(
-                      pathname || "/"
-                    )}`}
-                    className="flex items-center gap-2 hover:opacity-80"
-                  >
-                    <FiUser className="text-[20px]" />
-                    <span>Login</span>
-                  </Link>
-
-                  <Link
-                    href="/register"
-                    className="px-3 py-1 rounded border border-black/10 bg-white hover:bg-black/5"
-                  >
-                    Register
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                 <button
-  type="button"
-  onClick={() => router.push("/account")}
-  className="text-sm hover:underline hover:opacity-80"
->
-  Hi, <b>{lsUsername || "User"}</b>
-</button>
-
-                  <button
-                    onClick={logout}
-                    className="px-3 py-1 rounded border border-black/10 bg-white hover:bg-black/5"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              {/* Auth area removed */}
             </div>
           </div>
         </div>

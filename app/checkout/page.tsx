@@ -76,6 +76,23 @@ const [draftLoaded, setDraftLoaded] =
 
   const autoPayRef = useRef(false);
 
+  const [prospectId, setProspectId] = useState<number | null>(null);
+
+  // Helper to mark prospect as completed
+  async function markProspectCompleted(id: number) {
+    try {
+      await fetch("/api/prospects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, status: "completed" }),
+      });
+    } catch (err) {
+      console.error("Failed to mark prospect completed:", err);
+    }
+  }
+
   const totals = useMemo(() => {
     const items = cartItems || [];
     const subtotal = items.reduce((sum: number, it: any) => {
@@ -119,6 +136,52 @@ const [draftLoaded, setDraftLoaded] =
   const previewTotal = totals.subtotal + shippingAmount + taxAmount;
 
   const showGuestFields = !isLoggedIn;
+
+  // Real-time debounced prospect capture
+  useEffect(() => {
+    if (!form.fullName.trim() && !form.phone.trim()) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const payload = {
+          id: prospectId,
+          fullName: form.fullName.trim(),
+          phone: form.phone.trim(),
+          email: guestEmail || (form as any).email || "",
+          addressLine1: form.addressLine1.trim(),
+          addressLine2: form.addressLine2?.trim() || "",
+          city: form.city.trim(),
+          state: form.state.trim(),
+          pincode: form.pincode.trim(),
+          cartItems: (cartItems || []).map((item: any) => ({
+            id: item.productId || item.id,
+            name: item.name,
+            price: item.effectivePrice || item.price,
+            quantity: item.quantity,
+          })),
+          cartTotal: previewTotal,
+          status: "pending",
+        };
+
+        const response = await fetch("/api/prospects", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (data.success && data.prospect?.id && !prospectId) {
+          setProspectId(data.prospect.id);
+        }
+      } catch (err) {
+        console.error("Failed to capture prospect:", err);
+      }
+    }, 2000); // 2-second debounce
+
+    return () => clearTimeout(timer);
+  }, [form, guestEmail, cartItems, previewTotal, prospectId]);
 
   function updateField<K extends keyof AddressForm>(
     key: K,
@@ -439,7 +502,12 @@ useEffect(() => {
 
       toast.success("Order placed successfully!");
       clearDraft();
-await clearCart(true);
+      await clearCart(true);
+
+      // Mark prospect as completed in Supabase DB
+      if (prospectId) {
+        await markProspectCompleted(prospectId);
+      }
 
       if (showGuestFields) {
         router.push(
@@ -456,19 +524,8 @@ await clearCart(true);
   }
 
   async function handleRazorpay() {
-    // If guest: go login, but KEEP draft (form+cart) + intent
-    if (!isLoggedIn) {
-      redirectToLoginForRazorpay();
-      return;
-    }
-
     if (authLoading) {
       toast("Please wait...");
-      return;
-    }
-
-    if (!token || !isLoggedIn) {
-      redirectToLoginForRazorpay();
       return;
     }
 
@@ -479,8 +536,26 @@ await clearCart(true);
       const ok = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
       if (!ok) throw new Error("Razorpay SDK failed to load.");
 
-      const checkoutPayload = buildUserCheckoutPayload("Prepaid");
-      const checkoutRes = await checkoutUser(checkoutPayload as any, token as string);
+      // Guest checkout supports Prepaid as well
+      const checkoutRes = !isLoggedIn
+        ? await checkoutGuest({
+            paymentMethod: "Prepaid",
+            couponCode: couponCode.trim() || null,
+            items: buildItemsPayload(),
+            shippingAddress: `${form.fullName.trim()}, ${form.phone.trim()}, ${form.addressLine1.trim()} ${
+              form.addressLine2?.trim() || ""
+            }`.trim(),
+            shippingCity: form.city.trim(),
+            shippingCountry: "India",
+            shippingPostalCode: form.pincode.trim(),
+            contactPhone: form.phone.trim(),
+            customerName: form.fullName.trim(),
+            customerEmail: guestEmail || "guest@example.com",
+            guestPhone: form.phone.trim(),
+            deliveryDate,
+            deliveryTimeSlot,
+          } as any)
+        : await checkoutUser(buildUserCheckoutPayload("Prepaid") as any, token as string);
 
       const orderId =
         checkoutRes?.data?.orderId ??
@@ -490,7 +565,7 @@ await clearCart(true);
 
       if (!orderId) throw new Error("Checkout created but orderId not returned.");
 
-      const rpRes = await razorpayCreateOrder({ orderId } as any, token as string);
+      const rpRes = await razorpayCreateOrder({ orderId } as any, token || "");
 
       const razorpayOrderId =
         rpRes?.data?.razorpayOrderId ??
@@ -514,12 +589,12 @@ await clearCart(true);
         prefill: {
           name: form.fullName.trim(),
           contact: form.phone.trim(),
-          email: (form.email || "").trim(),
+          email: guestEmail || (form as any).email || "",
         },
         theme: { color: THEME },
         handler: async (response: any) => {
           try {
-            const verifyRes = await razorpayVerifyPayment(response as any, token as string);
+            const verifyRes = await razorpayVerifyPayment(response as any, token || "");
             if (verifyRes?.success === false) {
               throw new Error(verifyRes?.message || "Payment verification failed");
             }
@@ -527,7 +602,19 @@ await clearCart(true);
             toast.success("Payment successful!");
             clearDraft();
             await clearCart(true);
-            router.push(`/thank-you/${orderId}`);
+
+            // Mark prospect as completed in Supabase DB
+            if (prospectId) {
+              await markProspectCompleted(prospectId);
+            }
+
+            if (!isLoggedIn) {
+              router.push(
+                `/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`
+              );
+            } else {
+              router.push(`/thank-you/${orderId}`);
+            }
           } catch (err: any) {
             toast.error(err?.message || "Payment verification failed");
           }

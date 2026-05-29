@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import WriteReviewModal from "./WriteReviewModal";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
 
 export default function WriteReviewButton({
   productId,
@@ -12,15 +10,9 @@ export default function WriteReviewButton({
   productId?: number;
   productSlug?: string;
 }) {
-  const { isLoggedIn } = useAuth();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   function handleClick() {
-    if (!isLoggedIn) {
-      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-      return;
-    }
     setOpen(true);
   }
 

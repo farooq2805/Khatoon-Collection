@@ -7,13 +7,15 @@ import {
   FiHome,
   FiGrid,
   FiTag,
-  FiUser,
+  FiShoppingCart,
 } from "react-icons/fi";
+import { useCart } from "@/context/CartContext";
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const [currentHref, setCurrentHref] = useState("");
   const [mounted, setMounted] = useState(false);
+  const { cartCount } = useCart();
 
   useEffect(() => {
     setMounted(true);
@@ -119,18 +121,25 @@ export default function MobileBottomNav() {
           </span>
         </Link>
 
-        {/* Profile */}
+        {/* Cart */}
         <Link
-          href="/login"
-          onClick={() => setCurrentHref("/login")}
-          className="flex flex-col items-center gap-[2px]"
+          href="/cart"
+          onClick={() => setCurrentHref("/cart")}
+          className="flex flex-col items-center gap-[2px] relative"
         >
-          <FiUser
-            className={`text-[18px] ${iconClass("/login")}`}
-            strokeWidth={1.6}
-          />
-          <span className={`text-[10px] ${textClass("/login")}`}>
-            Account
+          <div className="relative">
+            <FiShoppingCart
+              className={`text-[18px] ${iconClass("/cart")}`}
+              strokeWidth={1.6}
+            />
+            {mounted && cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </div>
+          <span className={`text-[10px] ${textClass("/cart")}`}>
+            Cart
           </span>
         </Link>
       </div>
