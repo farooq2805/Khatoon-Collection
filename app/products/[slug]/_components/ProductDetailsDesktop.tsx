@@ -276,8 +276,7 @@ export default function ProductDetailsDesktop(props: any) {
   };
 
   const onBuy = async () => {
-    await onAddToCart(qty);
-    await onBuyNow();
+    await onBuyNow(qty);
   };
 
   const {
