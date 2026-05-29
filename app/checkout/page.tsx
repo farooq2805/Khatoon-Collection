@@ -1145,9 +1145,6 @@ const timer =
                 {modalLoading ? "Authenticating..." : "Verify & Pay"}
               </button>
             </form>
-            <div className="text-center text-xs text-gray-500 mt-4">
-              Prefer guest checkout? You can also check out instantly using Cash on Delivery (COD) without any login.
-            </div>
           </div>
         </div>
       )}
