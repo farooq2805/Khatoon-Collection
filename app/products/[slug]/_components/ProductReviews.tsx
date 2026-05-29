@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { FiStar, FiMessageSquare } from "react-icons/fi";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import WriteReviewModal from "@/components/reviews/WriteReviewModal";
 
 const API_BASE = "https://api.khatooncollection.in/api";
 
@@ -26,6 +29,10 @@ export default function ProductReviews({
   productImage?: string;
   productName?: string;
 }) {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [avg, setAvg] = useState(0);
   const [total, setTotal] = useState(0);
@@ -109,17 +116,20 @@ export default function ProductReviews({
             Based on {total} customer reviews
           </span>
 
-          <a
-            href={`https://wa.me/919867196860?text=Hi%20Khatoon%20Collection,%20I%20would%20like%20to%20share%20a%20review%20for%20the%20product%20"${encodeURIComponent(
-              productName || ""
-            )}".`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#58604d] hover:bg-[#4c5443] text-white py-3.5 rounded-2xl font-bold tracking-[0.15em] text-[10px] uppercase transition shadow-md hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isLoggedIn) {
+                router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+                return;
+              }
+              setIsModalOpen(true);
+            }}
+            className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-3.5 rounded-2xl font-bold tracking-[0.15em] text-[10px] uppercase transition shadow-md hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
           >
             <FiMessageSquare className="text-xs" />
             Write a Review
-          </a>
+          </button>
         </div>
 
         {/* Right Column: Reviews Feed */}
@@ -203,6 +213,13 @@ export default function ProductReviews({
         </div>
 
       </div>
+
+      {isModalOpen && (
+        <WriteReviewModal
+          productSlug={slug}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </section>
   );
 }
