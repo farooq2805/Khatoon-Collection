@@ -17,6 +17,7 @@ import {
   razorpayCreateOrder,
   razorpayVerifyPayment,
 } from "@/services/checkoutApi";
+import { loginUser } from "@/lib/auth";
 
 const THEME = "#f57bb4";
 const DRAFT_KEY = "checkoutDraft_v1";
@@ -46,7 +47,7 @@ export default function CheckoutPage() {
   const payIntent = searchParams.get("pay"); // pay=razorpay after login
 
   const { cartItems, clearCart } = useCart();
-  const { token, isLoggedIn, loading: authLoading } = useAuth();
+  const { token, isLoggedIn, loading: authLoading, login } = useAuth();
 
   // const [payMethod, setPayMethod] = useState<"COD" | "RAZORPAY">("COD");
   const [payMethod, setPayMethod] = useState<"COD" | "RAZORPAY">("RAZORPAY");
@@ -90,6 +91,48 @@ const [draftLoaded, setDraftLoaded] =
       });
     } catch (err) {
       console.error("Failed to mark prospect completed:", err);
+    }
+  }
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [modalEmail, setModalEmail] = useState("");
+  const [modalPassword, setModalPassword] = useState("");
+  const [modalLoading, setModalLoading] = useState(false);
+
+  async function handleModalLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!modalEmail.trim() || !modalPassword) {
+      toast.error("Email and password are required");
+      return;
+    }
+
+    setModalLoading(true);
+    try {
+      const res = await loginUser({
+        email: modalEmail.trim().toLowerCase(),
+        password: modalPassword,
+      });
+
+      if (!res?.data?.success) {
+        throw new Error(res?.data?.message || "Login failed");
+      }
+
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+
+      if (!tokenVal) throw new Error("Missing token from server");
+
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Logged in successfully! Resuming payment...");
+      setShowLoginModal(false);
+
+      setTimeout(() => {
+        void handleRazorpay();
+      }, 500);
+    } catch (err: any) {
+      toast.error(err?.message || "Login failed");
+    } finally {
+      setModalLoading(false);
     }
   }
 
@@ -526,6 +569,11 @@ useEffect(() => {
   async function handleRazorpay() {
     if (authLoading) {
       toast("Please wait...");
+      return;
+    }
+
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
       return;
     }
 
@@ -1048,6 +1096,61 @@ const timer =
           </div>
         </div>
       </div>
+
+      {/* GORGEOUS INLINE LOGIN MODAL FOR ONLINE PAYMENT */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-pink-100 flex flex-col relative animate-in fade-in zoom-in duration-300">
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-lg transition"
+            >
+              ✕
+            </button>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Secure Online Payment</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                To secure your online payment, please enter your Khatoon Collection password.
+              </p>
+            </div>
+            <form onSubmit={handleModalLogin} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Email Address</label>
+                <input
+                  type="email"
+                  value={modalEmail}
+                  onChange={(e) => setModalEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Password</label>
+                <input
+                  type="password"
+                  value={modalPassword}
+                  onChange={(e) => setModalPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={modalLoading}
+                className="w-full text-white font-semibold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-75"
+                style={{ backgroundColor: THEME }}
+              >
+                {modalLoading ? "Authenticating..." : "Verify & Pay"}
+              </button>
+            </form>
+            <div className="text-center text-xs text-gray-500 mt-4">
+              Prefer guest checkout? You can also check out instantly using Cash on Delivery (COD) without any login.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
