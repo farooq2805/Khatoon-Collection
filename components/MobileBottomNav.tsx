@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   FiHome,
   FiGrid,
@@ -11,16 +12,58 @@ import {
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const [currentHref, setCurrentHref] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window === "undefined") return;
+
+    const handleURLChange = () => {
+      setCurrentHref(window.location.href);
+    };
+
+    // Run immediately
+    handleURLChange();
+
+    // Listen to popstate (back/forward navigation)
+    window.addEventListener("popstate", handleURLChange);
+
+    // Listen to global click events to capture immediate Next.js routing transitions
+    const handleGlobalClick = () => {
+      setTimeout(handleURLChange, 50);
+      setTimeout(handleURLChange, 150);
+      setTimeout(handleURLChange, 350);
+    };
+    window.addEventListener("click", handleGlobalClick);
+
+    // Periodic check as a fallback
+    const interval = setInterval(handleURLChange, 200);
+
+    return () => {
+      window.removeEventListener("popstate", handleURLChange);
+      window.removeEventListener("click", handleGlobalClick);
+      clearInterval(interval);
+    };
+  }, [pathname]);
 
   const isActive = (path: string) => {
-    if (typeof window !== "undefined") {
-      const search = window.location.search;
-      if (path === "/products?sort=clearance") {
-        return pathname === "/products" && search.includes("sort=clearance");
-      }
-      if (path === "/products") {
-        return pathname === "/products" && !search.includes("sort=clearance");
-      }
+    if (!mounted) {
+      if (path === "/products?sort=clearance") return false;
+      if (path === "/products") return pathname.startsWith("/products");
+      return pathname === path || (path !== "/" && pathname.startsWith(path));
+    }
+
+    const searchStr = typeof window !== "undefined" ? window.location.search.toLowerCase() : "";
+    const hrefStr = currentHref.toLowerCase();
+    const isClearance = searchStr.includes("clearance") || hrefStr.includes("clearance");
+    const isProductsPage = pathname.startsWith("/products");
+
+    if (path === "/products?sort=clearance") {
+      return isProductsPage && isClearance;
+    }
+    if (path === "/products") {
+      return isProductsPage && !isClearance;
     }
     return pathname === path || (path !== "/" && pathname.startsWith(path));
   };
@@ -37,13 +80,21 @@ export default function MobileBottomNav() {
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-black/10">
       <div className="flex items-center justify-around py-2">
         {/* Home */}
-        <Link href="/" className="flex flex-col items-center gap-[2px]">
+        <Link
+          href="/"
+          onClick={() => setCurrentHref("/")}
+          className="flex flex-col items-center gap-[2px]"
+        >
           <FiHome className={`text-[18px] ${iconClass("/")}`} strokeWidth={1.6} />
           <span className={`text-[10px] ${textClass("/")}`}>Home</span>
         </Link>
 
         {/* Products */}
-        <Link href="/products" className="flex flex-col items-center gap-[2px]">
+        <Link
+          href="/products"
+          onClick={() => setCurrentHref("/products")}
+          className="flex flex-col items-center gap-[2px]"
+        >
           <FiGrid
             className={`text-[18px] ${iconClass("/products")}`}
             strokeWidth={1.6}
@@ -54,7 +105,11 @@ export default function MobileBottomNav() {
         </Link>
 
         {/* Offers */}
-        <Link href="/products?sort=clearance" className="flex flex-col items-center gap-[2px]">
+        <Link
+          href="/products?sort=clearance"
+          onClick={() => setCurrentHref("/products?sort=clearance")}
+          className="flex flex-col items-center gap-[2px]"
+        >
           <FiTag
             className={`text-[18px] ${iconClass("/products?sort=clearance")}`}
             strokeWidth={1.6}
@@ -65,7 +120,11 @@ export default function MobileBottomNav() {
         </Link>
 
         {/* Profile */}
-        <Link href="/login" className="flex flex-col items-center gap-[2px]">
+        <Link
+          href="/login"
+          onClick={() => setCurrentHref("/login")}
+          className="flex flex-col items-center gap-[2px]"
+        >
           <FiUser
             className={`text-[18px] ${iconClass("/login")}`}
             strokeWidth={1.6}

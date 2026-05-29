@@ -44,7 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 
               <Footer />
-              <MobileBottomNav />
+              <Suspense fallback={null}>
+                <MobileBottomNav />
+              </Suspense>
             </CatalogMenuProvider>
           </CartProvider>
         </AuthProvider>
