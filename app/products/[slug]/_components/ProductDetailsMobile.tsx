@@ -465,86 +465,15 @@ export default function ProductDetailsDesktop(props: any) {
 
 {variants?.length > 0 ? (
   <div className="mt-8 rounded-3xl border border-gray-100 bg-[#fafafa] p-6 shadow-sm">
-
     {/* ===================== COLORS ===================== */}
-
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-900">
-          Color:
-          <span className="ml-2 font-semibold text-black">
-            {selectedVariant?.color || "Select"}
-          </span>
-        </h3>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-
-        {[
-          ...new Set(
-            variants
-              .map((v: any) => v.color)
-              .filter(Boolean)
-          ),
-        ].map((color: any) => {
-
-          const firstVariant = variants.find(
-            (v: any) => v.color === color
-          );
-
-          const active =
-            selectedVariant?.color === color;
-
-          return (
-            <button
-              key={color}
-              type="button"
-              onClick={() => {
-                if (firstVariant) {
-                  setSelectedVariantId(
-                    firstVariant.id
-                  );
-                }
-              }}
-              className={`
-                relative
-                h-14
-                w-14
-                rounded-2xl
-                border-2
-                transition-all
-                duration-200
-                hover:scale-105
-                shadow-sm
-                ${
-                  active
-                    ? "border-black ring-4 ring-black/5"
-                    : "border-gray-200"
-                }
-              `}
-              title={color}
-            >
-              <span
-                className="absolute inset-1 rounded-xl"
-                style={{
-                  background:
-                    firstVariant?.colorHex ||
-                    "#000",
-                }}
-              />
-            </button>
-          );
-        })}
-
-      </div>
-    </div>
-
-    {/* ===================== MORE COLORS (MYNTRA-STYLE SIBLINGS) ===================== */}
-    {colorSiblings && colorSiblings.length > 1 && (
-      <div className="mt-8 border-t border-gray-150 pt-6">
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wider">
-            More Colors:
+    {colorSiblings && colorSiblings.length > 1 ? (
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-900">
+            Color:
+            <span className="ml-2 font-semibold text-black uppercase">
+              {selectedVariant?.color || product.color || "Select"}
+            </span>
           </h3>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-5">
@@ -595,6 +524,68 @@ export default function ProductDetailsDesktop(props: any) {
                   {sibling.color}
                 </span>
               </div>
+            );
+          })}
+        </div>
+      </div>
+    ) : (
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-900">
+            Color:
+            <span className="ml-2 font-semibold text-black">
+              {selectedVariant?.color || "Select"}
+            </span>
+          </h3>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {[
+            ...new Set(
+              variants
+                .map((v: any) => v.color)
+                .filter(Boolean)
+            ),
+          ].map((color: any) => {
+            const firstVariant = variants.find(
+              (v: any) => v.color === color
+            );
+            const active = selectedVariant?.color === color;
+
+            return (
+              <button
+                key={color}
+                type="button"
+                onClick={() => {
+                  if (firstVariant) {
+                    setSelectedVariantId(firstVariant.id);
+                  }
+                }}
+                className={`
+                  relative
+                  h-14
+                  w-14
+                  rounded-2xl
+                  border-2
+                  transition-all
+                  duration-200
+                  hover:scale-105
+                  shadow-sm
+                  ${
+                    active
+                      ? "border-black ring-4 ring-black/5"
+                      : "border-gray-200"
+                  }
+                `}
+                title={color}
+              >
+                <span
+                  className="absolute inset-1 rounded-xl"
+                  style={{
+                    background: firstVariant?.colorHex || "#000",
+                  }}
+                />
+              </button>
             );
           })}
         </div>
