@@ -12,6 +12,7 @@ import FiltersSidebar from "@/components/products/FiltersSidebar";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import Pagination from "@/components/products/Pagination";
 import ProductsListMobile from "@/components/products/ProductsListMobile";
+import productGroups from "@/config/productGroups.json";
 import MobileCategoryRail from "@/components/products/MobileCategoryRail";
 
  //const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:6103/api";
@@ -51,6 +52,28 @@ export default function ProductsPage() {
     totalItems: 0,
     totalPages: 1,
   });
+
+  const filteredItems = useMemo(() => {
+    const seenGroupIds = new Set<string>();
+    const out: any[] = [];
+    
+    for (const p of items) {
+      const pIdStr = String(p.id);
+      const siblings = (productGroups as Record<string, any>)[pIdStr];
+      
+      if (siblings && siblings.length > 0) {
+        const siblingIds = siblings.map((s: any) => Number(s.id));
+        const repId = Math.min(...siblingIds);
+        
+        if (seenGroupIds.has(String(repId))) {
+          continue;
+        }
+        seenGroupIds.add(String(repId));
+      }
+      out.push(p);
+    }
+    return out;
+  }, [items]);
 
   // mobile sheets
   const [openFilter, setOpenFilter] = useState(false);
@@ -186,7 +209,7 @@ export default function ProductsPage() {
           <div className="text-sm text-gray-600">
             Showing{" "}
             <span className="font-semibold text-gray-900">
-              {pagination.totalItems}
+              {filteredItems.length}
             </span>{" "}
             Products
           </div>
@@ -284,7 +307,7 @@ export default function ProductsPage() {
                   ))}
                 </div>
               ) : (
-                <ProductsListMobile items={items as any} />
+                <ProductsListMobile items={filteredItems as any} />
               )}
 
               <div className="mt-6">
@@ -326,7 +349,7 @@ export default function ProductsPage() {
                   ))}
                 </div>
               ) : (
-                <ProductsGrid items={items as any} />
+                <ProductsGrid items={filteredItems as any} />
               )}
 
               <div className="mt-6">

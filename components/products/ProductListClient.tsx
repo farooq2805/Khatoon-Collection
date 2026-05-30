@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FiltersSidebar from "@/components/products/FiltersSidebar";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import Pagination from "@/components/products/Pagination";
+import productGroups from "@/config/productGroups.json";
 
 //const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:6103/api";
  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in";
@@ -35,6 +36,28 @@ export default function ProductListClient() {
     totalItems: 0,
     totalPages: 1,
   });
+
+  const filteredItems = useMemo(() => {
+    const seenGroupIds = new Set<string>();
+    const out: any[] = [];
+    
+    for (const p of items) {
+      const pIdStr = String(p.id);
+      const siblings = (productGroups as Record<string, any>)[pIdStr];
+      
+      if (siblings && siblings.length > 0) {
+        const siblingIds = siblings.map((s: any) => Number(s.id));
+        const repId = Math.min(...siblingIds);
+        
+        if (seenGroupIds.has(String(repId))) {
+          continue;
+        }
+        seenGroupIds.add(String(repId));
+      }
+      out.push(p);
+    }
+    return out;
+  }, [items]);
 
   // URL state
   const category = sp.get("category") || "";
@@ -116,7 +139,7 @@ export default function ProductListClient() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div className="text-sm text-gray-600">
             Showing{" "}
-            <span className="font-semibold text-gray-900">{items.length}</span>{" "}
+            <span className="font-semibold text-gray-900">{filteredItems.length}</span>{" "}
             Products (Total:{" "}
             <span className="font-semibold text-gray-900">{pagination.totalItems}</span>)
           </div>
@@ -158,10 +181,9 @@ export default function ProductListClient() {
                   />
                 ))}
               </div>
-            ) : (
-             <ProductsGrid items={items as any} />
-
-            )}
+             ) : (
+              <ProductsGrid items={filteredItems as any} />
+             )}
 
             <div className="mt-6">
               <Pagination

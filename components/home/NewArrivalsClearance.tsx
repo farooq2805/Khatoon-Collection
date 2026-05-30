@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import productGroups from "@/config/productGroups.json";
 
 type Variant = {
   id: number;
@@ -49,7 +50,28 @@ function getPrices(p: Product) {
 }
 
 export default function NewArrivalsClearance({ initialData }: { initialData?: Product[] }) {
-  const products = useMemo(() => initialData || [], [initialData]);
+  const products = useMemo(() => {
+    const list = initialData || [];
+    const seenGroupIds = new Set<string>();
+    const out: Product[] = [];
+    
+    for (const p of list) {
+      const pIdStr = String(p.id);
+      const siblings = (productGroups as Record<string, any>)[pIdStr];
+      
+      if (siblings && siblings.length > 0) {
+        const siblingIds = siblings.map((s: any) => Number(s.id));
+        const repId = Math.min(...siblingIds);
+        
+        if (seenGroupIds.has(String(repId))) {
+          continue;
+        }
+        seenGroupIds.add(String(repId));
+      }
+      out.push(p);
+    }
+    return out;
+  }, [initialData]);
 
   const newArrivalsRef = useRef<HTMLDivElement>(null);
   const clearanceRef = useRef<HTMLDivElement>(null);

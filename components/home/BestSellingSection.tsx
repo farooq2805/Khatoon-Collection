@@ -4,6 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import productGroups from "@/config/productGroups.json";
 
 // const API_BASE = "http://localhost:6001/api";
 const API_BASE = "https://api.khatooncollection.in/api";
@@ -75,9 +76,31 @@ export default function NewArrivalsSection({ initialData }: { initialData?: Prod
     };
   }, [initialData]);
 
+  const filteredProducts = useMemo(() => {
+    const seenGroupIds = new Set<string>();
+    const out: Product[] = [];
+    
+    for (const p of products) {
+      const pIdStr = String(p.id);
+      const siblings = (productGroups as Record<string, any>)[pIdStr];
+      
+      if (siblings && siblings.length > 0) {
+        const siblingIds = siblings.map((s: any) => Number(s.id));
+        const repId = Math.min(...siblingIds);
+        
+        if (seenGroupIds.has(String(repId))) {
+          continue;
+        }
+        seenGroupIds.add(String(repId));
+      }
+      out.push(p);
+    }
+    return out;
+  }, [products]);
+
   // ✅ New Arrivals: prefer createdAt desc if available, else fallback to latest IDs
   const newArrivals = useMemo(() => {
-    const arr = [...products];
+    const arr = [...filteredProducts];
 
     const hasCreatedAt = arr.some((p) => typeof p.createdAt === "string");
     if (hasCreatedAt) {
@@ -93,7 +116,7 @@ export default function NewArrivalsSection({ initialData }: { initialData?: Prod
 
     // screenshot shows 8 items-ish
     return arr.slice(0, 8);
-  }, [products]);
+  }, [filteredProducts]);
 
   return (
     <section className="w-full bg-white py-5 md:py-5">
