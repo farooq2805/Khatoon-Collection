@@ -509,50 +509,54 @@ export default function ProductDetailsDesktop(props: any) {
             More Colors:
           </h3>
         </div>
-        <div className="flex flex-wrap gap-3.5">
+        <div className="flex flex-wrap gap-x-4 gap-y-5">
           {colorSiblings.map((sibling: any) => {
             const isActive = Number(sibling.id) === Number(product.id);
             return (
-              <a
-                key={sibling.id}
-                href={isActive ? undefined : `/products/${sibling.slug}`}
-                className={`
-                  relative
-                  rounded-2xl
-                  overflow-hidden
-                  border-2
-                  transition-all
-                  duration-300
-                  hover:scale-105
-                  shadow-sm
-                  block
-                  ${
-                    isActive
-                      ? "border-black ring-4 ring-black/5"
-                      : "border-gray-200 hover:border-black/50"
-                  }
-                `}
-                title={sibling.color}
-                style={{ width: "60px", height: "80px" }}
-              >
-                <img
-                  src={sibling.imageUrl || "/placeholder.png"}
-                  alt={sibling.color}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading="lazy"
-                />
-                
-                {/* Active check overlay indicator */}
-                {isActive && (
-                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none">
-                    <div className="bg-white/95 rounded-full p-1 shadow-md">
-                      <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
+              <div key={sibling.id} className="flex flex-col items-center" style={{ width: "60px" }}>
+                <a
+                  href={isActive ? undefined : `/products/${sibling.slug}`}
+                  className={`
+                    relative
+                    rounded-2xl
+                    overflow-hidden
+                    border-2
+                    transition-all
+                    duration-300
+                    hover:scale-105
+                    shadow-sm
+                    block
+                    ${
+                      isActive
+                        ? "border-black ring-4 ring-black/5"
+                        : "border-gray-200 hover:border-black/50"
+                    }
+                  `}
+                  title={sibling.color}
+                  style={{ width: "60px", height: "80px" }}
+                >
+                  <img
+                    src={sibling.imageUrl || "/placeholder.png"}
+                    alt={sibling.color}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  
+                  {/* Active check overlay indicator */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none">
+                      <div className="bg-white/95 rounded-full p-1 shadow-md">
+                        <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </a>
+                  )}
+                </a>
+                <span className="mt-1.5 text-[9px] font-bold text-gray-600 text-center block w-full truncate uppercase tracking-wide leading-none" title={sibling.color}>
+                  {sibling.color}
+                </span>
+              </div>
             );
           })}
         </div>
