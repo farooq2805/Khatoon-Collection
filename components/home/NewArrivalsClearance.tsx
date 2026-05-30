@@ -293,6 +293,9 @@ function ProductCard({ product, isClearance = false }: { product: Product; isCle
   const img = pickMainImage(product);
   const { mrp, sale, discountPercent } = getPrices(product);
 
+  const siblings = (productGroups as Record<string, any>)[String(product.id)] || [];
+  const currentSiblingColor = siblings.find((s: any) => Number(s.id) === Number(product.id))?.color || "";
+
   return (
     <div className="w-full bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between">
       <Link href={`/products/${product.slug}`} className="block relative flex-grow">
@@ -331,6 +334,20 @@ function ProductCard({ product, isClearance = false }: { product: Product; isCle
           <h4 className="text-[11px] md:text-[13px] text-gray-800 font-medium line-clamp-2 leading-relaxed min-h-[36px]">
             {product.name}
           </h4>
+          
+          {/* Color row */}
+          {siblings.length > 0 && (
+            <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+              <span className="text-[9px] font-bold text-[#f57bb4] bg-[#f57bb4]/5 border border-[#f57bb4]/20 rounded-md px-1.5 py-0.5 uppercase tracking-wide">
+                {currentSiblingColor || "Default"}
+              </span>
+              {siblings.length > 1 && (
+                <span className="text-[9px] text-gray-500 font-medium">
+                  +{siblings.length - 1} Colors
+                </span>
+              )}
+            </div>
+          )}
           
           <div className="mt-2 flex items-baseline gap-2 flex-wrap">
             <span className="text-[13px] md:text-[16px] font-bold text-gray-900">

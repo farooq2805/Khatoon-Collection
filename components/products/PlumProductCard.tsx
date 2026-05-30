@@ -243,6 +243,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
+import productGroups from "@/config/productGroups.json";
 
 const THEME = "#f57bb4";
 
@@ -309,6 +310,14 @@ export default function PlumProductCard({
   index?: number;
 }) {
   const { addToCart } = useCart();
+
+  const siblings = useMemo(() => {
+    return (productGroups as Record<string, any>)[String(product.id)] || [];
+  }, [product.id]);
+
+  const currentSiblingColor = useMemo(() => {
+    return siblings.find((s: any) => Number(s.id) === Number(product.id))?.color || "";
+  }, [siblings, product.id]);
 
   const isSimple = String(product.productType || "").toLowerCase() === "simple";
 
@@ -404,6 +413,20 @@ export default function PlumProductCard({
         <div className="mt-1 text-[12px] text-gray-500 line-clamp-1">
           {v ? variantLabel(v) : "Single product"}
         </div>
+
+        {/* Color row */}
+        {siblings.length > 0 && (
+          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-bold text-[#f57bb4] bg-[#f57bb4]/5 border border-[#f57bb4]/20 rounded-md px-2 py-0.5 uppercase tracking-wider">
+              {currentSiblingColor || "Default"}
+            </span>
+            {siblings.length > 1 && (
+              <span className="text-[10px] text-gray-500 font-medium">
+                +{siblings.length - 1} More Colors
+              </span>
+            )}
+          </div>
+        )}
 
         {/* rating row (small like 1mg) */}
         <div className="mt-2 flex items-center gap-1 text-[11px] text-gray-600">

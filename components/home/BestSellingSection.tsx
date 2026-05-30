@@ -160,6 +160,9 @@ function ProductTile({ product }: { product: Product }) {
   const img = pickMainImage(product);
   const price = getBestPrice(product);
 
+  const siblings = (productGroups as Record<string, any>)[String(product.id)] || [];
+  const currentSiblingColor = siblings.find((s: any) => Number(s.id) === Number(product.id))?.color || "";
+
   return (
     <div className="w-full">
       <Link href={`/products/${product.slug}`} className="block">
@@ -180,6 +183,21 @@ function ProductTile({ product }: { product: Product }) {
           <div className="text-[11px] md:text-[13px] text-gray-800 line-clamp-1">
             {product.name}
           </div>
+          
+          {/* Color row */}
+          {siblings.length > 0 && (
+            <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+              <span className="text-[9px] font-bold text-[#f57bb4] bg-[#f57bb4]/5 border border-[#f57bb4]/20 rounded-md px-1.5 py-0.5 uppercase tracking-wide">
+                {currentSiblingColor || "Default"}
+              </span>
+              {siblings.length > 1 && (
+                <span className="text-[9px] text-gray-500 font-medium">
+                  +{siblings.length - 1} Colors
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="mt-1 text-[11px] md:text-[14px] text-gray-900">
            <b> {INR(price)}</b>
           </div>
