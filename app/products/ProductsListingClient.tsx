@@ -602,6 +602,11 @@ export default function ProductsListingClient({
     return out;
   }, [sorted]);
 
+  const paginatedItems = useMemo(() => {
+    const start = (page - 1) * limit;
+    return filteredSorted.slice(start, start + limit);
+  }, [filteredSorted, page, limit]);
+
   const totalItems = filteredSorted.length;
 
   const totalPages = Math.max(
@@ -701,7 +706,7 @@ export default function ProductsListingClient({
 
         {/* PRODUCT GRID */}
         <div className="mt-4 grid grid-cols-2 gap-[2px] sm:grid-cols-3 lg:grid-cols-4">
-          {filteredSorted.map((p) => {
+          {paginatedItems.map((p) => {
             const slug =
               getProductSlug(p);
 

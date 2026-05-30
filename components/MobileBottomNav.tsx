@@ -78,6 +78,10 @@ export default function MobileBottomNav() {
       ? "text-[#f57bb4] font-medium"
       : "text-gray-400";
 
+  if (mounted && pathname.startsWith("/products/")) {
+    return null;
+  }
+
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-black/10">
       <div className="flex items-center justify-around py-2">

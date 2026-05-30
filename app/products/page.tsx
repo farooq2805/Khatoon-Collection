@@ -46,6 +46,8 @@ async function getProducts(params: {
   return { items, pagination };
 }
 
+import productGroups from "@/config/productGroups.json";
+
 // ✅ Next.js 15+ expects `searchParams` to be a Promise in PageProps typing
 export default async function ProductsPage({
   searchParams,
@@ -57,28 +59,54 @@ export default async function ProductsPage({
   const page = Math.max(1, Number(sp.page ?? "1"));
   const sort = sp.sort?.trim() || "latest";
   
-  // Set limit to 200 when sort=clearance to ensure we load all products
-  // and can filter/sort every discounted item in the database.
-  const limit = sort === "clearance" ? 200 : 16;
+  // Fetch all products at once to perform accurate global deduplication and sorting
+  const limit = 1000;
 
   const q = sp.q?.trim() || "";
   const category = sp.category?.trim() || "";
   const subcategory = sp.subcategory?.trim() || "";
 
-  const { items, pagination } = await getProducts({
-    page,
+  const { items } = await getProducts({
+    page: 1,
     limit,
     q: q || undefined,
     category: category || undefined,
     subcategory: subcategory || undefined,
   });
 
+  // Global Deduplication based on productGroups to ensure only unique color variations are displayed
+  const uniqueItems: any[] = [];
+  const seenGroupIds = new Set<string>();
+
+  for (const p of items) {
+    const pIdStr = String(p.id);
+    const siblings = (productGroups as Record<string, any>)[pIdStr];
+
+    if (siblings && siblings.length > 0) {
+      const siblingIds = siblings.map((s: any) => Number(s.id));
+      const repId = Math.min(...siblingIds);
+
+      if (seenGroupIds.has(String(repId))) {
+        continue;
+      }
+      seenGroupIds.add(String(repId));
+    }
+    uniqueItems.push(p);
+  }
+
+  const computedPagination = {
+    page,
+    limit: 16,
+    totalItems: uniqueItems.length,
+    totalPages: Math.max(1, Math.ceil(uniqueItems.length / 16)),
+  };
+
   return (
     <ProductsListingClient
-      initialItems={items}
-      initialPagination={pagination}
+      initialItems={uniqueItems}
+      initialPagination={computedPagination}
       page={page}
-      limit={limit}
+      limit={16}
     />
   );
 }
