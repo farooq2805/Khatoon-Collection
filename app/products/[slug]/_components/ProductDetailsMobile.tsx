@@ -485,8 +485,9 @@ export default function ProductDetailsDesktop(props: any) {
                   href={isActive ? undefined : `/products/${sibling.slug}`}
                   className={`
                     relative
-                    rounded-2xl
-                    overflow-hidden
+                    h-14
+                    w-14
+                    rounded-full
                     border-2
                     transition-all
                     duration-300
@@ -500,18 +501,17 @@ export default function ProductDetailsDesktop(props: any) {
                     }
                   `}
                   title={sibling.color}
-                  style={{ width: "60px", height: "80px" }}
                 >
-                  <img
-                    src={sibling.imageUrl || "/placeholder.png"}
-                    alt={sibling.color}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
+                  <span
+                    className="absolute inset-1 rounded-full animate-fadeIn"
+                    style={{
+                      background: sibling.colorHex || "#ccc",
+                    }}
                   />
                   
                   {/* Active check overlay indicator */}
                   {isActive && (
-                    <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none">
+                    <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none rounded-full">
                       <div className="bg-white/95 rounded-full p-1 shadow-md">
                         <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -520,7 +520,7 @@ export default function ProductDetailsDesktop(props: any) {
                     </div>
                   )}
                 </a>
-                <span className="mt-1.5 text-[9px] font-bold text-gray-600 text-center block w-full truncate uppercase tracking-wide leading-none" title={sibling.color}>
+                <span className="mt-2 text-[9px] font-bold text-gray-600 text-center block w-full truncate uppercase tracking-wide leading-none" title={sibling.color}>
                   {sibling.color}
                 </span>
               </div>

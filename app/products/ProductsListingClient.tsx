@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import productGroups from "@/config/productGroups.json";
 import { FiChevronDown, FiX } from "react-icons/fi";
 
 /* =========================
@@ -579,16 +580,34 @@ export default function ProductsListingClient({
     return items;
   }, [initialItems, sort]);
 
-  const totalItems =
-    initialPagination?.totalItems ??
-    sorted.length;
+  const filteredSorted = useMemo(() => {
+    const seenGroupIds = new Set<string>();
+    const out: Product[] = [];
+    
+    for (const p of sorted) {
+      const pIdStr = String(p.id);
+      const siblings = (productGroups as Record<string, any>)[pIdStr];
+      
+      if (siblings && siblings.length > 0) {
+        const siblingIds = siblings.map((s: any) => Number(s.id));
+        const repId = Math.min(...siblingIds);
+        
+        if (seenGroupIds.has(String(repId))) {
+          continue;
+        }
+        seenGroupIds.add(String(repId));
+      }
+      out.push(p);
+    }
+    return out;
+  }, [sorted]);
 
-  const totalPages =
-    initialPagination?.totalPages ??
-    Math.max(
-      1,
-      Math.ceil(totalItems / limit)
-    );
+  const totalItems = filteredSorted.length;
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalItems / limit)
+  );
 
   function goToPage(pn: number) {
     const next = Math.min(
@@ -682,7 +701,7 @@ export default function ProductsListingClient({
 
         {/* PRODUCT GRID */}
         <div className="mt-4 grid grid-cols-2 gap-[2px] sm:grid-cols-3 lg:grid-cols-4">
-          {sorted.map((p) => {
+          {filteredSorted.map((p) => {
             const slug =
               getProductSlug(p);
 
@@ -734,6 +753,25 @@ export default function ProductsListingClient({
                   <div className="line-clamp-1 text-[14px] font-medium text-black/80">
                     {getProductName(p)}
                   </div>
+
+                  {/* Color row */}
+                  {(() => {
+                    const siblings = (productGroups as Record<string, any>)[String(p.id)] || [];
+                    const currentSiblingColor = siblings.find((s: any) => Number(s.id) === Number(p.id))?.color || "";
+                    if (siblings.length === 0) return null;
+                    return (
+                      <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[10px] font-bold text-[#f57bb4] bg-[#f57bb4]/5 border border-[#f57bb4]/20 rounded-md px-1.5 py-0.5 uppercase tracking-wide">
+                          {currentSiblingColor || "Default"}
+                        </span>
+                        {siblings.length > 1 && (
+                          <span className="text-[10px] text-gray-500 font-medium">
+                            +{siblings.length - 1} Colors
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div className="mt-2 flex flex-wrap items-center gap-3 text-[14px]">
                     <span className="font-semibold text-black">
