@@ -232,6 +232,7 @@ export default function ProductDetailsDesktop(props: any) {
 
     onAddToCart,
     onBuyNow,
+    colorSiblings = [],
   } = props;
 
   const isSoldOut = !inStock;
@@ -499,6 +500,64 @@ export default function ProductDetailsDesktop(props: any) {
 
       </div>
     </div>
+
+    {/* ===================== MORE COLORS (MYNTRA-STYLE SIBLINGS) ===================== */}
+    {colorSiblings && colorSiblings.length > 1 && (
+      <div className="mt-8 border-t border-gray-150 pt-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-gray-900 uppercase tracking-wider">
+            More Colors:
+          </h3>
+        </div>
+        <div className="flex flex-wrap gap-3.5">
+          {colorSiblings.map((sibling: any) => {
+            const isActive = Number(sibling.id) === Number(product.id);
+            return (
+              <a
+                key={sibling.id}
+                href={isActive ? undefined : `/products/${sibling.slug}`}
+                className={`
+                  relative
+                  rounded-2xl
+                  overflow-hidden
+                  border-2
+                  transition-all
+                  duration-300
+                  hover:scale-105
+                  shadow-sm
+                  block
+                  ${
+                    isActive
+                      ? "border-black ring-4 ring-black/5"
+                      : "border-gray-200 hover:border-black/50"
+                  }
+                `}
+                title={sibling.color}
+                style={{ width: "60px", height: "80px" }}
+              >
+                <img
+                  src={sibling.imageUrl || "/placeholder.png"}
+                  alt={sibling.color}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                />
+                
+                {/* Active check overlay indicator */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center pointer-events-none">
+                    <div className="bg-white/95 rounded-full p-1 shadow-md">
+                      <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    )}
 
     {/* ===================== SIZE ===================== */}
 

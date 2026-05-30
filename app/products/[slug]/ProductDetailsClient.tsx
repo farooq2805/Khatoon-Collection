@@ -10,6 +10,7 @@ import React, {
 } from "react";
 
 import { useCart } from "@/context/CartContext";
+import productGroups from "@/config/productGroups.json";
 
 import ZoomModal from "./_components/ZoomModal";
 import ProductDetailsMobile from "./_components/ProductDetailsMobile";
@@ -457,6 +458,10 @@ export default function ProductDetailsClient({
 
   /* ===================== SHARED ===================== */
 
+  const colorSiblings = useMemo(() => {
+    return (productGroups as Record<string, any>)[String(product.id)] || [];
+  }, [product.id]);
+
   const shared = {
     THEME,
 
@@ -506,6 +511,7 @@ export default function ProductDetailsClient({
 
     onAddToCart,
     onBuyNow,
+    colorSiblings,
   };
 
   /* ===================== RENDER ===================== */
