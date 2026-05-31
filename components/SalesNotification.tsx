@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FiX, FiCheck } from "react-icons/fi";
+import { usePathname } from "next/navigation";
 import { productService } from "@/services/productService";
 
 const INDIAN_NAMES = ["Priya", "Kiran", "Ayesha", "Pooja", "Sneha", "Meera", "Ritu", "Anjali", "Divya", "Neha", "Shalini", "Sunita", "Preeti", "Kavita"];
@@ -29,6 +30,7 @@ function getProductThumbnail(product: any): string {
 }
 
 export default function SalesNotification() {
+  const pathname = usePathname();
   const [products, setProducts] = useState<any[]>([]);
   const [currentSale, setCurrentSale] = useState<SaleNotification | null>(null);
   const [visible, setVisible] = useState(false);
@@ -96,29 +98,42 @@ export default function SalesNotification() {
     setVisible(false);
   };
 
+  // Do not show on any product detail pages to avoid blocking product info
+  if (pathname.startsWith("/products/")) {
+    return null;
+  }
+
   if (!visible || !currentSale) return null;
 
   return (
     <div 
       className="
         fixed 
-        top-[136px] 
-        left-4 
-        md:top-auto 
-        md:bottom-6 
-        md:left-6 
-        z-50 
-        bg-white 
-        p-3 
-        rounded-2xl 
+        top-2 
+        left-1/2 
+        -translate-x-1/2 
+        w-[94%] 
+        max-w-[380px] 
+        rounded-xl 
         border 
         border-gray-100 
         shadow-xl 
+        z-[999] 
+        bg-white 
+        p-2.5 
         flex 
         items-center 
-        gap-3.5 
-        w-[290px] 
+        gap-3 
+        md:fixed 
+        md:top-auto 
+        md:bottom-6 
+        md:left-6 
+        md:right-auto 
+        md:translate-x-0 
         md:w-[320px] 
+        md:rounded-2xl 
+        md:border 
+        md:shadow-xl 
         animate-slide-up 
         cursor-pointer
         hover:shadow-2xl

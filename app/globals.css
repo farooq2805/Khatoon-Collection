@@ -229,17 +229,15 @@ body {
   overscroll-behavior: none;
 }
 
-.mobile-logo{
-  margin-right: 30px;
+.mobile-logo {
+  margin: 0 auto !important;
+  display: block !important;
+  max-width: 100%;
 }
 
 .menu-item{
   padding-left: 7px;
   padding-right: 7px;
-}
-
-.mobile-logo{
-  margin-left: -15px;
 }
 
 .aside-menu{

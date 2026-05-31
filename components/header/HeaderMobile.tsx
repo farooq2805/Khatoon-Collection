@@ -167,25 +167,32 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-white shadow border-b border-black/10">
-          <div className="flex items-center justify-between px-3 h-[90px]">
+          <div className="grid grid-cols-3 items-center px-3 h-[90px] relative">
+            <div className="flex justify-start">
+              <button
+                onClick={() => setMenuOpen(true)}
+                className="h-11 w-11 flex-shrink-0 grid place-items-center z-10"
+              >
+                <FiMenu className="text-2xl" />
+              </button>
+            </div>
 
-            <button
-              onClick={() => setMenuOpen(true)}
-              className="h-11 w-11 flex-shrink-0 grid place-items-center"
-            >
-              <FiMenu className="text-2xl" />
-            </button>
+            <div className="flex justify-center items-center">
+              <Link 
+                href="/" 
+                onClick={closeAll} 
+                className="flex items-center justify-center z-0 translate-x-2"
+              >
+                <img
+                  src="/logo.png"
+                  className="h-[80px] w-auto object-contain block mx-auto mobile-logo"
+                  alt="Khatoon Collection"
+                  loading="eager"
+                />
+              </Link>
+            </div>
 
-            <Link href="/" onClick={closeAll} className="flex-1 flex justify-center px-2">
-              <img
-                src="/logo.png"
-                className="h-[85px] w-auto object-contain mobile-logo"
-                alt="Khatoon Collection"
-                loading="eager"
-              />
-            </Link>
-
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2 z-10">
               <button
                 onClick={() => setSearchOpen((s) => !s)}
                 className="h-11 w-11 grid place-items-center"
