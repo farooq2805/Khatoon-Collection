@@ -167,7 +167,7 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-white shadow border-b border-black/10">
-          <div className="grid grid-cols-3 items-center px-3 h-[90px] relative">
+          <div className="grid grid-cols-3 items-center px-3 h-[95px] relative">
             <div className="flex justify-start">
               <button
                 onClick={() => setMenuOpen(true)}
@@ -185,7 +185,7 @@ const closeAll = () => {
               >
                 <img
                   src="/logo.png"
-                  className="h-[80px] w-auto object-contain block mx-auto mobile-logo"
+                  className="h-[92px] w-auto object-contain block mx-auto mobile-logo"
                   alt="Khatoon Collection"
                   loading="eager"
                 />

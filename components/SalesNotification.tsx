@@ -73,19 +73,23 @@ export default function SalesNotification() {
     // Initial delay before first popup shows
     const initialDelay = setTimeout(() => {
       setVisible(true);
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        setVisible(false);
+      }, 5000);
     }, 8000);
 
-    // Dynamic rotation logic: shows every 36 seconds (6s visible + 30s hidden delay)
+    // Dynamic rotation logic: shows every 35 seconds (5s visible + 30s hidden delay)
     const interval = setInterval(() => {
-      setVisible(false);
+      generateRandomSale();
+      setVisible(true);
 
-      // Wait 30 seconds after hiding, then load the next popup
+      // Auto-hide after 5 seconds
       setTimeout(() => {
-        generateRandomSale();
-        setVisible(true);
-      }, 30000);
+        setVisible(false);
+      }, 5000);
 
-    }, 36000); // 6s visible + 30s hidden delay
+    }, 35000);
 
     return () => {
       clearTimeout(initialDelay);
