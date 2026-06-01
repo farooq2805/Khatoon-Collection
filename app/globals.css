@@ -232,7 +232,9 @@ body {
 .mobile-logo {
   margin: 0 auto !important;
   display: block !important;
-  max-width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
 }
 
 .menu-item{
