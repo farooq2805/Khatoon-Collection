@@ -42,7 +42,7 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
         }
         @media (max-width: 767px) {
           .kc-banner {
-            height: calc(100dvh - 92px); /* mobile: minus mobile header */
+            height: calc(100dvh - 98px); /* mobile: minus mobile header */
           }
         }
 

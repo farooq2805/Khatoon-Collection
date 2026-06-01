@@ -166,10 +166,10 @@ const closeAll = () => {
           </div>
         </Link>
 
-        <div className="shadow-sm border-b border-black/10" style={{ backgroundColor: '#ffffff' }}>
-          <div className="flex items-center justify-between px-3 h-[115px]" style={{ backgroundColor: '#ffffff' }}>
+        <div className="shadow-sm border-b border-black/10 bg-white">
+          <div className="relative flex items-center justify-between px-3 h-[72px] bg-white">
             {/* Left Column: Menu Button */}
-            <div className="flex-shrink-0 flex justify-start">
+            <div className="z-10 flex-shrink-0 flex justify-start">
               <button
                 onClick={() => setMenuOpen(true)}
                 className="h-11 w-11 flex-shrink-0 grid place-items-center text-gray-800"
@@ -178,17 +178,17 @@ const closeAll = () => {
               </button>
             </div>
 
-            {/* Centered Logo Container: fills all available space between left and right buttons, pure white bg */}
-            <div className="flex-1 flex justify-center items-center" style={{ backgroundColor: '#ffffff' }}>
+            {/* Absolute Centered Logo Container: perfectly centered on the screen */}
+            <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
               <Link 
                 href="/" 
                 onClick={closeAll} 
-                className="flex items-center justify-center w-full h-full"
+                className="pointer-events-auto flex items-center justify-center"
               >
                 <img
                   src="/logo.png"
-                  className="h-[100px] w-full block mobile-logo transition-transform duration-300 hover:scale-102"
-                  style={{ backgroundColor: '#ffffff', objectFit: 'contain', objectPosition: 'center' }}
+                  className="h-[48px] w-auto block mobile-logo transition-transform duration-300 hover:scale-102"
+                  style={{ objectFit: 'contain' }}
                   alt="Khatoon Collection"
                   loading="eager"
                 />
@@ -196,7 +196,7 @@ const closeAll = () => {
             </div>
 
             {/* Right Column: Search & Cart */}
-            <div className="flex-shrink-0 flex justify-end gap-2.5 text-gray-800">
+            <div className="z-10 flex-shrink-0 flex justify-end gap-2.5 text-gray-800">
               <button
                 onClick={() => setSearchOpen((s) => !s)}
                 className="h-11 w-11 grid place-items-center"
