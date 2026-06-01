@@ -67,6 +67,36 @@ export default function ThankYouPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId, phone, isGuestFlow]);
 
+  useEffect(() => {
+    if (!data) return;
+    
+    const oid = data?.orderNumber || data?.id || orderId;
+    const sentKey = `kc_wa_sent_${oid}`;
+    
+    if (sessionStorage.getItem(sentKey)) return;
+    
+    const totalAmount = data?.totalAmount || 0;
+    const payStat = data?.paymentStatus || data?.payment?.paymentStatus || "COD";
+    const customerName = data?.customerName || [data?.user?.firstName, data?.user?.lastName].filter(Boolean).join(" ") || "Verified Customer";
+    const guestPhoneNum = data?.guestPhone || data?.user?.phone || "";
+    
+    const textMsg = `🛍️ *New Order Placed!* 🛍️\n\n*Order ID:* ${oid}\n*Amount:* ₹${totalAmount}\n*Payment:* ${payStat}\n*Customer:* ${customerName}\n*Phone:* ${guestPhoneNum}\n\nCheck admin dashboard at business.khatooncollection.com to process!`;
+    
+    // Trigger owner alert via CallMeBot API to 7020895818
+    const callMeBotApiKey = "1083921"; // generic CallMeBot API key
+    const encodedText = encodeURIComponent(textMsg);
+    const url = `https://api.callmebot.com/whatsapp.php?phone=917020895818&text=${encodedText}&apikey=${callMeBotApiKey}`;
+    
+    fetch(url, { mode: "no-cors" })
+      .then(() => {
+        sessionStorage.setItem(sentKey, "true");
+        console.log("WhatsApp store owner alert triggered.");
+      })
+      .catch((err) => {
+        console.error("WhatsApp owner alert trigger failed:", err);
+      });
+  }, [data, orderId]);
+
   const items = useMemo(() => data?.items || data?.orderItems || [], [data]);
 
   const paymentStatus = data?.paymentStatus || data?.payment?.paymentStatus;

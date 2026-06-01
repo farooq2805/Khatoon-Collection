@@ -1356,6 +1356,27 @@
   ],
   "201": [
     {
+      "id": 204,
+      "color": "Mustard",
+      "colorHex": "#f7ce46",
+      "slug": "mustard-yellow-black-ombre-party-wear-kaftan-dress-with-hand-bead-work",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389888/products/gallery/IMG_0113_aqpbvs.jpg"
+    },
+    {
+      "id": 203,
+      "color": "Mist",
+      "colorHex": "#b7a7d8",
+      "slug": "lavender-black-ombre-party-wear-kaftan-dress-with-hand-bead-embellishment",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389605/products/gallery/IMG_0105_ok9lyy.jpg"
+    },
+    {
+      "id": 202,
+      "color": "Dusty Rose",
+      "colorHex": "#b76e79",
+      "slug": "dusty-rose-black-ombre-party-wear-kaftan-suit-with-hand-bead-work",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389417/products/gallery/IMG_0102_iwv7og.jpg"
+    },
+    {
       "id": 201,
       "color": "Pink",
       "colorHex": "#e91e8f",
@@ -1384,6 +1405,13 @@
       "colorHex": "#b76e79",
       "slug": "dusty-rose-black-ombre-party-wear-kaftan-suit-with-hand-bead-work",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389417/products/gallery/IMG_0102_iwv7og.jpg"
+    },
+    {
+      "id": 201,
+      "color": "Pink",
+      "colorHex": "#e91e8f",
+      "slug": "fuchsia-pink-black-ombre-party-wear-kaftan-suit-with-handwork",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389127/products/gallery/IMG_0096_mrh8oo.jpg"
     }
   ],
   "203": [
@@ -1407,6 +1435,13 @@
       "colorHex": "#b76e79",
       "slug": "dusty-rose-black-ombre-party-wear-kaftan-suit-with-hand-bead-work",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389417/products/gallery/IMG_0102_iwv7og.jpg"
+    },
+    {
+      "id": 201,
+      "color": "Pink",
+      "colorHex": "#e91e8f",
+      "slug": "fuchsia-pink-black-ombre-party-wear-kaftan-suit-with-handwork",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389127/products/gallery/IMG_0096_mrh8oo.jpg"
     }
   ],
   "204": [
@@ -1430,6 +1465,13 @@
       "colorHex": "#b76e79",
       "slug": "dusty-rose-black-ombre-party-wear-kaftan-suit-with-hand-bead-work",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389417/products/gallery/IMG_0102_iwv7og.jpg"
+    },
+    {
+      "id": 201,
+      "color": "Pink",
+      "colorHex": "#e91e8f",
+      "slug": "fuchsia-pink-black-ombre-party-wear-kaftan-suit-with-handwork",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777389127/products/gallery/IMG_0096_mrh8oo.jpg"
     }
   ],
   "205": [
@@ -2559,15 +2601,6 @@
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777444195/products/gallery/IMG_0008_imz4xx.jpg"
     }
   ],
-  "230": [
-    {
-      "id": 230,
-      "color": "Golden",
-      "colorHex": "#f7fadb",
-      "slug": "elegant-grey-black-floral-printed-suit-with-embroidered-lace-work",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777447900/products/gallery/IMG_0065_ainrpp.jpg"
-    }
-  ],
   "231": [
     {
       "id": 260,
@@ -2623,34 +2656,14 @@
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778493194/products/gallery/IMG_0808_rjeiop.jpg"
     }
   ],
-  "237": [
-    {
-      "id": 237,
-      "color": "Rusk ",
-      "colorHex": "#da5100",
-      "slug": "elegant-rust-colour-embroidery-suit-featuring-intricate-multicolor-thread-work-on-the-neckline-daman-sleeves-and-plazo-border-paired-with-a-beautifully-printed-dupatta-for-a-rich-festive-and-party-wear-look",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778514926/products/gallery/IMG_0820_lnrjwv.jpg"
-    }
-  ],
-  "238": [
-    {
-      "id": 238,
-      "color": "Light Greem",
-      "colorHex": "#b1dd8b",
-      "slug": "elegant-light-green-suit-featuring-intricate-multicolor-ethnic-embroidery-on-the-neckline-daman-and-sleeves-with-stylish-tassel-detailing-paired-with-a-matching-bottom-and-a-beautifully-printed-dupatta",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778520424/products/gallery/IMG_0825_mqjpcu.jpg"
-    }
-  ],
-  "239": [
-    {
-      "id": 239,
-      "color": "White ",
-      "colorHex": "#FFFFFF",
-      "slug": "elegant-white-cotton-suit-featuring-vibrant-multicolor-heavy-embroidery-work-on-the-neckline",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778529136/products/gallery/IMG_0833_aadoo3.jpg"
-    }
-  ],
   "240": [
+    {
+      "id": 241,
+      "color": "White blue",
+      "colorHex": "#FFFFFF",
+      "slug": "this-elegant-white-cotton-suit-features-beautiful-royal-blue-thread-embroidery",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778681778/products/gallery/IMG_0857_ajcllg.jpg"
+    },
     {
       "id": 240,
       "color": "Brown Coffee",
@@ -2666,6 +2679,13 @@
       "colorHex": "#FFFFFF",
       "slug": "this-elegant-white-cotton-suit-features-beautiful-royal-blue-thread-embroidery",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778681778/products/gallery/IMG_0857_ajcllg.jpg"
+    },
+    {
+      "id": 240,
+      "color": "Brown Coffee",
+      "colorHex": "#583300",
+      "slug": "brown-rayon-embroidery-work-nect-sleeve-daman-cutwork",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778530540/products/gallery/IMG_0837_gckbnk.jpg"
     }
   ],
   "242": [
@@ -3094,15 +3114,6 @@
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778695447/products/gallery/IMG_0887_mmlyj0.jpg"
     }
   ],
-  "253": [
-    {
-      "id": 253,
-      "color": "Neon lime",
-      "colorHex": "#96d35f",
-      "slug": "neon-lime-green-color-paired-beautifully-with-a-soft-pastel-lavender-dupatta",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778847876/products/gallery/IMG_0914_vy5rru.jpg"
-    }
-  ],
   "254": [
     {
       "id": 255,
@@ -3133,15 +3144,6 @@
       "colorHex": "#FFFFFF",
       "slug": "white-royal-blue-embroidery-combination-that-gives-it-a-rich-and-elegant-designer-look",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778853233/products/gallery/IMG_0911_p5kxcw.jpg"
-    }
-  ],
-  "256": [
-    {
-      "id": 256,
-      "color": "Pear whir",
-      "colorHex": "#fefcdd",
-      "slug": "pearl-white-and-black-colour-combination-with-elegant-heavy-floral-vine-embroidery-work",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778860504/products/gallery/IMG_0920_zqvhzj.jpg"
     }
   ],
   "257": [
@@ -3220,15 +3222,6 @@
       "colorHex": "#808080",
       "slug": "elegant-silver-black-floral-printed-suit-with-premium-embroidered-lace",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1777448576/products/gallery/IMG_0069_hanvg5.jpg"
-    }
-  ],
-  "261": [
-    {
-      "id": 261,
-      "color": "Crimson Red",
-      "colorHex": "#e22400",
-      "slug": "crimson-red-three-piece-traditional-ethnic-suit-consisting-of-a-solid-kurta-dupatta",
-      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1778932283/products/gallery/IMG_0946_etomiq.jpg"
     }
   ],
   "262": [

@@ -1,25 +1,57 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
-/*
-  ─────────────────────────────────────────────
-  Khatoon Collection — Instagram Reels Section
-  ─────────────────────────────────────────────
-  Uses the /embed/ iframe URL so ONLY the video
-  player renders — no captions, no comments.
-
-  To add/update reels: edit the REELS array.
-*/
-const REELS = [
-  { id: "DYzXKZNMVbf", label: "Latest Drop" },
-  { id: "DYt2uQHMh7G", label: "New Arrivals" },
-  { id: "DYr4IFLM4J-", label: "Party Wear"  },
-  { id: "DYo42mOs_q7", label: "Ethnic Wear" },
-];
+interface ReelItem {
+  id: string;
+  label: string;
+  productName?: string;
+  productLink?: string;
+}
 
 export default function InstagramReels() {
+  const [reels, setReels] = useState<ReelItem[]>([]);
+
+  useEffect(() => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+    
+    // First, attempt to fetch from the native PostgreSQL Database via Express API
+    fetch(`${apiBaseUrl}/instagram-reels`)
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const activeReels = resData.data.filter((r: any) => r.isActive !== false);
+          setReels(activeReels);
+        } else {
+          throw new Error("No database reels or empty response. Trying JSON fallback.");
+        }
+      })
+      .catch((apiErr) => {
+        console.warn("API/Database fetch for reels failed or empty, trying local file fallback...", apiErr);
+        // Fallback 1: Try public/instagram-reels.json storefront static asset
+        fetch("/instagram-reels.json")
+          .then((res) => res.json())
+          .then((jsonData) => {
+            if (Array.isArray(jsonData) && jsonData.length > 0) {
+              setReels(jsonData);
+            } else {
+              throw new Error("Local JSON is not a valid array.");
+            }
+          })
+          .catch((jsonErr) => {
+            console.error("Local JSON fallback failed as well, using hardcoded seeds:", jsonErr);
+            // Fallback 2: Premium seed fallback
+            setReels([
+              { id: "DYzXKZNMVbf", label: "Latest Drop", productName: "Navy Blue Rayon Suit Set", productLink: "/products/elegant-navi-blue-rayon-suit-set-featuring-intricate-kashmiri-embroidery-work-in-vibrant-floral-patterns" },
+              { id: "DYt2uQHMh7G", label: "New Arrivals", productName: "Black Rayon Cutwork Suit", productLink: "/products/black-and-white-rayon-suit-with-neck-cutwork-and-daman-cutwork-with-comfortable-pant-with-pattern" },
+              { id: "DYr4IFLM4J-", label: "Party Wear", productName: "Crimson Red Kurta Dupatta Set", productLink: "/products/crimson-red-three-piece-traditional-ethnic-suit-consisting-of-a-solid-kurta-dupatta" },
+              { id: "DYo42mOs_q7", label: "Ethnic Wear", productName: "Silver & Black Premium Lace Suit", productLink: "/products/elegant-silver-black-floral-printed-suit-with-premium-embroidered-lace" }
+            ]);
+          });
+      });
+  }, []);
+
   return (
     <section className="kc-ig-section">
       <style>{`
@@ -211,6 +243,40 @@ export default function InstagramReels() {
           transform: translateY(-2px) scale(1.04);
           box-shadow: 0 8px 32px rgba(245,123,180,0.55);
         }
+        
+        /* Shoppable buttons */
+        .kc-reel-label-container {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 14px;
+          background: linear-gradient(180deg, #160711 0%, #0c0209 100%);
+          border-top: 1px solid rgba(245, 123, 180, 0.15);
+        }
+        .kc-reel-shop-btn {
+          display: inline-block;
+          text-align: center;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #ffffff;
+          background: rgba(245, 123, 180, 0.12);
+          border: 1px solid rgba(245, 123, 180, 0.35);
+          padding: 7px 12px;
+          border-radius: 8px;
+          margin-top: 4px;
+          transition: all 0.2s ease;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        .kc-reel-shop-btn:hover {
+          background: #f57bb4;
+          border-color: #f57bb4;
+          color: #1a0a14;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(245, 123, 180, 0.3);
+        }
       `}</style>
 
       <div className="kc-ig-inner">
@@ -226,7 +292,7 @@ export default function InstagramReels() {
 
         {/* Reels Grid */}
         <div className="kc-reels-grid">
-          {REELS.map((reel) => (
+          {reels.map((reel) => (
             <div key={reel.id} className="kc-reel-card">
               <div className="kc-reel-aspect">
                 <iframe
@@ -238,9 +304,25 @@ export default function InstagramReels() {
                   loading="lazy"
                 />
               </div>
-              <div className="kc-reel-label">
-                <div className="kc-reel-dot" />
-                <span>{reel.label}</span>
+              
+              <div className="kc-reel-label-container">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div className="kc-reel-dot" />
+                  <span style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#f57bb4', fontWeight: 'bold' }}>
+                    {reel.label}
+                  </span>
+                </div>
+                
+                {reel.productName && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px', marginTop: '2px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '500', color: 'rgba(255,255,255,0.85)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={reel.productName}>
+                      {reel.productName}
+                    </div>
+                    <Link href={reel.productLink || "/products"} className="kc-reel-shop-btn">
+                      Shop This Look
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           ))}
