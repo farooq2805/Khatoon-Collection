@@ -177,7 +177,7 @@ const closeAll = () => {
               </button>
             </div>
 
-            <div className="flex-1 flex justify-center items-center min-w-0 px-2">
+            <div className="flex-1 flex justify-center items-center min-w-0 px-0">
               <Link 
                 href="/" 
                 onClick={closeAll} 
@@ -185,7 +185,7 @@ const closeAll = () => {
               >
                 <img
                   src="/logo.png"
-                  className="h-[65px] w-auto max-w-full object-contain block mx-auto mobile-logo"
+                  className="h-[75px] w-full max-w-full object-contain block mx-auto mobile-logo"
                   alt="Khatoon Collection"
                   loading="eager"
                 />
