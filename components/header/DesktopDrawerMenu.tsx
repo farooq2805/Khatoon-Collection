@@ -55,7 +55,7 @@ export default function DesktopDrawerMenu({ open, onClose }: Props) {
             <img
               src="/logo.svg"
               alt="Khatoon Collection"
-              className="h-[60px] w-auto object-contain"
+              className="h-[84px] w-auto object-contain"
             />
           </Link>
 

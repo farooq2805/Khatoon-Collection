@@ -15,7 +15,7 @@ const Footer = () => {
                 <img
                   src="/logo_white.svg"
                   alt="Khatoon Collection"
-                  className="h-28 w-auto object-contain"
+                  className="h-[156px] w-auto object-contain"
                   loading="lazy"
                 />
               </Link>

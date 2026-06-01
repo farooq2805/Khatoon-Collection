@@ -172,7 +172,7 @@ useEffect(() => {
                 <img
                   src="/logo.svg"
                   alt="Khatoon Collection"
-                  className="h-[90px] w-auto object-contain"
+                  className="h-[126px] w-auto object-contain"
                   draggable={false}
                   loading="eager"
                 />
