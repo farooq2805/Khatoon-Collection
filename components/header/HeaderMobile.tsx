@@ -178,8 +178,8 @@ const closeAll = () => {
               </button>
             </div>
 
-            {/* Centered Logo Container: Constrained to exactly 55% width and perfectly centered */}
-            <div className="absolute inset-x-0 mx-auto w-[55%] flex justify-center items-center pointer-events-none z-0">
+            {/* Centered Logo Container: Constrained to exactly 80% width and perfectly centered */}
+            <div className="absolute inset-x-0 mx-auto w-[80%] flex justify-center items-center pointer-events-none z-0">
               <Link 
                 href="/" 
                 onClick={closeAll} 
@@ -187,7 +187,7 @@ const closeAll = () => {
               >
                 <img
                   src="/logo.png"
-                  className="h-[72px] w-auto max-w-full object-contain block mx-auto mobile-logo transition-transform duration-300 hover:scale-102"
+                  className="h-[76px] w-auto max-w-full object-contain block mx-auto mobile-logo transition-transform duration-300 hover:scale-102"
                   alt="Khatoon Collection"
                   loading="eager"
                 />
