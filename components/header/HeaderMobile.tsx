@@ -167,7 +167,7 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-[#FEE5ED] shadow-sm border-b border-[#f57bb4]/20">
-          <div className="flex items-center justify-between px-3 h-[90px] relative">
+          <div className="flex items-center justify-between px-3 h-[105px] relative">
             {/* Left Column: Menu Button */}
             <div className="flex justify-start z-10">
               <button
@@ -187,7 +187,7 @@ const closeAll = () => {
               >
                 <img
                   src="/logo.png"
-                  className="h-[76px] w-auto max-w-full object-contain block mx-auto mobile-logo transition-transform duration-300 hover:scale-102"
+                  className="h-[90px] w-auto max-w-full object-contain block mx-auto mobile-logo transition-transform duration-300 hover:scale-102"
                   alt="Khatoon Collection"
                   loading="eager"
                 />
