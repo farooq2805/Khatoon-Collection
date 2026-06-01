@@ -167,32 +167,35 @@ const closeAll = () => {
         </Link>
 
         <div className="bg-[#FEE5ED] shadow-sm border-b border-[#f57bb4]/20">
-          <div className="flex items-center justify-between px-3 h-[85px] relative">
-            <div className="w-[50px] flex justify-start flex-shrink-0">
+          <div className="flex items-center justify-between px-3 h-[90px] relative">
+            {/* Left Column: Menu Button */}
+            <div className="flex justify-start z-10">
               <button
                 onClick={() => setMenuOpen(true)}
-                className="h-11 w-11 flex-shrink-0 grid place-items-center z-10 text-gray-800"
+                className="h-11 w-11 flex-shrink-0 grid place-items-center text-gray-800"
               >
                 <FiMenu className="text-2xl" />
               </button>
             </div>
 
-            <div className="flex-1 flex justify-center items-center min-w-0 px-0">
+            {/* Centered Logo Container: Constrained to exactly 55% width and perfectly centered */}
+            <div className="absolute inset-x-0 mx-auto w-[55%] flex justify-center items-center pointer-events-none z-0">
               <Link 
                 href="/" 
                 onClick={closeAll} 
-                className="flex items-center justify-center z-0 w-full"
+                className="flex items-center justify-center w-full pointer-events-auto"
               >
                 <img
                   src="/logo.png"
-                  className="h-[75px] w-full max-w-full object-contain block mx-auto mobile-logo"
+                  className="h-[72px] w-auto max-w-full object-contain block mx-auto mobile-logo transition-transform duration-300 hover:scale-102"
                   alt="Khatoon Collection"
                   loading="eager"
                 />
               </Link>
             </div>
 
-            <div className="w-[96px] flex justify-end gap-2 flex-shrink-0 z-10 text-gray-800">
+            {/* Right Column: Search & Cart */}
+            <div className="flex justify-end gap-2.5 z-10 text-gray-800">
               <button
                 onClick={() => setSearchOpen((s) => !s)}
                 className="h-11 w-11 grid place-items-center"
