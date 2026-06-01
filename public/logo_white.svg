@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 120" width="100%" height="100%">
+  <!-- Definitions for styling and fonts -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap');
+      .logo-emblem-circle {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 1.5;
+      }
+      .logo-botanical {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 1.2;
+        stroke-linecap: round;
+      }
+      .logo-leaf {
+        fill: #ffffff;
+      }
+      .logo-monogram {
+        font-family: 'Playfair Display', 'Cinzel', 'Didot', 'Georgia', serif;
+        font-size: 38px;
+        font-weight: 300;
+        fill: #ffffff;
+      }
+      .logo-title {
+        font-family: 'Playfair Display', 'Didot', 'Georgia', serif;
+        font-size: 44px;
+        font-weight: 400;
+        fill: #ffffff;
+        letter-spacing: 0.5px;
+      }
+      .logo-subtitle {
+        font-family: 'Montserrat', 'Helvetica', 'Arial', sans-serif;
+        font-size: 11px;
+        font-weight: 400;
+        fill: #ffffff;
+        letter-spacing: 7px;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+      .logo-flourish {
+        fill: #ffffff;
+      }
+    </style>
+  </defs>
+
+  <!-- ================= EMBLEM (Left) ================= -->
+  <g transform="translate(10, 0)">
+    <!-- Outer thin circle -->
+    <circle cx="60" cy="60" r="44" class="logo-emblem-circle" />
+
+    <!-- Botanical branch on the left side of the circle -->
+    <path d="M 28,88 C 12,70 14,48 29,30" class="logo-botanical" />
+    
+    <!-- Botanical Leaves -->
+    <!-- Leaf 1 (bottom left) -->
+    <path d="M 25,83 C 18,81 18,74 22,73 C 25,72 27,78 25,83 Z" class="logo-leaf" />
+    <!-- Leaf 2 (middle left lower) -->
+    <path d="M 18,66 C 11,64 12,57 17,57 C 20,57 21,63 18,66 Z" class="logo-leaf" />
+    <!-- Leaf 3 (middle left upper) -->
+    <path d="M 18,48 C 11,46 12,39 17,39 C 20,39 21,45 18,48 Z" class="logo-leaf" />
+    <!-- Leaf 4 (top left) -->
+    <path d="M 26,33 C 19,31 20,24 24,23 C 27,23 29,29 26,33 Z" class="logo-leaf" />
+    <!-- Leaf 5 (top extension) -->
+    <path d="M 33,21 C 29,15 33,9 37,11 C 39,13 37,19 33,21 Z" class="logo-leaf" />
+    <!-- Leaf 6 (bottom extension) -->
+    <path d="M 34,95 C 30,101 34,107 38,105 C 40,103 38,97 34,95 Z" class="logo-leaf" />
+
+    <!-- Monogram letters 'K' and 'C' inside -->
+    <text x="32" y="72" class="logo-monogram">K</text>
+    <text x="60" y="72" class="logo-monogram" style="font-weight: 400;">C</text>
+
+    <!-- Refined Minimalist Lady Profile Silhouette inside the circle (integrated near the 'C') -->
+    <path d="M 69,44 
+             C 65,46 64,49 63,52 
+             C 62.2,54.4 61.5,55 60.5,56.5 
+             L 59,57.5 L 61,58.8 
+             C 59.8,59.8 60,61.5 62.5,62.2 
+             C 61.5,64.2 62,66 64.5,67 
+             C 66.5,68 68,71 71,72 
+             C 75.5,72 79,67 79,60 
+             C 79,52.5 74.5,46.5 69,44 Z" 
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="1.0" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+    
+    <!-- Eyelash / Eye closed line -->
+    <path d="M 63.8,54.5 C 63.2,55 63.2,55.6 63.8,56" fill="none" stroke="#ffffff" stroke-width="0.8" />
+  </g>
+
+  <!-- ================= BRAND TEXT (Right) ================= -->
+  <!-- Brand Title: Khatoon -->
+  <text x="140" y="65" class="logo-title">Khatoon</text>
+  
+  <!-- Connected 'oo' Ligature Ornament: Subtle elegant infinity loop overlaying the two 'o's -->
+  <!-- In 'Khatoon', the two 'o's are roughly between x=252 and x=298 -->
+  <path d="M 252,56 C 252,48 274,62 274,54 C 274,46 296,60 296,52" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="1.2" 
+        stroke-linecap="round" 
+        opacity="0.85" />
+  
+  <!-- Subtitle: COLLECTION -->
+  <text x="142" y="88" class="logo-subtitle">— Collection —</text>
+
+  <!-- Calligraphic vintage divider flourish centered below the text -->
+  <g transform="translate(245, 102)" class="logo-flourish">
+    <!-- Center floral bud -->
+    <circle cx="0" cy="0" r="2.2" />
+    <circle cx="-5" cy="-2" r="1" />
+    <circle cx="5" cy="-2" r="1" />
+    <circle cx="0" cy="-5" r="1" />
+    
+    <!-- Left flourished wing -->
+    <path d="M -10,0 C -30,0 -50,-5 -65,0 C -70,1.5 -65,3 -60,2 C -50,0 -30,1 -10,0 Z" />
+    <path d="M -20,1 C -35,5 -50,4 -60,1" fill="none" stroke="#ffffff" stroke-width="0.8" />
+    
+    <!-- Right flourished wing -->
+    <path d="M 10,0 C 30,0 50,-5 65,0 C 70,1.5 65,3 60,2 C 50,0 30,1 10,0 Z" />
+    <path d="M 20,1 C 35,5 50,4 60,1" fill="none" stroke="#ffffff" stroke-width="0.8" />
+    
+    <!-- Tiny elegant drop at bottom -->
+    <path d="M 0,2 C -1,5 0,9 0,9 C 0,9 1,5 0,2 Z" />
+  </g>
+</svg>

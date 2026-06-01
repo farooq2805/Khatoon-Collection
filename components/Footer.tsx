@@ -13,7 +13,7 @@ const Footer = () => {
             <div className="mb-5">
               <Link href="/">
                 <img
-                  src="/logo_white.png"
+                  src="/logo_white.svg"
                   alt="Khatoon Collection"
                   className="h-28 w-auto object-contain"
                   loading="lazy"

@@ -170,7 +170,7 @@ useEffect(() => {
             <div className="flex justify-center">
               <Link href="/" className="inline-flex items-center">
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Khatoon Collection"
                   className="h-[90px] w-auto object-contain"
                   draggable={false}

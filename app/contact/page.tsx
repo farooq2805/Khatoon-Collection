@@ -186,7 +186,7 @@ export default function ContactPage() {
                     <div className="bg-white p-[2px] rounded-full">
                       <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gray-100">
                         <Image
-                          src="/logo.png"
+                          src="/logo.svg"
                           alt="Khatoon Collection logo"
                           fill
                           className="object-cover"
