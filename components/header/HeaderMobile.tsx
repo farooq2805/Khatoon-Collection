@@ -179,16 +179,16 @@ const closeAll = () => {
             </div>
 
             {/* Centered Logo Container: fills all available space between left and right buttons, pure white bg */}
-            <div className="flex-1 flex justify-center items-center px-1" style={{ backgroundColor: '#ffffff' }}>
+            <div className="flex-1 flex justify-center items-center" style={{ backgroundColor: '#ffffff' }}>
               <Link 
                 href="/" 
                 onClick={closeAll} 
-                className="flex items-center justify-center w-full"
+                className="flex items-center justify-center w-full h-full"
               >
                 <img
                   src="/logo.png"
-                  className="h-[100px] w-full object-contain block mobile-logo transition-transform duration-300 hover:scale-102"
-                  style={{ backgroundColor: '#ffffff' }}
+                  className="h-[100px] w-full block mobile-logo transition-transform duration-300 hover:scale-102"
+                  style={{ backgroundColor: '#ffffff', objectFit: 'contain', objectPosition: 'center' }}
                   alt="Khatoon Collection"
                   loading="eager"
                 />
