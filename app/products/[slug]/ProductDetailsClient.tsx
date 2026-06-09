@@ -10,7 +10,6 @@ import React, {
 } from "react";
 
 import { useCart } from "@/context/CartContext";
-import productGroups from "@/config/productGroups.json";
 
 import ZoomModal from "./_components/ZoomModal";
 import ProductDetailsMobile from "./_components/ProductDetailsMobile";
@@ -459,8 +458,13 @@ export default function ProductDetailsClient({
   /* ===================== SHARED ===================== */
 
   const colorSiblings = useMemo(() => {
-    return (productGroups as Record<string, any>)[String(product.id)] || [];
-  }, [product.id]);
+    // ✅ Primary: use live DB-driven siblings from API
+    if (Array.isArray(product.colorSiblings) && product.colorSiblings.length > 0) {
+      return product.colorSiblings;
+    }
+    // Fallback: empty (groups not yet configured in admin)
+    return [];
+  }, [product]);
 
   const shared = {
     THEME,
