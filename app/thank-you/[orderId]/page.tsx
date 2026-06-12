@@ -80,7 +80,7 @@ export default function ThankYouPage({
     const customerName = data?.customerName || [data?.user?.firstName, data?.user?.lastName].filter(Boolean).join(" ") || "Verified Customer";
     const guestPhoneNum = data?.guestPhone || data?.user?.phone || "";
     
-    const textMsg = `🛍️ *New Order Placed!* 🛍️\n\n*Order ID:* ${oid}\n*Amount:* ₹${totalAmount}\n*Payment:* ${payStat}\n*Customer:* ${customerName}\n*Phone:* ${guestPhoneNum}\n\nCheck admin dashboard at https://khatoon-collection-dashboard.vercel.app to process!`;
+    const textMsg = `🛍️ *New Order Placed!* 🛍️\n\n*Order ID:* ${oid}\n*Amount:* ₹${totalAmount}\n*Payment:* ${payStat}\n*Customer:* ${customerName}\n*Phone:* ${guestPhoneNum}\n\nCheck admin dashboard at https://dashboard.khatooncollection.in to process!`;
     
     // Trigger owner alert via CallMeBot API to 7020895818
     const callMeBotApiKey = "1083921"; // generic CallMeBot API key
@@ -127,7 +127,7 @@ export default function ThankYouPage({
         key,
         amount,
         currency: "INR",
-        name: "CrescentHealthcare",
+        name: "Khatoon Collection",
         description: "Retry Order Payment",
         order_id: razorpayOrderId,
         theme: { color: THEME },
