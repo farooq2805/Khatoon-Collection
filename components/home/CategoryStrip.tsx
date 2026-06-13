@@ -86,7 +86,7 @@ export default function CategoryStrip({ initialData }: { initialData?: Category[
                     src={c.imageUrl || FALLBACK}
                     alt={c.name}
                     fill
-                    priority={i < 6}
+                    priority={false}
                     sizes="(max-width: 1024px) 33vw, 16vw"
                     className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                   />

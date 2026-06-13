@@ -34,6 +34,15 @@ const Footer = () => {
               >
                 <i className="ri-instagram-line text-[#f57bb4]"></i>
               </a>
+              <a
+                href="https://in.pinterest.com/khatooncollection"
+                className="w-10 h-10 flex items-center justify-center bg-white rounded-full transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Khatoon Collection on Pinterest"
+              >
+                <i className="ri-pinterest-line text-[#f57bb4]"></i>
+              </a>
             </div>
           </div>
 

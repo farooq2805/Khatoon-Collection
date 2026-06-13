@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
@@ -58,26 +57,6 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
         .kc-banner .swiper-slide {
           position: relative;
         }
-
-        /* Desktop image: visible ≥ 768px */
-        .kc-banner-img-desktop {
-          display: block;
-          object-fit: cover;
-          object-position: top center;
-        }
-        @media (max-width: 767px) {
-          .kc-banner-img-desktop { display: none; }
-        }
-
-        /* Mobile image: visible < 768px */
-        .kc-banner-img-mobile {
-          display: none;
-          object-fit: cover;
-          object-position: center center;
-        }
-        @media (max-width: 767px) {
-          .kc-banner-img-mobile { display: block; }
-        }
       `}</style>
 
       <div className="kc-banner">
@@ -95,30 +74,47 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
           {slides.map((slide, index) => {
             const href = slide.ctaHref || "#";
             const inner = (
-              <>
-                {/* Desktop banner */}
-                <Image
-                  src={slide.desktopImageUrl}
-                  alt="Khatoon Collection — Premium Ethnic Wear"
-                  fill
-                  priority={index === 0}
-                  sizes="100vw"
-                  className="kc-banner-img-desktop"
+              <picture>
+                {/* Mobile source (max-width: 767px) */}
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={`/_next/image?url=${encodeURIComponent(slide.mobileImageUrl)}&w=750&q=75`}
                 />
-                {/* Mobile banner */}
-                <Image
-                  src={slide.mobileImageUrl}
-                  alt="Khatoon Collection — Premium Ethnic Wear"
-                  fill
-                  priority={index === 0}
-                  sizes="100vw"
-                  className="kc-banner-img-mobile"
+                {/* Desktop source (min-width: 768px) */}
+                <source
+                  media="(min-width: 768px)"
+                  srcSet={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
                 />
-              </>
+                {/* Fallback img */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
+                  alt="Khatoon Collection — Premium Ethnic Wear"
+                  className="absolute inset-0 w-full h-full object-cover object-center md:object-top"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "low"}
+                />
+              </picture>
             );
 
             return (
               <SwiperSlide key={index}>
+                {index === 0 && (
+                  <>
+                    <link
+                      rel="preload"
+                      as="image"
+                      href={`/_next/image?url=${encodeURIComponent(slide.mobileImageUrl)}&w=750&q=75`}
+                      media="(max-width: 767px)"
+                    />
+                    <link
+                      rel="preload"
+                      as="image"
+                      href={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
+                      media="(min-width: 768px)"
+                    />
+                  </>
+                )}
                 {href !== "#" ? (
                   <Link
                     href={href}

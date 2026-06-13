@@ -1,7 +1,8 @@
-@import "https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css";
 @import "tailwindcss";
 
 @theme {
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-montserrat), sans-serif;
   --color-brand: #f57bb4;
   --color-brand-dark: #b34d6b;
   --color-brandDark: #990077;
@@ -232,7 +233,7 @@ body {
 .mobile-logo {
   margin: 0 auto !important;
   display: block !important;
-  height: 68px !important;
+  height: 48px !important;
   width: auto !important;
   object-fit: contain !important;
 }

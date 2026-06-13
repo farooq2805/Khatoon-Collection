@@ -124,6 +124,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               src="/demo/new_arrival_pakistani.png"
               alt="New Arrival Ethnic Wear"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Dark overlay */}
@@ -182,6 +183,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
               src="/demo/clearance_sale.png"
               alt="Clearance Sale"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Dark overlay */}
