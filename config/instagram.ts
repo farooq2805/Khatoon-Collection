@@ -139,3 +139,12 @@ export const INSTAGRAM_REELS: ReelItem[] = [
     price: "₹1,799"
   }
 ];
+
+// ── AUTOMATED INSTAGRAM REELS (BEHOLD.SO) ──
+// To automatically display your 4 most recent Instagram reels:
+// 1. Create a free account at https://behold.so/
+// 2. Link your Instagram profile and create a widget
+// 3. Paste the Feed ID from Behold here (e.g. "abcDE123fgh")
+// Set to "" to fall back to your dashboard/JSON manual reels management.
+export const BEHOLD_FEED_ID = "";
+
