@@ -291,7 +291,7 @@ export default function ProductDetailsDesktop(props: any) {
               src={src}
               alt={`thumb-${i}`}
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </button>
         );
@@ -319,7 +319,7 @@ export default function ProductDetailsDesktop(props: any) {
                 alt={`image-${i}`}
                 fill
                 priority={i === 0}
-                className="object-cover"
+                className="object-contain"
               />
             </div>
           );
@@ -394,7 +394,7 @@ export default function ProductDetailsDesktop(props: any) {
             isActive ? "border-black" : "border-gray-200"
           }`}
         >
-          <Image src={src} alt={`thumb-${i}`} fill className="object-cover" />
+          <Image src={src} alt={`thumb-${i}`} fill className="object-contain" />
         </button>
       );
     })}

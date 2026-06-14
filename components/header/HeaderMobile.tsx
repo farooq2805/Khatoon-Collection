@@ -186,7 +186,7 @@ const closeAll = () => {
                 className="pointer-events-auto flex items-center justify-center"
               >
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   className="h-[48px] w-auto block mobile-logo transition-transform duration-300 hover:scale-102"
                   style={{ objectFit: 'contain' }}
                   alt="Khatoon Collection"

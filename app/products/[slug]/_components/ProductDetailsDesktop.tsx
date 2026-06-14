@@ -174,8 +174,8 @@ function MagnifierImageCard({
         priority={index === 0}
         unoptimized
         sizes="(max-width: 1024px) 100vw, 35vw"
-        className={`object-cover transition-transform duration-200 ease-out ${
-          isHovered ? "scale-[1.8]" : "scale-100"
+        className={`object-contain transition-transform duration-200 ease-out ${
+          isHovered ? "scale-[1.25]" : "scale-100"
         }`}
         style={zoomStyle}
       />
