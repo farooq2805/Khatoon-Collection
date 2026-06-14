@@ -28,20 +28,21 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a
                 href="https://www.instagram.com/khatooncollection25/?hl=en"
-                className="w-10 h-10 flex items-center justify-center bg-white rounded-full transition-colors"
+                className="w-10 h-10 flex items-center justify-center bg-white rounded-full transition-all duration-300 hover:bg-[#E1306C] group shadow-sm hover:shadow-md"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Khatoon Collection on Instagram"
               >
-                <i className="ri-instagram-line text-[#f57bb4]"></i>
+                <i className="ri-instagram-line text-[#E1306C] transition-colors duration-300 group-hover:text-white text-lg"></i>
               </a>
               <a
                 href="https://in.pinterest.com/khatooncollection"
-                className="w-10 h-10 flex items-center justify-center bg-white rounded-full transition-colors"
+                className="w-10 h-10 flex items-center justify-center bg-white rounded-full transition-all duration-300 hover:bg-[#E60023] group shadow-sm hover:shadow-md"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Khatoon Collection on Pinterest"
               >
-                <i className="ri-pinterest-line text-[#f57bb4]"></i>
+                <i className="ri-pinterest-line text-[#E60023] transition-colors duration-300 group-hover:text-white text-lg"></i>
               </a>
             </div>
           </div>
