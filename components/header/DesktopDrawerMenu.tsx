@@ -53,7 +53,7 @@ export default function DesktopDrawerMenu({ open, onClose }: Props) {
 
           <Link href="/" onClick={onClose} className="flex items-center">
             <img
-              src="/logo.svg"
+               src="/logo.svg?v=2"
               alt="Khatoon Collection"
               className="h-[84px] w-auto object-contain"
             />
