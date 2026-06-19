@@ -3324,5 +3324,37 @@
       "slug": "elegant-white-rayon-suit-set-featuring-intricate-kashmiri-embroidery-work-in-vibrant-floral-patterns",
       "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1779356624/products/gallery/IMG_1017_hvzdz8.jpg"
     }
+  ],
+  "270": [
+    {
+      "id": 270,
+      "color": "Mint Green",
+      "colorHex": "#a2d2c8",
+      "slug": "mint-green-floral-embroidered-premium-cotton-suit",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1781523173/products/gallery/mint_green_sleeve.jpg"
+    },
+    {
+      "id": 272,
+      "color": "Royal Purple",
+      "colorHex": "#613b7d",
+      "slug": "royal-purple-floral-embroidered-premium-cotton-suit",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1781523176/products/gallery/royal_purple_front.jpg"
+    }
+  ],
+  "272": [
+    {
+      "id": 270,
+      "color": "Mint Green",
+      "colorHex": "#a2d2c8",
+      "slug": "mint-green-floral-embroidered-premium-cotton-suit",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1781523173/products/gallery/mint_green_sleeve.jpg"
+    },
+    {
+      "id": 272,
+      "color": "Royal Purple",
+      "colorHex": "#613b7d",
+      "slug": "royal-purple-floral-embroidered-premium-cotton-suit",
+      "imageUrl": "https://res.cloudinary.com/techsrow/image/upload/v1781523176/products/gallery/royal_purple_front.jpg"
+    }
   ]
 }

@@ -109,7 +109,7 @@ const [draftLoaded, setDraftLoaded] =
   async function handleModalLogin(e: React.FormEvent) {
     e.preventDefault();
     if (!modalEmail.trim() || !modalPassword) {
-      toast.error("Email and password are required");
+      toast.error("Email and password are required", { id: "checkout-auth" });
       return;
     }
 
@@ -134,10 +134,10 @@ const [draftLoaded, setDraftLoaded] =
       setShowLoginModal(false);
 
       setTimeout(() => {
-        void handleRazorpay();
+        void handleRazorpay(tokenVal);
       }, 500);
     } catch (err: any) {
-      toast.error(err?.message || "Login failed");
+      toast.error(err?.message || "Login failed", { id: "checkout-auth" });
     } finally {
       setModalLoading(false);
     }
@@ -146,11 +146,11 @@ const [draftLoaded, setDraftLoaded] =
   async function handleModalRegister(e: React.FormEvent) {
     e.preventDefault();
     if (!regFirstName.trim() || !regLastName.trim() || !modalEmail.trim() || !regPassword) {
-      toast.error("First Name, Last Name, Email and Password are required");
+      toast.error("First Name, Last Name, Email and Password are required", { id: "checkout-auth" });
       return;
     }
     if (regPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters", { id: "checkout-auth" });
       return;
     }
 
@@ -168,10 +168,20 @@ const [draftLoaded, setDraftLoaded] =
         throw new Error(res?.data?.message || "Registration failed");
       }
 
-      toast.success(res?.data?.message || "Registered successfully! 📩 Please verify your email.");
-      setModalAuthMode("pending-verify");
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+
+      if (!tokenVal) throw new Error("Missing token from server");
+
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Account created & logged in! Launching payment...");
+      setShowLoginModal(false);
+
+      setTimeout(() => {
+        void handleRazorpay(tokenVal);
+      }, 500);
     } catch (err: any) {
-      toast.error(err?.message || "Registration failed");
+      toast.error(err?.message || "Registration failed", { id: "checkout-auth" });
     } finally {
       setModalLoading(false);
     }
@@ -179,7 +189,7 @@ const [draftLoaded, setDraftLoaded] =
 
   async function handleModalVerifyAndPay() {
     if (!modalEmail.trim() || !regPassword) {
-      toast.error("Email and password are required to verify account state");
+      toast.error("Email and password are required to verify account state", { id: "checkout-auth" });
       return;
     }
 
@@ -204,10 +214,10 @@ const [draftLoaded, setDraftLoaded] =
       setShowLoginModal(false);
 
       setTimeout(() => {
-        void handleRazorpay();
+        void handleRazorpay(tokenVal);
       }, 500);
     } catch (err: any) {
-      toast.error(err?.message || "Verification check failed. Please verify your email first.");
+      toast.error(err?.message || "Verification check failed. Please verify your email first.", { id: "checkout-auth" });
     } finally {
       setModalLoading(false);
     }
@@ -637,19 +647,22 @@ useEffect(() => {
         router.push(`/thank-you/${orderId}`);
       }
     } catch (e: any) {
-      toast.error(e?.message || "COD checkout failed");
+      toast.error(e?.message || "COD checkout failed", { id: "checkout-payment" });
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleRazorpay() {
+  async function handleRazorpay(tokenOverride?: string | React.MouseEvent) {
     if (authLoading) {
       toast("Please wait...");
       return;
     }
 
-    if (!isLoggedIn) {
+    const activeToken = typeof tokenOverride === "string" ? tokenOverride : token;
+    const activeIsLoggedIn = !!activeToken;
+
+    if (!activeIsLoggedIn) {
       setShowLoginModal(true);
       return;
     }
@@ -662,7 +675,7 @@ useEffect(() => {
       if (!ok) throw new Error("Razorpay SDK failed to load.");
 
       // Guest checkout supports Prepaid as well
-      const checkoutRes = !isLoggedIn
+      const checkoutRes = !activeIsLoggedIn
         ? await checkoutGuest({
             paymentMethod: "Prepaid",
             couponCode: couponCode.trim() || null,
@@ -680,7 +693,7 @@ useEffect(() => {
             deliveryDate,
             deliveryTimeSlot,
           } as any)
-        : await checkoutUser(buildUserCheckoutPayload("Prepaid") as any, token as string);
+        : await checkoutUser(buildUserCheckoutPayload("Prepaid") as any, activeToken as string);
 
       const orderId =
         checkoutRes?.data?.orderId ??
@@ -690,7 +703,7 @@ useEffect(() => {
 
       if (!orderId) throw new Error("Checkout created but orderId not returned.");
 
-      const rpRes = await razorpayCreateOrder({ orderId } as any, token || "");
+      const rpRes = await razorpayCreateOrder({ orderId } as any, activeToken || "");
 
       const razorpayOrderId =
         rpRes?.data?.razorpayOrderId ??
@@ -719,7 +732,7 @@ useEffect(() => {
         theme: { color: THEME },
         handler: async (response: any) => {
           try {
-            const verifyRes = await razorpayVerifyPayment(response as any, token || "");
+            const verifyRes = await razorpayVerifyPayment(response as any, activeToken || "");
             if (verifyRes?.success === false) {
               throw new Error(verifyRes?.message || "Payment verification failed");
             }
@@ -733,7 +746,7 @@ useEffect(() => {
               await markProspectCompleted(prospectId);
             }
 
-            if (!isLoggedIn) {
+            if (!activeIsLoggedIn) {
               router.push(
                 `/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`
               );
@@ -741,7 +754,7 @@ useEffect(() => {
               router.push(`/thank-you/${orderId}`);
             }
           } catch (err: any) {
-            toast.error(err?.message || "Payment verification failed");
+            toast.error(err?.message || "Payment verification failed", { id: "checkout-payment" });
           }
         },
         modal: { ondismiss: () => toast("Payment cancelled.") },
@@ -750,7 +763,7 @@ useEffect(() => {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (e: any) {
-      toast.error(e?.message || "Razorpay checkout failed");
+      toast.error(e?.message || "Razorpay checkout failed", { id: "checkout-payment" });
     } finally {
       setLoading(false);
     }

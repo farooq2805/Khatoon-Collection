@@ -54,25 +54,16 @@ export default function ProductsPage() {
   });
 
   const filteredItems = useMemo(() => {
-    const seenGroupIds = new Set<string>();
-    const out: any[] = [];
-    
-    for (const p of items) {
-      const pIdStr = String(p.id);
-      const siblings = (productGroups as Record<string, any>)[pIdStr];
-      
-      if (siblings && siblings.length > 0) {
-        const siblingIds = siblings.map((s: any) => Number(s.id));
-        const repId = Math.min(...siblingIds);
-        
-        if (seenGroupIds.has(String(repId))) {
-          continue;
-        }
-        seenGroupIds.add(String(repId));
-      }
-      out.push(p);
-    }
-    return out;
+    return items.filter((p: any) => {
+      const name = (p.name || "").toLowerCase();
+      const slug = (p.slug || "").toLowerCase();
+      const isTest =
+        name.includes("test") ||
+        slug.includes("test") ||
+        p.id === 252 ||
+        name === "big size for daily";
+      return !isTest;
+    });
   }, [items]);
 
   // mobile sheets

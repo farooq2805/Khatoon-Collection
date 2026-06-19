@@ -31,7 +31,7 @@ export async function registerUser(payload: {
   phone?: string;
   password: string;
 }) {
-  return api.post<ApiEnvelope>("/auth/register", payload, { withAuth: false });
+  return api.post<ApiEnvelope<LoginData>>("/auth/register", payload, { withAuth: false });
 }
 
 export async function resendVerification(email: string) {

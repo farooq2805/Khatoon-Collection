@@ -4,6 +4,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { registerUser, resendVerification } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const INDIAN_PHONE_REGEX = /^[6-9]\d{9}$/;
 
@@ -29,6 +32,9 @@ function extractErrorMessage(e: any, fallback: string) {
 }
 
 export default function RegisterPage() {
+  const { login } = useAuth();
+  const router = useRouter();
+
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -111,11 +117,18 @@ export default function RegisterPage() {
         throw new Error(res?.data?.message || "Registration failed");
       }
 
-      setRegisteredEmail(normalized.email);
-      setMsg(res.data.message || "Registered successfully. Please verify your email.");
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
 
-      // optional: clear password field only
-      setForm((p) => ({ ...p, password: "" }));
+      if (!tokenVal) throw new Error("Missing token from server");
+
+      login(userVal?.email || normalized.email, tokenVal);
+      toast.success("Account created and logged in successfully!");
+      setMsg("Registration successful! Redirecting...");
+
+      setTimeout(() => {
+        router.push("/account");
+      }, 1000);
     } catch (e: any) {
       setErr(extractErrorMessage(e, "Registration failed"));
     } finally {
@@ -149,7 +162,7 @@ export default function RegisterPage() {
     <div className="max-w-md mx-auto p-6">
       <h1 className="text-2xl font-semibold">Create account</h1>
       <p className="text-sm text-gray-500 mt-1">
-        Register and verify your email to activate.
+        Create your account to start shopping.
       </p>
 
       <form onSubmit={onSubmit} className="mt-6 space-y-3">

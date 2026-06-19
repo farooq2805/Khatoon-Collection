@@ -63,6 +63,7 @@ type Product = {
   stockQuantity?: number;
 
   createdAt?: string;
+  colorSiblings?: any[];
 };
 
 type Pagination = {
@@ -581,25 +582,7 @@ export default function ProductsListingClient({
   }, [initialItems, sort]);
 
   const filteredSorted = useMemo(() => {
-    const seenGroupIds = new Set<string>();
-    const out: Product[] = [];
-    
-    for (const p of sorted) {
-      const pIdStr = String(p.id);
-      const siblings = (productGroups as Record<string, any>)[pIdStr];
-      
-      if (siblings && siblings.length > 0) {
-        const siblingIds = siblings.map((s: any) => Number(s.id));
-        const repId = Math.min(...siblingIds);
-        
-        if (seenGroupIds.has(String(repId))) {
-          continue;
-        }
-        seenGroupIds.add(String(repId));
-      }
-      out.push(p);
-    }
-    return out;
+    return sorted;
   }, [sorted]);
 
   const paginatedItems = useMemo(() => {
@@ -761,7 +744,7 @@ export default function ProductsListingClient({
 
                   {/* Color row */}
                   {(() => {
-                    const siblings = (productGroups as Record<string, any>)[String(p.id)] || [];
+                    const siblings = p.colorSiblings || [];
                     const currentSiblingColor = siblings.find((s: any) => Number(s.id) === Number(p.id))?.color || "";
                     if (siblings.length === 0) return null;
                     return (

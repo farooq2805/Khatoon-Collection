@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   FiHome,
@@ -13,41 +13,13 @@ import { useCart } from "@/context/CartContext";
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const [currentHref, setCurrentHref] = useState("");
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const { cartCount } = useCart();
 
   useEffect(() => {
     setMounted(true);
-    if (typeof window === "undefined") return;
-
-    const handleURLChange = () => {
-      setCurrentHref(window.location.href);
-    };
-
-    // Run immediately
-    handleURLChange();
-
-    // Listen to popstate (back/forward navigation)
-    window.addEventListener("popstate", handleURLChange);
-
-    // Listen to global click events to capture immediate Next.js routing transitions
-    const handleGlobalClick = () => {
-      setTimeout(handleURLChange, 50);
-      setTimeout(handleURLChange, 150);
-      setTimeout(handleURLChange, 350);
-    };
-    window.addEventListener("click", handleGlobalClick);
-
-    // Periodic check as a fallback
-    const interval = setInterval(handleURLChange, 200);
-
-    return () => {
-      window.removeEventListener("popstate", handleURLChange);
-      window.removeEventListener("click", handleGlobalClick);
-      clearInterval(interval);
-    };
-  }, [pathname]);
+  }, []);
 
   const isActive = (path: string) => {
     if (!mounted) {
@@ -56,9 +28,7 @@ export default function MobileBottomNav() {
       return pathname === path || (path !== "/" && pathname.startsWith(path));
     }
 
-    const searchStr = typeof window !== "undefined" ? window.location.search.toLowerCase() : "";
-    const hrefStr = currentHref.toLowerCase();
-    const isClearance = searchStr.includes("clearance") || hrefStr.includes("clearance");
+    const isClearance = searchParams?.get("sort") === "clearance";
     const isProductsPage = pathname.startsWith("/products");
 
     if (path === "/products?sort=clearance") {
@@ -88,7 +58,6 @@ export default function MobileBottomNav() {
         {/* Home */}
         <Link
           href="/"
-          onClick={() => setCurrentHref("/")}
           className="flex flex-col items-center gap-[2px]"
         >
           <FiHome className={`text-[18px] ${iconClass("/")}`} strokeWidth={1.6} />
@@ -98,7 +67,6 @@ export default function MobileBottomNav() {
         {/* Products */}
         <Link
           href="/products"
-          onClick={() => setCurrentHref("/products")}
           className="flex flex-col items-center gap-[2px]"
         >
           <FiGrid
@@ -113,7 +81,6 @@ export default function MobileBottomNav() {
         {/* Offers */}
         <Link
           href="/products?sort=clearance"
-          onClick={() => setCurrentHref("/products?sort=clearance")}
           className="flex flex-col items-center gap-[2px]"
         >
           <FiTag
@@ -128,7 +95,6 @@ export default function MobileBottomNav() {
         {/* Cart */}
         <Link
           href="/cart"
-          onClick={() => setCurrentHref("/cart")}
           className="flex flex-col items-center gap-[2px] relative"
         >
           <div className="relative">

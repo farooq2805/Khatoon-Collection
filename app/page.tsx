@@ -5,9 +5,25 @@ import NewArrivalsClearance from "@/components/home/NewArrivalsClearance";
 import ServicePaymentSection from "@/components/ServicePaymentSection";
 import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
+import { reportSystemError } from "@/utils/errorHandler";
 
 // Enable Incremental Static Regeneration (ISR) - Rebuilds page in background every 1 hour
 export const revalidate = 3600;
+
+async function fetchWithReporting(url: string, tag: string) {
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) {
+      throw new Error(`API returned status ${res.status}`);
+    }
+    return await res.json();
+  } catch (e: any) {
+    console.error(`❌ Fetching ${tag} failed:`, e);
+    // Report error asynchronously to backend API (to trigger email notification)
+    reportSystemError(`Homepage Fetch - ${tag}`, e, { url });
+    return null;
+  }
+}
 
 async function getHomeData() {
   const api = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
@@ -15,10 +31,10 @@ async function getHomeData() {
   try {
     // Parallel fetching on the server with revalidate tag (cache-friendly)
     const [sliderRes, catRes, bannerRes, productsRes] = await Promise.all([
-      fetch(`${api}/home-slider`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
-      fetch(`${api}/categories`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
-      fetch(`${api}/banner-grid`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
-      fetch(`${api}/publicproducts?limit=40`, { next: { revalidate: 3600 } }).then((r) => r.json()).catch(() => null),
+      fetchWithReporting(`${api}/home-slider`, "home-slider"),
+      fetchWithReporting(`${api}/categories`, "categories"),
+      fetchWithReporting(`${api}/banner-grid`, "banner-grid"),
+      fetchWithReporting(`${api}/publicproducts?limit=40`, "publicproducts"),
     ]);
 
     return {
@@ -29,6 +45,7 @@ async function getHomeData() {
     };
   } catch (e) {
     console.error("❌ Failed to pre-fetch home data on server:", e);
+    reportSystemError("Homepage Fetch Parallel Wrapper", e);
     return {
       sliderData: null,
       categoriesData: [],
