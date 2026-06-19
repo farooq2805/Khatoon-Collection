@@ -218,6 +218,46 @@ const closeAll = () => {
             </div>
           </div>
         </div>
+
+        {/* MOBILE SEARCH BAR DROPDOWN */}
+        {searchOpen && (
+          <div className="bg-[#FEE5ED] px-4 py-3 border-b border-[#f57bb4]/20">
+            <div className="relative w-full">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/60" />
+              <input
+                ref={inputRef}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    goSearch();
+                  }
+                }}
+                placeholder="Search products..."
+                className="
+                  w-full h-11 rounded-md
+                  bg-white
+                  border border-black/10
+                  pl-10 pr-10
+                  text-[14px]
+                  outline-none
+                  focus:ring-2 focus:ring-black/10
+                "
+              />
+              {q.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQ("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/60 hover:text-black"
+                  aria-label="Clear"
+                >
+                  <FiX className="text-[18px]" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
      {/* ================= MOBILE MENU DRAWER ================= */}
