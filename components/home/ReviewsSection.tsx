@@ -1,71 +1,121 @@
 "use client";
 
 import React from "react";
-import { FiStar } from "react-icons/fi";
+import { FiStar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 type ReviewItem = {
   id: string;
   name: string;
-  location: string;
   rating: number;
-  date: string;
   title: string;
   comment: string;
   productName: string;
   productSlug: string;
+  imageUrl: string;
 };
 
 const REVIEWS: ReviewItem[] = [
   {
     id: "rev_1",
-    name: "Priya Sharma",
-    location: "Mumbai, MH",
+    name: "Ayisha Siddiqua",
     rating: 5,
-    date: "2 days ago",
-    title: "Stunning Kashmiri Embroidery! ✨",
-    comment: "I am absolutely in love with this Navy Blue Rayon Suit! The Kashmiri embroidery is so intricate and colorful. Fabric is incredibly soft and comfortable. Perfect for family events!",
-    productName: "Navy Blue Kashmiri Rayon Suit",
-    productSlug: "elegant-navi-blue-rayon-suit-set-featuring-intricate-kashmiri-embroidery-work-in-vibrant-floral-patterns"
+    title: "Absolutely amazing 🤩",
+    comment: "The Lavender Bloom Cotton Suit is absolutely stunning! The embroidery work is very intricate, fabric is pure cotton, and the lace detailing is beautiful. It is perfect for hot summers.",
+    productName: "Lavender Bloom Embroidered Cotton Suit",
+    productSlug: "lavender-bloom-embroidered-pure-cotton-suit-with-lace-detail-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364797/products/gallery/IMG_0312_ekpdt7.jpg"
   },
   {
     id: "rev_2",
-    name: "Anjali Singh",
-    location: "New Delhi, DL",
+    name: "Fouziya khan",
     rating: 5,
-    date: "1 week ago",
-    title: "Exquisite Neck & Daman Cutwork 🌸",
-    comment: "Ordered the Black and White Rayon Suit with neck cutwork and it is so beautiful! The material is very premium and breathable. Fits perfectly and looks super elegant. Quick delivery too!",
-    productName: "Black & White Rayon Cutwork Suit",
-    productSlug: "black-and-white-rayon-suit-with-neck-cutwork-and-daman-cutwork-with-comfortable-pant-with-pattern"
+    title: "The quality and fabric is too good!",
+    comment: "Very pleased with the Aqua Blue Floral suit. The material is so soft and comfortable, the print looks very premium, and the dupatta completed the premium look perfectly.",
+    productName: "Aqua Blue Floral Cotton Suit",
+    productSlug: "aqua-blue-floral-embroidered-pure-cotton-suit-with-lace-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364769/products/gallery/IMG_0315_de7rmo.jpg"
   },
   {
     id: "rev_3",
-    name: "Sneha Reddy",
-    location: "Bangalore, KA",
+    name: "Anonymous",
     rating: 5,
-    date: "5 days ago",
-    title: "Gorgeous Crimson Red Suit! 👑",
-    comment: "This Crimson Red three-piece suit is spectacular! The solid kurta-dupatta set has an extremely premium feel. Perfect fit and the fabric feels like pure luxury. Highly recommended!",
-    productName: "Crimson Red Kurta Dupatta Set",
-    productSlug: "crimson-red-three-piece-traditional-ethnic-suit-consisting-of-a-solid-kurta-dupatta"
+    title: "Easy online ordering",
+    comment: "Seamless experience buying this Sky Grey Cotton Suit. The product is exactly as shown in the picture, embroidery is elegant, and delivery was exceptionally fast.",
+    productName: "Sky Grey Embroidered Cotton Suit",
+    productSlug: "sky-grey-embroidered-pure-cotton-suit-with-lace-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364747/products/gallery/IMG_0318_eutsio.jpg"
   },
   {
     id: "rev_4",
-    name: "Riya Patel",
-    location: "Ahmedabad, GJ",
+    name: "Rida Fatma",
     rating: 5,
-    date: "3 days ago",
-    title: "Classy Embroidery Work 💫",
-    comment: "The Black and Magenta Pink thread embroidery suit is simply stunning! The thread work is clean and has a beautiful classy ethnic design. Extremely comfortable for daily wear.",
-    productName: "Black Magenta Thread Embroidery Suit",
-    productSlug: "black-magenta-pink-thread-embroidery-work-with-a-classy-ethnic-design"
+    title: "Perfect fitting!",
+    comment: "This Midnight Blue Cotton Suit is superb! The color is deep and vibrant, embroidery detail is neat, and the sizing is exactly spot on. Highly recommend Khatoon Collection!",
+    productName: "Midnight Blue Cotton Suit",
+    productSlug: "midnight-blue-embroidered-pure-cotton-suit-with-lace-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365025/products/gallery/IMG_0321_wftmk0.jpg"
+  },
+  {
+    id: "rev_5",
+    name: "Sana Malik",
+    rating: 5,
+    title: "Very beautiful embroidery",
+    comment: "Got this Royal Blue Suit and I'm in love! The premium rayon fabric feels silky and heavy, print quality is high, and the embroidery on the neck is extremely classy.",
+    productName: "Royal Blue Premium Rayon Suit",
+    productSlug: "white-royal-blue-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365719/products/main/IMG_0154_t0x2zq.jpg"
+  },
+  {
+    id: "rev_6",
+    name: "Zoya N.",
+    rating: 5,
+    title: "Extremely comfortable",
+    comment: "Olive Green Premium Suit is super comfortable. Perfect for both office wear and daily wear. Fabric does not bleed color, and the lace work on dupatta is very neat.",
+    productName: "Olive Green Premium Rayon Suit",
+    productSlug: "olive-green-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365889/products/main/IMG_0161_z8c9ii.jpg"
+  },
+  {
+    id: "rev_7",
+    name: "Shabana Begum",
+    rating: 5,
+    title: "Highly recommended",
+    comment: "Loved the Deep Purple shade! It looks incredibly elegant, rayon cotton blend is breathable and premium, and the dupatta is soft and printed beautifully.",
+    productName: "Deep Purple Premium Rayon Suit",
+    productSlug: "deep-purple-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366008/products/main/IMG_0164_huxutc.jpg"
+  },
+  {
+    id: "rev_8",
+    name: "Amina K.",
+    rating: 5,
+    title: "Stunning outfit",
+    comment: "The Sky Blue Floral suit is a head-turner. Got so many compliments at a family lunch. Chiffon dupatta is very flowy and the floral details look so soft and chic.",
+    productName: "Sky Blue Floral Rayon Suit",
+    productSlug: "sky-blue-floral-premium-rayon-cotton-embroidered-suit-with-chiffon-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366236/products/gallery/IMG_9877_avnpzo.jpg"
+  },
+  {
+    id: "rev_9",
+    name: "Ayisha Siddiqua",
+    rating: 5,
+    title: "Absolutely amazing 🤩",
+    comment: "Bought the Black & Red suit too and it's as gorgeous as the others. Great customer service, excellent stitching guide, and fast shipping to my doorstep.",
+    productName: "Black & Red Premium Rayon Suit",
+    productSlug: "black-red-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
+    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366939/products/main/IMG_9901_dmfhuu.jpg"
   }
 ];
 
 export default function ReviewsSection() {
   return (
-    <section id="homepage-reviews-section" className="w-full bg-[#fafafa] py-16 md:py-20 border-t border-gray-100 relative">
+    <section id="homepage-reviews-section" className="w-full bg-[#fafafa] py-16 md:py-20 border-t border-neutral-100 relative overflow-hidden">
       {/* Floating vertical "★ REVIEWS" sticky tab on the right side of the screen */}
       <button
         onClick={() => {
@@ -84,93 +134,148 @@ export default function ReviewsSection() {
       <div className="mx-auto w-full max-w-[1500px] px-4 md:px-8">
         
         {/* Title Block */}
-        <div className="text-center mb-12 md:mb-16">
-          <span className="text-[11px] md:text-[13px] tracking-[0.25em] text-[#f57bb4] uppercase font-bold block mb-2">
-            Testimonials
-          </span>
-          <h2 className="font-serif text-[24px] sm:text-[36px] tracking-[0.1em] text-black uppercase leading-tight">
-            What Our Customers <span className="text-[#f57bb4]">Are Saying</span>
+        <div className="text-center mb-10">
+          <h2 className="font-serif text-[28px] sm:text-[34px] tracking-[0.12em] text-neutral-900 uppercase font-medium">
+            Customers Are Saying
           </h2>
-          <div className="flex items-center justify-center gap-1 mt-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <FiStar key={i} className="text-amber-400 fill-amber-400 text-lg" />
-            ))}
-            <span className="text-gray-700 text-xs md:text-sm font-semibold ml-2">
-              4.9/5 based on 850+ reviews
+          <div className="flex items-center justify-center gap-1.5 mt-3 text-neutral-800 text-xs sm:text-sm font-semibold">
+            <div className="flex items-center gap-0.5 text-black">
+              <FiStar className="fill-black text-black text-xs sm:text-sm" />
+              <FiStar className="fill-black text-black text-xs sm:text-sm" />
+              <FiStar className="fill-black text-black text-xs sm:text-sm" />
+              <FiStar className="fill-black text-black text-xs sm:text-sm" />
+              <FiStar className="fill-black text-black text-xs sm:text-sm" />
+            </div>
+            <span>4.6</span>
+            <span className="text-neutral-400 font-normal">★</span>
+            <span className="text-neutral-500 font-medium">(287)</span>
+            <span className="flex items-center gap-1 text-[#10b981] ml-2">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#10b981] text-white text-[9px] font-bold">✓</span>
+              Verified
             </span>
           </div>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {REVIEWS.map((rev) => (
-            <div 
-              key={rev.id}
-              className="
-                bg-white 
-                p-6 
-                rounded-2xl 
-                border 
-                border-gray-100 
-                shadow-sm 
-                hover:shadow-md 
-                transition-all 
-                duration-300 
-                flex 
-                flex-col 
-                justify-between 
-                h-full
-              "
-            >
-              <div>
-                {/* Stars Row */}
-                <div className="flex items-center gap-0.5 mb-4">
-                  {Array.from({ length: rev.rating }).map((_, i) => (
-                    <FiStar key={i} className="text-amber-400 fill-amber-400 text-[14px]" />
-                  ))}
-                </div>
-
-                {/* Review Details */}
-                <h4 className="text-gray-900 text-sm font-bold mb-2">
-                  {rev.title}
-                </h4>
-                
-                <p className="text-gray-600 text-xs leading-relaxed mb-4">
-                  &ldquo;{rev.comment}&rdquo;
-                </p>
-              </div>
-
-              <div>
-                {/* Divider Line */}
-                <div className="w-full h-px bg-gray-50 my-4" />
-
-                {/* Reviewer Details */}
-                <div className="flex items-center justify-between text-left">
-                  <div>
-                    <div className="text-[11px] font-bold text-gray-900 flex items-center gap-1.5">
-                      <span>{rev.name}</span>
-                      <span className="bg-emerald-50 text-emerald-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-                        Verified
-                      </span>
+        {/* Carousel Wrapper */}
+        <div className="relative px-6 md:px-12">
+          
+          {/* Swiper Slider */}
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: ".prev-reviews-btn",
+              nextEl: ".next-reviews-btn",
+            }}
+            slidesPerView={1}
+            spaceBetween={16}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 16 },
+              768: { slidesPerView: 3, spaceBetween: 20 },
+              1024: { slidesPerView: 4, spaceBetween: 24 },
+              1280: { slidesPerView: 5, spaceBetween: 24 },
+            }}
+            className="reviews-swiper !overflow-visible"
+          >
+            {REVIEWS.map((rev) => (
+              <SwiperSlide key={rev.id} className="h-auto">
+                <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
+                  {/* Product Image */}
+                  <div className="w-full aspect-[3/4] relative overflow-hidden bg-neutral-50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={rev.imageUrl}
+                      alt={rev.productName}
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                    />
+                  </div>
+                  
+                  {/* Review Details */}
+                  <div className="p-4 flex flex-col justify-between flex-grow text-center">
+                    <div className="flex flex-col items-center flex-grow">
+                      {/* Title / Excerpt */}
+                      <h3 className="text-neutral-900 text-[13px] font-bold line-clamp-1 mb-1.5">
+                        {rev.title}
+                      </h3>
+                      
+                      {/* 5 gold stars */}
+                      <div className="flex items-center gap-0.5 text-amber-400 mb-2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <FiStar key={i} className="fill-amber-400 text-amber-400 text-[11px]" />
+                        ))}
+                      </div>
+                      
+                      {/* Comment */}
+                      <p className="text-neutral-600 text-[11px] leading-relaxed line-clamp-3 mb-4">
+                        &ldquo;{rev.comment}&rdquo;
+                      </p>
                     </div>
-                    <div className="text-[10px] text-gray-400 font-semibold mt-0.5">
-                      {rev.location} &bull; {rev.date}
+
+                    {/* Footer Info */}
+                    <div className="mt-auto pt-3 border-t border-neutral-50">
+                      {/* Author Name */}
+                      <div className="text-neutral-900 text-[12px] font-bold flex items-center justify-center gap-1 mb-0.5">
+                        <span>{rev.name}</span>
+                        {/* Black circle verified badge */}
+                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-black text-white text-[8px] font-bold">✓</span>
+                      </div>
+                      
+                      {/* Product Tag / Link */}
+                      <Link
+                        href={`/products/${rev.productSlug}`}
+                        className="text-[10px] text-neutral-400 font-semibold hover:text-[#f57bb4] transition-colors line-clamp-1"
+                      >
+                        {rev.productName}
+                      </Link>
                     </div>
                   </div>
-
-                  <div className="text-right">
-                    <Link
-                      href={`/products/${rev.productSlug}`}
-                      className="text-[9px] bg-[#f57bb4]/10 text-[#f57bb4] hover:bg-[#f57bb4] hover:text-white transition-all duration-200 font-bold px-2 py-1.5 rounded-md block"
-                    >
-                      {rev.productName}
-                    </Link>
-                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Custom Navigation Arrows */}
+          <button className="prev-reviews-btn absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+            <FiChevronLeft className="text-3xl sm:text-4xl stroke-[1.5]" />
+          </button>
+          <button className="next-reviews-btn absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+            <FiChevronRight className="text-3xl sm:text-4xl stroke-[1.5]" />
+          </button>
+
         </div>
+
+        {/* Bottom Trust Bar */}
+        <div className="mt-16 border-t border-neutral-100 pt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
+          <div className="flex items-center flex-wrap justify-center gap-2 text-xs md:text-sm font-semibold text-neutral-700">
+            <span className="flex items-center gap-1 text-[#10b981]">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#10b981] text-white text-[9px] font-bold">✓</span>
+              4.5
+            </span>
+            
+            {/* 5 Green stars */}
+            <div className="flex items-center gap-0.5 text-[#10b981]">
+              <FiStar className="fill-[#10b981] text-[#10b981] text-sm" />
+              <FiStar className="fill-[#10b981] text-[#10b981] text-sm" />
+              <FiStar className="fill-[#10b981] text-[#10b981] text-sm" />
+              <FiStar className="fill-[#10b981] text-[#10b981] text-sm" />
+              <FiStar className="fill-[#10b981] text-[#10b981] text-sm" />
+            </div>
+            
+            <span className="text-neutral-300 mx-1 hidden sm:inline">|</span>
+            
+            <span className="text-neutral-500 font-medium">
+              4.5 out of 5 stars based on 682 reviews
+            </span>
+            
+            <span className="text-neutral-300 mx-1 hidden sm:inline">|</span>
+            
+            <span className="flex items-center gap-1 text-[#10b981] font-bold">
+              Verified
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#10b981] text-white text-[9px] font-bold">✓</span>
+            </span>
+          </div>
+        </div>
+
       </div>
     </section>
   );
