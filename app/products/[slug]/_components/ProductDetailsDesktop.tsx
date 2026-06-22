@@ -867,15 +867,15 @@ export default function ProductDetailsDesktop(props: any) {
               </div>
           </div>
         </div>
-
-        {/* Customer Reviews Section */}
-        <ProductReviews
-          slug={product.slug}
-          productImage={mainImage}
-          productName={title}
-          productImages={galleryImages}
-        />
       </div>
+
+      {/* Customer Reviews Section */}
+      <ProductReviews
+        slug={product.slug}
+        productImage={mainImage}
+        productName={title}
+        productImages={galleryImages}
+      />
 
       {/* Full-width Craftsmanship Brand Story Banner */}
       <div className="mt-16 w-full rounded-[32px] overflow-hidden bg-[#faf8f6] border border-[#f57bb4]/10 relative flex flex-col md:flex-row items-center gap-8 p-6 md:p-10 shadow-sm">
