@@ -931,6 +931,7 @@ export default function ProductDetailsMobile(props: any) {
           slug={product.slug}
           productImage={mainImage}
           productName={title}
+          productImages={galleryImages}
         />
 
         {/* Full-width Craftsmanship Brand Story Banner */}

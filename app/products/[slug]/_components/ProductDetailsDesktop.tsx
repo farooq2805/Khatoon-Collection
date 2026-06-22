@@ -873,6 +873,7 @@ export default function ProductDetailsDesktop(props: any) {
           slug={product.slug}
           productImage={mainImage}
           productName={title}
+          productImages={galleryImages}
         />
       </div>
 

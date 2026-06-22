@@ -21,9 +21,10 @@ type ReviewItem = {
   comment: string;
   location: string;
   date: string;
+  imageUrl?: string;
 };
 
-function generateMockReviews(slug: string): ReviewItem[] {
+function generateMockReviews(slug: string, productImages: string[], defaultImage: string): ReviewItem[] {
   const hash = slug.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
   
   const reviewsPool = [
@@ -85,9 +86,11 @@ function generateMockReviews(slug: string): ReviewItem[] {
     }
   ];
 
-  // Guarantee at least 6 reviews per product page
-  const numReviews = 6;
+  // Guarantee at least 8 reviews per product page
+  const numReviews = 8;
   const reviews: ReviewItem[] = [];
+  
+  const imagesList = Array.isArray(productImages) && productImages.length > 0 ? productImages : [defaultImage];
   
   for (let i = 0; i < numReviews; i++) {
     const idx = (hash + i) % reviewsPool.length;
@@ -104,6 +107,7 @@ function generateMockReviews(slug: string): ReviewItem[] {
       title: poolItem.title,
       comment: poolItem.comment,
       location: poolItem.location,
+      imageUrl: imagesList[i % imagesList.length], // Cycle through available product gallery photos
       date: date.toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
@@ -119,10 +123,12 @@ export default function ProductReviews({
   slug,
   productImage,
   productName,
+  productImages = [],
 }: {
   slug: string;
   productImage?: string;
   productName?: string;
+  productImages?: string[];
 }) {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
@@ -139,7 +145,9 @@ export default function ProductReviews({
       .then((res) => res.json())
       .then((json) => {
         const apiReviews = (json?.success ? json.data?.reviews : []) || [];
-        const mockReviews = generateMockReviews(slug);
+        const defaultImg = productImage || "/placeholder.png";
+        
+        const mockReviews = generateMockReviews(slug, productImages, defaultImg);
         
         const mappedApiReviews = apiReviews.map((r: any) => ({
           id: String(r.id),
@@ -148,6 +156,7 @@ export default function ProductReviews({
           title: r.title || "Excellent Product",
           comment: r.comment || "",
           location: "Verified Buyer",
+          imageUrl: r.images?.[0]?.url || defaultImg, // Use user review upload if available
           date: new Date(r.createdAt).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
@@ -155,7 +164,7 @@ export default function ProductReviews({
           })
         }));
 
-        // Merge API reviews and dynamic high-quality mock reviews (guaranteeing at least 6)
+        // Merge API reviews and dynamic high-quality mock reviews (guaranteeing at least 8)
         const allReviews = [...mappedApiReviews, ...mockReviews];
         
         // Calculate deterministic average rating strictly in range 4.5 - 4.8
@@ -168,7 +177,8 @@ export default function ProductReviews({
       })
       .catch((err) => {
         console.error("Failed to fetch reviews:", err);
-        const mockReviews = generateMockReviews(slug);
+        const defaultImg = productImage || "/placeholder.png";
+        const mockReviews = generateMockReviews(slug, productImages, defaultImg);
         const hash = slug.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const clampedAvg = 4.5 + (hash % 4) * 0.1;
         
@@ -177,7 +187,7 @@ export default function ProductReviews({
         setTotal(mockReviews.length);
       })
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, productImage, productImages]);
 
   if (loading) {
     return (
@@ -190,11 +200,12 @@ export default function ProductReviews({
     );
   }
 
-  const defaultImage = productImage || "/placeholder.png";
+  const defaultImg = productImage || "/placeholder.png";
 
   return (
     <section id="reviews-section" className="mt-16 border-t border-neutral-100 pt-16 scroll-mt-24 w-full relative overflow-hidden">
-      <div className="w-full">
+      {/* Wrapped inside layout constraint to prevent infinite desktop stretching */}
+      <div className="mx-auto w-full max-w-[1500px] px-4 md:px-8">
         
         {/* Title & Stats Block */}
         <div className="text-center mb-10">
@@ -261,11 +272,11 @@ export default function ProductReviews({
             {reviews.map((rev) => (
               <SwiperSlide key={rev.id} className="h-auto">
                 <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
-                  {/* Product Image */}
+                  {/* Product Image (Gallery photo distributed) */}
                   <div className="w-full aspect-[3/4] relative overflow-hidden bg-neutral-50">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={defaultImage}
+                      src={rev.imageUrl || defaultImg}
                       alt={productName || "Product"}
                       className="w-full h-full object-cover object-center"
                       loading="lazy"

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { FiChevronLeft, FiChevronRight, FiPlay, FiX, FiShoppingBag } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiShoppingBag } from "react-icons/fi";
 import { BEHOLD_FEED_ID } from "@/config/instagram";
 
 import "swiper/css";
@@ -19,7 +19,6 @@ interface ReelItem {
 
 export default function InstagramReels() {
   const [reels, setReels] = useState<ReelItem[]>([]);
-  const [activeReel, setActiveReel] = useState<ReelItem | null>(null);
 
   useEffect(() => {
     if (BEHOLD_FEED_ID) {
@@ -94,7 +93,7 @@ export default function InstagramReels() {
             <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>
           </div>
         ) : (
-          /* Custom Swiper Showcase */
+          /* Custom Swiper Showcase containing working Reels embeds */
           <div className="relative px-6 md:px-12 w-full">
             
             <Swiper
@@ -103,63 +102,64 @@ export default function InstagramReels() {
                 prevEl: ".prev-reels-btn",
                 nextEl: ".next-reels-btn",
               }}
-              slidesPerView={1.5}
-              spaceBetween={12}
+              slidesPerView={1}
+              spaceBetween={16}
               breakpoints={{
-                480: { slidesPerView: 2, spaceBetween: 12 },
-                640: { slidesPerView: 3, spaceBetween: 16 },
-                768: { slidesPerView: 4, spaceBetween: 16 },
-                1024: { slidesPerView: 5, spaceBetween: 20 },
-                1280: { slidesPerView: 6, spaceBetween: 20 },
+                480: { slidesPerView: 1.5, spaceBetween: 16 },
+                640: { slidesPerView: 2, spaceBetween: 16 },
+                768: { slidesPerView: 3, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 24 },
+                1280: { slidesPerView: 5, spaceBetween: 24 },
               }}
               className="reels-swiper !overflow-visible"
             >
               {reels.map((reel) => {
-                const coverUrl = `https://www.instagram.com/p/${reel.id}/media/?size=l`;
-
                 return (
                   <SwiperSlide key={reel.id} className="h-auto">
-                    <div 
-                      onClick={() => setActiveReel(reel)}
-                      className="group relative aspect-[9/16] rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-100 shadow-sm transition-all duration-300 hover:shadow-md cursor-pointer flex flex-col justify-end"
-                    >
-                      {/* Cover Image Redirect */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={coverUrl}
-                        alt={reel.label}
-                        className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                    <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
+                      
+                      {/* Instagram Embed Video Iframe */}
+                      <div className="w-full aspect-[9/16] relative overflow-hidden bg-neutral-950">
+                        <iframe
+                          src={`https://www.instagram.com/reel/${reel.id}/embed/`}
+                          title={`Khatoon Collection Reel — ${reel.label}`}
+                          className="absolute inset-0 w-full h-full border-0"
+                          scrolling="no"
+                          allowFullScreen
+                          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                          loading="lazy"
+                        />
+                      </div>
+                      
+                      {/* Shoppable Product Details Box */}
+                      <div className="p-4 flex flex-col justify-between flex-grow text-left bg-neutral-50 border-t border-neutral-100">
+                        <div>
+                          {/* Label badge */}
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#f57bb4]" />
+                            <span className="text-[#f57bb4] text-[9px] font-bold uppercase tracking-widest">
+                              {reel.label}
+                            </span>
+                          </div>
 
-                      {/* Play Button Indicator */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-white text-lg transition-transform duration-300 group-hover:scale-110 shadow-sm">
-                          <FiPlay className="fill-white translate-x-[1px]" />
+                          {/* Product name */}
+                          {reel.productName && (
+                            <h4 className="text-neutral-800 text-[12px] font-semibold line-clamp-1 mb-3" title={reel.productName}>
+                              {reel.productName}
+                            </h4>
+                          )}
                         </div>
-                      </div>
 
-                      {/* Subtle Bottom Brand Label */}
-                      <div className="absolute bottom-3 left-3 right-3 z-10 bg-black/40 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-white/10 text-center pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
-                        <span className="text-white text-[9px] font-bold tracking-[0.15em] uppercase">
-                          {reel.label}
-                        </span>
-                      </div>
-
-                      {/* Glassmorphic Hover Shop Overlay */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col justify-end p-4 text-left">
-                        <span className="text-[#f57bb4] text-[9px] font-extrabold uppercase tracking-widest mb-1">
-                          {reel.label}
-                        </span>
-                        {reel.productName && (
-                          <h4 className="text-white text-[12px] font-semibold truncate mb-3">
-                            {reel.productName}
-                          </h4>
-                        )}
-                        <button className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5">
-                          <FiShoppingBag className="text-xs" />
-                          Shop Look
-                        </button>
+                        {/* CTA button */}
+                        <div className="mt-auto">
+                          <Link 
+                            href={reel.productLink || "/products"} 
+                            className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition shadow-xs flex items-center justify-center gap-1.5"
+                          >
+                            <FiShoppingBag className="text-xs" />
+                            Shop This Look
+                          </Link>
+                        </div>
                       </div>
 
                     </div>
@@ -176,95 +176,6 @@ export default function InstagramReels() {
               <FiChevronRight className="text-3xl sm:text-4xl stroke-[1.5]" />
             </button>
 
-          </div>
-        )}
-
-        {/* Video Player & Shoppable Modal */}
-        {activeReel && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm transition-opacity duration-300 animate-fadeIn">
-            
-            {/* Modal Body */}
-            <div className="relative w-full max-w-[800px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[85vh] md:h-[600px] border border-neutral-100 max-h-[90vh]">
-              
-              {/* Close Button */}
-              <button 
-                onClick={() => setActiveReel(null)}
-                className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition cursor-pointer"
-              >
-                <FiX className="text-lg" />
-              </button>
-
-              {/* Left Column: Embed Player */}
-              <div className="w-full md:w-[380px] bg-black h-[55%] md:h-full relative flex-shrink-0">
-                <iframe
-                  src={`https://www.instagram.com/reel/${activeReel.id}/embed/`}
-                  title={`Instagram Reel — ${activeReel.label}`}
-                  className="absolute inset-0 w-full h-full border-0"
-                  scrolling="no"
-                  allowFullScreen
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                />
-              </div>
-
-              {/* Right Column: Shop/Info */}
-              <div className="w-full flex-grow p-6 md:p-8 flex flex-col justify-between h-[45%] md:h-full text-left bg-[#fcfcfc]">
-                
-                <div className="flex-grow flex flex-col justify-center">
-                  <span className="text-[#f57bb4] text-[10px] md:text-[11px] font-extrabold uppercase tracking-widest block mb-2">
-                    {activeReel.label}
-                  </span>
-                  
-                  {activeReel.productName ? (
-                    <>
-                      <h3 className="font-serif text-[20px] md:text-[24px] text-neutral-900 leading-snug mb-3">
-                        {activeReel.productName}
-                      </h3>
-                      <p className="text-xs md:text-sm text-neutral-500 leading-relaxed mb-6">
-                        Watch this look in action and shop the premium ethnic wear set directly. Free shipping in India!
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="font-serif text-[20px] md:text-[24px] text-neutral-900 leading-snug mb-3">
-                        Khatoon Collection Styles
-                      </h3>
-                      <p className="text-xs md:text-sm text-neutral-500 leading-relaxed mb-6">
-                        Explore our latest traditional collections, luxury rayon suits, and fine craftsmanship on Instagram.
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                {/* Shoppable Action Button */}
-                <div className="mt-auto">
-                  <Link
-                    href={activeReel.productLink || "/products"}
-                    onClick={() => setActiveReel(null)}
-                    className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-3.5 rounded-2xl font-bold tracking-[0.15em] text-[11px] uppercase transition shadow-md flex items-center justify-center gap-2"
-                  >
-                    <FiShoppingBag className="text-sm" />
-                    Shop This Look
-                  </Link>
-                  <a
-                    href={`https://www.instagram.com/reel/${activeReel.id}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-center text-[10px] text-neutral-400 hover:text-neutral-700 transition font-bold uppercase tracking-widest mt-4"
-                  >
-                    View Original on Instagram
-                  </a>
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* Click Backdrop to Close */}
-            <div 
-              onClick={() => setActiveReel(null)}
-              className="absolute inset-0 -z-10 cursor-pointer"
-            />
-            
           </div>
         )}
 
