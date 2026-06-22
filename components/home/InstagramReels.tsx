@@ -118,12 +118,16 @@ export default function InstagramReels() {
                   <SwiperSlide key={reel.id} className="h-auto">
                     <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
                       
-                      {/* Instagram Embed Video Iframe */}
+                      {/* Instagram Embed Video Iframe (Cropped top/bottom to hide header and View Profile button) */}
                       <div className="w-full aspect-[9/16] relative overflow-hidden bg-neutral-950">
                         <iframe
                           src={`https://www.instagram.com/reel/${reel.id}/embed/`}
                           title={`Khatoon Collection Reel — ${reel.label}`}
-                          className="absolute inset-0 w-full h-full border-0"
+                          className="absolute left-0 w-full border-0"
+                          style={{
+                            top: "-72px",
+                            height: "calc(100% + 72px)",
+                          }}
                           scrolling="no"
                           allowFullScreen
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
