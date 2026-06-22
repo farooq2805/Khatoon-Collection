@@ -325,11 +325,11 @@ export default function ProductReviews({
           </Swiper>
 
           {/* Custom Navigation Arrows */}
-          <button className="prev-reviews-btn absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
-            <FiChevronLeft className="text-3xl sm:text-4xl stroke-[1.5]" />
+          <button className="prev-reviews-btn absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-110 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
+            <FiChevronLeft className="text-xl stroke-[2.5]" />
           </button>
-          <button className="next-reviews-btn absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
-            <FiChevronRight className="text-3xl sm:text-4xl stroke-[1.5]" />
+          <button className="next-reviews-btn absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-110 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
+            <FiChevronRight className="text-xl stroke-[2.5]" />
           </button>
 
         </div>
