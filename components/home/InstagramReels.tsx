@@ -2,7 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import { FiChevronLeft, FiChevronRight, FiPlay, FiX, FiShoppingBag } from "react-icons/fi";
 import { BEHOLD_FEED_ID } from "@/config/instagram";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 interface ReelItem {
   id: string;
@@ -13,6 +19,7 @@ interface ReelItem {
 
 export default function InstagramReels() {
   const [reels, setReels] = useState<ReelItem[]>([]);
+  const [activeReel, setActiveReel] = useState<ReelItem | null>(null);
 
   useEffect(() => {
     if (BEHOLD_FEED_ID) {
@@ -68,319 +75,198 @@ export default function InstagramReels() {
   }, []);
 
   return (
-    <section className="kc-ig-section">
-      <style>{`
-        /* ── Section wrapper ── */
-        .kc-ig-section {
-          width: 100%;
-          background: linear-gradient(160deg, #1a0a14 0%, #2d1020 50%, #1a0a14 100%);
-          padding: 60px 0 70px;
-          overflow: hidden;
-          position: relative;
-        }
+    <section className="w-full bg-[#fcfcfc] py-16 md:py-20 border-t border-neutral-100 relative overflow-hidden">
+      <div className="mx-auto w-full max-w-[1500px] px-4 md:px-8">
 
-        /* subtle decorative radial glow */
-        .kc-ig-section::before {
-          content: '';
-          position: absolute;
-          top: -120px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 700px;
-          height: 400px;
-          background: radial-gradient(ellipse, rgba(245,123,180,0.18) 0%, transparent 70%);
-          pointer-events: none;
-        }
+        {/* Heading Block */}
+        <div className="text-center mb-10">
+          <h2 className="font-serif text-[28px] sm:text-[34px] tracking-[0.12em] text-neutral-900 uppercase font-medium">
+            Follow Us On Instagram
+          </h2>
+          <p className="text-[11px] tracking-[0.2em] text-neutral-500 uppercase mt-2 font-semibold">
+            @khatooncollection25
+          </p>
+        </div>
 
-        /* ── Heading area ── */
-        .kc-ig-eyebrow {
-          display: block;
-          text-align: center;
-          font-size: 11px;
-          letter-spacing: 0.3em;
-          color: #f57bb4;
-          text-transform: uppercase;
-          font-weight: 700;
-          margin-bottom: 10px;
-        }
-        .kc-ig-title {
-          text-align: center;
-          font-family: Georgia, 'Times New Roman', serif;
-          font-size: clamp(24px, 4vw, 40px);
-          font-weight: 400;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: #fff;
-          margin: 0 0 6px;
-          line-height: 1.2;
-        }
-        .kc-ig-title span {
-          background: linear-gradient(90deg, #f57bb4, #e040a0);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        .kc-ig-subtitle {
-          text-align: center;
-          color: rgba(255,255,255,0.45);
-          font-size: 13px;
-          margin: 0 auto 40px;
-          max-width: 380px;
-          line-height: 1.6;
-          letter-spacing: 0.02em;
-        }
-
-        /* ── Reels grid ── */
-        .kc-ig-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 16px;
-        }
-
-        /* Desktop: 4-column grid */
-        .kc-reels-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-        }
-        @media (max-width: 1023px) {
-          .kc-reels-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-          }
-        }
-        @media (max-width: 639px) {
-          /* Mobile: horizontal scroll — all 4 visible as a strip */
-          .kc-reels-grid {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 12px;
-            padding-bottom: 12px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-          }
-          .kc-reels-grid::-webkit-scrollbar { display: none; }
-        }
-
-        /* ── Individual reel card ── */
-        .kc-reel-card {
-          position: relative;
-          border-radius: 18px;
-          overflow: hidden;
-          background: #0d0008;
-          /* pink-to-purple gradient border */
-          border: 1.5px solid rgba(245,123,180,0.3);
-          box-shadow:
-            0 4px 24px rgba(0,0,0,0.45),
-            0 0 0 0 rgba(245,123,180,0);
-          transition: transform 0.35s cubic-bezier(.22,.68,0,1.2),
-                      box-shadow 0.35s ease,
-                      border-color 0.35s ease;
-          scroll-snap-align: start;
-        }
-        @media (max-width: 639px) {
-          .kc-reel-card {
-            min-width: 200px;
-            flex: 0 0 200px;
-          }
-        }
-        .kc-reel-card:hover {
-          transform: translateY(-6px) scale(1.015);
-          border-color: rgba(245,123,180,0.75);
-          box-shadow:
-            0 16px 48px rgba(0,0,0,0.5),
-            0 0 20px rgba(245,123,180,0.2);
-        }
-
-        /* 9:16 portrait aspect wrapper */
-        .kc-reel-aspect {
-          position: relative;
-          width: 100%;
-          padding-top: 177.78%; /* 16/9 inverted */
-        }
-        .kc-reel-aspect iframe {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          border: 0;
-          display: block;
-        }
-
-        /* Label badge below each reel */
-        .kc-reel-label {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          padding: 10px 12px;
-          background: linear-gradient(90deg, #1a0a14, #2d1020);
-        }
-        .kc-reel-label span {
-          font-size: 11px;
-          letter-spacing: 0.18em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.6);
-          font-weight: 600;
-        }
-        .kc-reel-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #f57bb4, #e040a0);
-          flex-shrink: 0;
-        }
-
-        /* ── Follow CTA button ── */
-        .kc-ig-cta {
-          display: flex;
-          justify-content: center;
-          margin-top: 40px;
-        }
-        .kc-ig-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 13px 32px;
-          border-radius: 50px;
-          background: linear-gradient(135deg, #f57bb4 0%, #c026a0 100%);
-          color: #fff;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          text-decoration: none;
-          box-shadow: 0 4px 20px rgba(245,123,180,0.4);
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        .kc-ig-btn:hover {
-          transform: translateY(-2px) scale(1.04);
-          box-shadow: 0 8px 32px rgba(245,123,180,0.55);
-        }
-        
-        /* Shoppable buttons */
-        .kc-reel-label-container {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 14px;
-          background: linear-gradient(180deg, #160711 0%, #0c0209 100%);
-          border-top: 1px solid rgba(245, 123, 180, 0.15);
-        }
-        .kc-reel-shop-btn {
-          display: inline-block;
-          text-align: center;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #ffffff;
-          background: rgba(245, 123, 180, 0.12);
-          border: 1px solid rgba(245, 123, 180, 0.35);
-          padding: 7px 12px;
-          border-radius: 8px;
-          margin-top: 4px;
-          transition: all 0.2s ease;
-          text-decoration: none;
-          cursor: pointer;
-        }
-        .kc-reel-shop-btn:hover {
-          background: #f57bb4;
-          border-color: #f57bb4;
-          color: #1a0a14;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(245, 123, 180, 0.3);
-        }
-        .kc-behold-widget-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          border-radius: 20px;
-          overflow: hidden;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1.5px solid rgba(245, 123, 180, 0.15);
-          padding: 12px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-      `}</style>
-
-      <div className="kc-ig-inner">
-
-        {/* Heading */}
-        <span className="kc-ig-eyebrow">Social Showcase</span>
-        <h2 className="kc-ig-title">
-          Follow Us on <span>Instagram</span>
-        </h2>
-        <p className="kc-ig-subtitle">
-          Watch our latest reels &amp; explore the newest ethnic wear collections.
-        </p>
-
-        {/* Reels Grid */}
+        {/* Behold.so Widget (if configured) */}
         {BEHOLD_FEED_ID ? (
-          <div className="kc-behold-widget-container">
+          <div className="max-w-7xl mx-auto rounded-2xl border border-neutral-100 p-3 bg-white shadow-sm">
             <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>
           </div>
         ) : (
-          <div className="kc-reels-grid">
-            {reels.map((reel) => (
-              <div key={reel.id} className="kc-reel-card">
-                <div className="kc-reel-aspect">
-                  <iframe
-                    src={`https://www.instagram.com/reel/${reel.id}/embed/`}
-                    title={`Khatoon Collection Reel — ${reel.label}`}
-                    scrolling="no"
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                    loading="lazy"
-                  />
-                </div>
-                
-                <div className="kc-reel-label-container">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div className="kc-reel-dot" />
-                    <span style={{ fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#f57bb4', fontWeight: 'bold' }}>
-                      {reel.label}
-                    </span>
-                  </div>
-                  
-                  {reel.productName && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px', marginTop: '2px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: '500', color: 'rgba(255,255,255,0.85)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={reel.productName}>
-                        {reel.productName}
+          /* Custom Swiper Showcase */
+          <div className="relative px-6 md:px-12 w-full">
+            
+            <Swiper
+              modules={[Navigation]}
+              navigation={{
+                prevEl: ".prev-reels-btn",
+                nextEl: ".next-reels-btn",
+              }}
+              slidesPerView={1.5}
+              spaceBetween={12}
+              breakpoints={{
+                480: { slidesPerView: 2, spaceBetween: 12 },
+                640: { slidesPerView: 3, spaceBetween: 16 },
+                768: { slidesPerView: 4, spaceBetween: 16 },
+                1024: { slidesPerView: 5, spaceBetween: 20 },
+                1280: { slidesPerView: 6, spaceBetween: 20 },
+              }}
+              className="reels-swiper !overflow-visible"
+            >
+              {reels.map((reel) => {
+                const coverUrl = `https://www.instagram.com/p/${reel.id}/media/?size=l`;
+
+                return (
+                  <SwiperSlide key={reel.id} className="h-auto">
+                    <div 
+                      onClick={() => setActiveReel(reel)}
+                      className="group relative aspect-[9/16] rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-100 shadow-sm transition-all duration-300 hover:shadow-md cursor-pointer flex flex-col justify-end"
+                    >
+                      {/* Cover Image Redirect */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={coverUrl}
+                        alt={reel.label}
+                        className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+
+                      {/* Play Button Indicator */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center text-white text-lg transition-transform duration-300 group-hover:scale-110 shadow-sm">
+                          <FiPlay className="fill-white translate-x-[1px]" />
+                        </div>
                       </div>
-                      <Link href={reel.productLink || "/products"} className="kc-reel-shop-btn">
-                        Shop This Look
-                      </Link>
+
+                      {/* Subtle Bottom Brand Label */}
+                      <div className="absolute bottom-3 left-3 right-3 z-10 bg-black/40 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-white/10 text-center pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                        <span className="text-white text-[9px] font-bold tracking-[0.15em] uppercase">
+                          {reel.label}
+                        </span>
+                      </div>
+
+                      {/* Glassmorphic Hover Shop Overlay */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col justify-end p-4 text-left">
+                        <span className="text-[#f57bb4] text-[9px] font-extrabold uppercase tracking-widest mb-1">
+                          {reel.label}
+                        </span>
+                        {reel.productName && (
+                          <h4 className="text-white text-[12px] font-semibold truncate mb-3">
+                            {reel.productName}
+                          </h4>
+                        )}
+                        <button className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-1.5">
+                          <FiShoppingBag className="text-xs" />
+                          Shop Look
+                        </button>
+                      </div>
+
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+
+            {/* Custom Navigation Chevrons */}
+            <button className="prev-reels-btn absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+              <FiChevronLeft className="text-3xl sm:text-4xl stroke-[1.5]" />
+            </button>
+            <button className="next-reels-btn absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-12 flex items-center justify-center text-neutral-400 hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+              <FiChevronRight className="text-3xl sm:text-4xl stroke-[1.5]" />
+            </button>
+
           </div>
         )}
 
-        {/* Follow Button */}
-        <div className="kc-ig-cta">
-          <Link
-            href="https://www.instagram.com/khatooncollection25/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="kc-ig-btn"
-          >
-            {/* Instagram icon */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="white"
-              aria-hidden="true"
-            >
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-            </svg>
-            <span>Follow @khatooncollection25</span>
-          </Link>
-        </div>
+        {/* Video Player & Shoppable Modal */}
+        {activeReel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm transition-opacity duration-300 animate-fadeIn">
+            
+            {/* Modal Body */}
+            <div className="relative w-full max-w-[800px] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[85vh] md:h-[600px] border border-neutral-100 max-h-[90vh]">
+              
+              {/* Close Button */}
+              <button 
+                onClick={() => setActiveReel(null)}
+                className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition cursor-pointer"
+              >
+                <FiX className="text-lg" />
+              </button>
+
+              {/* Left Column: Embed Player */}
+              <div className="w-full md:w-[380px] bg-black h-[55%] md:h-full relative flex-shrink-0">
+                <iframe
+                  src={`https://www.instagram.com/reel/${activeReel.id}/embed/`}
+                  title={`Instagram Reel — ${activeReel.label}`}
+                  className="absolute inset-0 w-full h-full border-0"
+                  scrolling="no"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                />
+              </div>
+
+              {/* Right Column: Shop/Info */}
+              <div className="w-full flex-grow p-6 md:p-8 flex flex-col justify-between h-[45%] md:h-full text-left bg-[#fcfcfc]">
+                
+                <div className="flex-grow flex flex-col justify-center">
+                  <span className="text-[#f57bb4] text-[10px] md:text-[11px] font-extrabold uppercase tracking-widest block mb-2">
+                    {activeReel.label}
+                  </span>
+                  
+                  {activeReel.productName ? (
+                    <>
+                      <h3 className="font-serif text-[20px] md:text-[24px] text-neutral-900 leading-snug mb-3">
+                        {activeReel.productName}
+                      </h3>
+                      <p className="text-xs md:text-sm text-neutral-500 leading-relaxed mb-6">
+                        Watch this look in action and shop the premium ethnic wear set directly. Free shipping in India!
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-serif text-[20px] md:text-[24px] text-neutral-900 leading-snug mb-3">
+                        Khatoon Collection Styles
+                      </h3>
+                      <p className="text-xs md:text-sm text-neutral-500 leading-relaxed mb-6">
+                        Explore our latest traditional collections, luxury rayon suits, and fine craftsmanship on Instagram.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* Shoppable Action Button */}
+                <div className="mt-auto">
+                  <Link
+                    href={activeReel.productLink || "/products"}
+                    onClick={() => setActiveReel(null)}
+                    className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-3.5 rounded-2xl font-bold tracking-[0.15em] text-[11px] uppercase transition shadow-md flex items-center justify-center gap-2"
+                  >
+                    <FiShoppingBag className="text-sm" />
+                    Shop This Look
+                  </Link>
+                  <a
+                    href={`https://www.instagram.com/reel/${activeReel.id}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-center text-[10px] text-neutral-400 hover:text-neutral-700 transition font-bold uppercase tracking-widest mt-4"
+                  >
+                    View Original on Instagram
+                  </a>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Click Backdrop to Close */}
+            <div 
+              onClick={() => setActiveReel(null)}
+              className="absolute inset-0 -z-10 cursor-pointer"
+            />
+            
+          </div>
+        )}
 
       </div>
     </section>
