@@ -51,8 +51,7 @@ export default function ShippingPolicy() {
             Shipping Charges
           </h2>
           <p className="text-gray-600 text-sm md:text-base">
-            Shipping charges, if applicable, will be calculated and displayed at checkout before
-            placing your order.
+            Shipping is completely <b>FREE</b> for all orders across India.
           </p>
         </section>
 

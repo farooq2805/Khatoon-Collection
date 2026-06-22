@@ -57,16 +57,8 @@ export default function BuyNowCheckoutPage() {
   }, [postal]);
 
   const shippingAmount = useMemo(() => {
-    if (buyNowQty === 0) return 0;
-    if (pincodeStatus === "mumbai") {
-      return 80 * buyNowQty;
-    }
-    if (pincodeStatus === "outside") {
-      return 160 * buyNowQty;
-    }
-    // Default fallback rate (160 per product) before pincode is entered
-    return 160 * buyNowQty;
-  }, [pincodeStatus, buyNowQty]);
+    return 0;
+  }, []);
 
   const dynamicTotal = useMemo(() => {
     return buyNowSubtotal + shippingAmount;
@@ -350,7 +342,7 @@ const confirmOrder = async (
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Delivery Charge</span>
-              <span>₹{shippingAmount.toFixed(2)}</span>
+              <span className="font-semibold text-emerald-600">FREE</span>
             </div>
             <div className="flex justify-between font-bold text-base text-gray-900 pt-2 border-t">
               <span>Total (Estimated)</span>
@@ -435,12 +427,12 @@ const confirmOrder = async (
                 )}
                 {pincodeStatus === "mumbai" && (
                   <span className="text-emerald-600 text-xs mt-1 font-semibold">
-                    ✓ Mumbai Delivery (₹80/product)
+                    ✓ Serviceable (Mumbai Delivery)
                   </span>
                 )}
                 {pincodeStatus === "outside" && (
                   <span className="text-emerald-600 text-xs mt-1 font-semibold">
-                    ✓ Outside Mumbai Delivery (₹160/product)
+                    ✓ Serviceable (Standard Delivery)
                   </span>
                 )}
               </div>

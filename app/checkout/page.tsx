@@ -249,18 +249,8 @@ const [draftLoaded, setDraftLoaded] =
   }, [form.pincode]);
 
   const shippingAmount = useMemo(() => {
-    const qty = totals.itemsCount;
-    if (qty === 0) return 0;
-
-    if (pincodeStatus === "mumbai") {
-      return 80 * qty;
-    }
-    if (pincodeStatus === "outside") {
-      return 160 * qty;
-    }
-    // Default fallback rate (160 per product) before pincode is fully entered
-    return 160 * qty;
-  }, [pincodeStatus, totals.itemsCount]);
+    return 0;
+  }, []);
 
   const taxAmount = 0;
   const previewTotal = totals.subtotal + shippingAmount + taxAmount;
@@ -927,12 +917,12 @@ const timer =
                 )}
                 {pincodeStatus === "mumbai" && (
                   <span className="text-emerald-600 text-xs mt-1 font-semibold">
-                    ✓ Mumbai Delivery (₹80/product)
+                    ✓ Serviceable (Mumbai Delivery)
                   </span>
                 )}
                 {pincodeStatus === "outside" && (
                   <span className="text-emerald-600 text-xs mt-1 font-semibold">
-                    ✓ Outside Mumbai Delivery (₹160/product)
+                    ✓ Serviceable (Standard Delivery)
                   </span>
                 )}
               </div>
@@ -1067,11 +1057,8 @@ const timer =
     Delivery Charge
   </span>
 
-  <span className="font-medium">
-    ₹
-    {moneyINR(
-      shippingAmount
-    )}
+  <span className="font-semibold text-emerald-600">
+    FREE
   </span>
 </div>
 

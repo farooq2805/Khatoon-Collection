@@ -693,8 +693,8 @@ export default function ProductDetailsDesktop(props: any) {
 
       <div className="flex items-center gap-3 text-sm text-gray-700">
         <FiCreditCard className="text-black" />
-        <span>
-          Shipping will be calculated at checkout
+        <span className="font-semibold text-emerald-600">
+          FREE Shipping in India
         </span>
       </div>
 
@@ -846,7 +846,7 @@ export default function ProductDetailsDesktop(props: any) {
     <li>Shipping is available only within India.</li>
     <li>Orders placed on weekends or holidays are processed next business day.</li>
     <li>Delivery generally takes 3–7 business days depending on location.</li>
-    <li>Shipping charges are calculated during checkout.</li>
+    <li>Shipping is completely free of charge.</li>
     <li>Tracking details are shared through email or SMS after dispatch.</li>
     <li>
       Delivery timelines may vary due to weather conditions, courier delays,
