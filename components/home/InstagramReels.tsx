@@ -1,187 +1,292 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { FiChevronLeft, FiChevronRight, FiShoppingBag } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiInstagram, FiHeart, FiMessageCircle, FiPlay } from "react-icons/fi";
 import { BEHOLD_FEED_ID } from "@/config/instagram";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-interface ReelItem {
+interface BeholdPost {
   id: string;
-  label: string;
-  productName?: string;
-  productLink?: string;
+  caption: string;
+  permalink: string;
+  mediaUrl: string;
+  thumbnailUrl?: string;
+  likeCount?: number;
+  commentsCount?: number;
+  isEmbed?: boolean;
 }
 
-export default function InstagramReels() {
-  const [reels, setReels] = useState<ReelItem[]>([]);
+const ReelCard = ({ post }: { post: BeholdPost }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (BEHOLD_FEED_ID) {
-      // Load Behold.so widget script dynamically
-      const script = document.createElement("script");
-      script.src = "https://w.behold.so/widget.js";
-      script.type = "module";
-      document.head.appendChild(script);
-      return () => {
-        const existingScript = document.querySelector('script[src="https://w.behold.so/widget.js"]');
-        if (existingScript) {
-          existingScript.remove();
-        }
-      };
-    } else {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
-      
-      // First, attempt to fetch from the native PostgreSQL Database via Express API
-      fetch(`${apiBaseUrl}/instagram-reels`)
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-            const activeReels = resData.data.filter((r: any) => r.isActive !== false);
-            setReels(activeReels);
-          } else {
-            throw new Error("No database reels or empty response. Trying JSON fallback.");
-          }
-        })
-        .catch((apiErr) => {
-          console.warn("API/Database fetch for reels failed or empty, trying local file fallback...", apiErr);
-          // Fallback 1: Try public/instagram-reels.json storefront static asset
-          fetch("/instagram-reels.json")
-            .then((res) => res.json())
-            .then((jsonData) => {
-              if (Array.isArray(jsonData) && jsonData.length > 0) {
-                setReels(jsonData);
-              } else {
-                throw new Error("Local JSON is not a valid array.");
-              }
-            })
-            .catch((jsonErr) => {
-              console.error("Local JSON fallback failed as well, using hardcoded seeds:", jsonErr);
-              // Fallback 2: Premium seed fallback
-              setReels([
-                { id: "DYzXKZNMVbf", label: "Latest Drop", productName: "Navy Blue Rayon Suit Set", productLink: "/products/elegant-navi-blue-rayon-suit-set-featuring-intricate-kashmiri-embroidery-work-in-vibrant-floral-patterns" },
-                { id: "DYt2uQHMh7G", label: "New Arrivals", productName: "Black Rayon Cutwork Suit", productLink: "/products/black-and-white-rayon-suit-with-neck-cutwork-and-daman-cutwork-with-comfortable-pant-with-pattern" },
-                { id: "DYr4IFLM4J-", label: "Party Wear", productName: "Crimson Red Kurta Dupatta Set", productLink: "/products/crimson-red-three-piece-traditional-ethnic-suit-consisting-of-a-solid-kurta-dupatta" },
-                { id: "DYo42mOs_q7", label: "Ethnic Wear", productName: "Silver & Black Premium Lace Suit", productLink: "/products/elegant-silver-black-floral-printed-suit-with-premium-embroidered-lace" }
-              ]);
-            });
-        });
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (!post.isEmbed && videoRef.current) {
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => {
+        console.warn("Video playback interrupted:", err);
+      });
     }
-  }, []);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (!post.isEmbed && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  if (post.isEmbed) {
+    return (
+      <div 
+        className="w-full aspect-[9/16] relative bg-neutral-950 overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <iframe
+          src={post.mediaUrl}
+          title={`Instagram Reel ${post.id}`}
+          className="absolute inset-0 w-full h-full border-0"
+          scrolling="no"
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+          loading="lazy"
+        />
+        {isHovered && (
+          <a
+            href={post.permalink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute inset-0 bg-black/30 flex items-center justify-center transition-all duration-300"
+          >
+            <div className="px-4 py-2 bg-white/95 text-neutral-900 text-xs font-semibold uppercase tracking-wider rounded-full shadow-lg flex items-center gap-1.5 transform scale-100 hover:scale-105 transition-transform duration-300">
+              <FiInstagram className="text-sm text-pink-600" />
+              View on Instagram
+            </div>
+          </a>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <section className="w-full bg-[#fcfcfc] py-16 md:py-20 border-t border-neutral-100 relative overflow-hidden">
-      <div className="mx-auto w-full max-w-[1500px] px-4 md:px-8">
+    <div
+      className="relative w-full aspect-[9/16] overflow-hidden bg-neutral-950 select-none cursor-pointer group"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <a href={post.permalink} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+        {/* Video Tag */}
+        <video
+          ref={videoRef}
+          src={post.mediaUrl}
+          poster={post.thumbnailUrl}
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+
+        {/* Hover/Play overlay */}
+        <div className={`absolute inset-0 flex flex-col justify-between p-4 transition-all duration-300 ${
+          isHovered ? "bg-black/40" : "bg-black/10"
+        }`}>
+          {/* Top Right Play indicator */}
+          <div className="self-end">
+            {!isPlaying ? (
+              <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
+                <FiPlay className="text-xs ml-0.5" />
+              </div>
+            ) : (
+              <div className="text-white text-[9px] font-bold uppercase tracking-wider bg-pink-600/95 px-2.5 py-1 rounded-full shadow-xs">
+                Playing
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Info Overlay */}
+          <div className={`transition-all duration-300 transform ${
+            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+          } text-white`}>
+            {post.caption && (
+              <p className="text-[11px] line-clamp-2 mb-2 font-medium leading-relaxed text-neutral-100">
+                {post.caption}
+              </p>
+            )}
+            
+            <div className="flex items-center justify-between text-xs font-semibold mt-1">
+              <div className="flex items-center gap-3">
+                {post.likeCount !== undefined && (
+                  <span className="flex items-center gap-1">
+                    <FiHeart className="text-red-500 fill-red-500 text-xs" />
+                    {post.likeCount}
+                  </span>
+                )}
+                {post.commentsCount !== undefined && (
+                  <span className="flex items-center gap-1">
+                    <FiMessageCircle className="text-white fill-white/10 text-xs" />
+                    {post.commentsCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] tracking-wider uppercase text-pink-400 font-bold flex items-center gap-1">
+                <FiInstagram /> Visit
+              </span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  );
+};
+
+export default function InstagramReels() {
+  const [reels, setReels] = useState<BeholdPost[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchReels = async () => {
+      try {
+        setLoading(true);
+        if (BEHOLD_FEED_ID) {
+          const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
+          if (!res.ok) throw new Error("Behold API error");
+          const data = await res.json();
+          const posts = data.posts || [];
+          const videoPosts = posts
+            .filter((p: any) => p.mediaType === "VIDEO" || p.isReel)
+            .map((p: any) => ({
+              id: p.id,
+              caption: p.prunedCaption || p.caption || "",
+              permalink: p.permalink,
+              mediaUrl: p.mediaUrl,
+              thumbnailUrl: p.thumbnailUrl || p.mediaUrl,
+              likeCount: p.likeCount,
+              commentsCount: p.commentsCount,
+            }));
+          if (videoPosts.length > 0) {
+            setReels(videoPosts.slice(0, 6)); // Display first 6 reels as requested
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch Behold reels, falling back to database/JSON:", err);
+      }
+
+      // Fallback 1: load from backend API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+      try {
+        const res = await fetch(`${apiBaseUrl}/instagram-reels`);
+        const resData = await res.json();
+        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const activeReels = resData.data.filter((r: any) => r.isActive !== false);
+          const dbReels = activeReels.map((r: any) => ({
+            id: r.id,
+            caption: r.label || "Khatoon Collection Showcase",
+            permalink: `https://www.instagram.com/reel/${r.id}/`,
+            mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
+            thumbnailUrl: "",
+            isEmbed: true
+          }));
+          setReels(dbReels.slice(0, 6));
+          setLoading(false);
+          return;
+        }
+      } catch (dbErr) {
+        console.warn("Database fallback failed:", dbErr);
+      }
+
+      // Fallback 2: Hardcoded seed fallback
+      setReels([
+        { id: "DYzXKZNMVbf", caption: "Latest Drop", permalink: "https://www.instagram.com/reel/DYzXKZNMVbf/", mediaUrl: "https://www.instagram.com/reel/DYzXKZNMVbf/embed/", thumbnailUrl: "" },
+        { id: "DYt2uQHMh7G", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DYt2uQHMh7G/", mediaUrl: "https://www.instagram.com/reel/DYt2uQHMh7G/embed/", thumbnailUrl: "" },
+        { id: "DYr4IFLM4J-", caption: "Party Wear", permalink: "https://www.instagram.com/reel/DYr4IFLM4J-/", mediaUrl: "https://www.instagram.com/reel/DYr4IFLM4J-/embed/", thumbnailUrl: "" },
+        { id: "DYo42mOs_q7", caption: "Ethnic Wear", permalink: "https://www.instagram.com/reel/DYo42mOs_q7/", mediaUrl: "https://www.instagram.com/reel/DYo42mOs_q7/embed/", thumbnailUrl: "" }
+      ]);
+      setLoading(false);
+    };
+
+    fetchReels();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="w-full bg-[#fcfcfc] py-12 border-t border-neutral-100">
+        <div className="mx-auto w-full text-center">
+          <div className="inline-block w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-neutral-500 text-xs mt-3 uppercase tracking-widest font-semibold">Loading Instagram Videos...</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="w-full bg-[#fcfcfc] py-12 md:py-16 border-t border-neutral-100 relative overflow-hidden">
+      <div className="mx-auto w-full max-w-[1600px] px-2 md:px-4">
 
         {/* Heading Block */}
-        <div className="text-center mb-10">
-          <h2 className="font-serif text-[28px] sm:text-[34px] tracking-[0.12em] text-neutral-900 uppercase font-medium">
+        <div className="text-center mb-8">
+          <h2 className="font-serif text-[24px] sm:text-[30px] tracking-[0.1em] text-neutral-900 uppercase font-medium">
             Follow Us On Instagram
           </h2>
-          <p className="text-[11px] tracking-[0.2em] text-neutral-500 uppercase mt-2 font-semibold">
-            @khatooncollection25
-          </p>
+          <a 
+            href="https://www.instagram.com/khatooncollection25/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] tracking-[0.2em] text-pink-600 hover:text-pink-700 uppercase mt-2 font-bold inline-flex items-center gap-1.5 transition-colors"
+          >
+            <FiInstagram /> @khatooncollection25
+          </a>
         </div>
 
-        {/* Behold.so Widget (if configured) */}
-        {BEHOLD_FEED_ID ? (
-          <div className="max-w-7xl mx-auto md:rounded-2xl border-y md:border border-neutral-100 p-0 md:p-3 bg-white md:shadow-sm">
-            <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>
-          </div>
-        ) : (
-          /* Custom Swiper Showcase containing working Reels embeds */
-          <div className="relative px-6 md:px-12 w-full">
-            
-            <Swiper
-              modules={[Navigation]}
-              navigation={{
-                prevEl: ".prev-reels-btn",
-                nextEl: ".next-reels-btn",
-              }}
-              slidesPerView={1}
-              spaceBetween={16}
-              breakpoints={{
-                480: { slidesPerView: 1.5, spaceBetween: 16 },
-                640: { slidesPerView: 2, spaceBetween: 16 },
-                768: { slidesPerView: 3, spaceBetween: 20 },
-                1024: { slidesPerView: 4, spaceBetween: 24 },
-                1280: { slidesPerView: 5, spaceBetween: 24 },
-              }}
-              className="reels-swiper !overflow-visible"
-            >
-              {reels.map((reel) => {
-                return (
-                  <SwiperSlide key={reel.id} className="h-auto">
-                    <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
-                      
-                      {/* Instagram Embed Video Iframe (Cropped top/bottom to hide header and View Profile button) */}
-                      <div className="w-full aspect-[9/16] relative overflow-hidden bg-neutral-950">
-                        <iframe
-                          src={`https://www.instagram.com/reel/${reel.id}/embed/`}
-                          title={`Khatoon Collection Reel — ${reel.label}`}
-                          className="absolute left-0 w-full border-0"
-                          style={{
-                            top: "-72px",
-                            height: "calc(100% + 72px)",
-                          }}
-                          scrolling="no"
-                          allowFullScreen
-                          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                          loading="lazy"
-                        />
-                      </div>
-                      
-                      {/* Shoppable Product Details Box */}
-                      <div className="p-4 flex flex-col justify-between flex-grow text-left bg-neutral-50 border-t border-neutral-100">
-                        <div>
-                          {/* Label badge */}
-                          <div className="flex items-center gap-1.5 mb-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#f57bb4]" />
-                            <span className="text-[#f57bb4] text-[9px] font-bold uppercase tracking-widest">
-                              {reel.label}
-                            </span>
-                          </div>
+        {/* Custom Swiper Showcase containing working Reels embeds */}
+        <div className="relative px-0 w-full group/navigation">
+          
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: ".prev-reels-btn",
+              nextEl: ".next-reels-btn",
+            }}
+            slidesPerView={1.2}
+            spaceBetween={4}
+            breakpoints={{
+              360: { slidesPerView: 1.5, spaceBetween: 4 },
+              480: { slidesPerView: 2.2, spaceBetween: 6 },
+              640: { slidesPerView: 3.2, spaceBetween: 6 },
+              768: { slidesPerView: 4.2, spaceBetween: 8 },
+              1024: { slidesPerView: 5.2, spaceBetween: 8 },
+              1280: { slidesPerView: 6, spaceBetween: 8 },
+            }}
+            className="reels-swiper !overflow-visible"
+          >
+            {reels.map((post) => {
+              return (
+                <SwiperSlide key={post.id} className="h-auto rounded-[2px] overflow-hidden">
+                  <ReelCard post={post} />
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
 
-                          {/* Product name */}
-                          {reel.productName && (
-                            <h4 className="text-neutral-800 text-[12px] font-semibold line-clamp-1 mb-3" title={reel.productName}>
-                              {reel.productName}
-                            </h4>
-                          )}
-                        </div>
+          {/* Custom Navigation Chevrons - Rafa style hover-only details */}
+          <button className="prev-reels-btn absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-xs shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-105 disabled:opacity-0 disabled:pointer-events-none cursor-pointer opacity-0 group-hover/navigation:opacity-100">
+            <FiChevronLeft className="text-xl stroke-[2.5]" />
+          </button>
+          <button className="next-reels-btn absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 backdrop-blur-xs shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-105 disabled:opacity-0 disabled:pointer-events-none cursor-pointer opacity-0 group-hover/navigation:opacity-100">
+            <FiChevronRight className="text-xl stroke-[2.5]" />
+          </button>
 
-                        {/* CTA button */}
-                        <div className="mt-auto">
-                          <Link 
-                            href={reel.productLink || "/products"} 
-                            className="w-full bg-[#f57bb4] hover:bg-[#e06ca1] text-white py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition shadow-xs flex items-center justify-center gap-1.5"
-                          >
-                            <FiShoppingBag className="text-xs" />
-                            Shop This Look
-                          </Link>
-                        </div>
-                      </div>
-
-                    </div>
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-
-            {/* Custom Navigation Chevrons */}
-            <button className="prev-reels-btn absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-110 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
-              <FiChevronLeft className="text-xl stroke-[2.5]" />
-            </button>
-            <button className="next-reels-btn absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white shadow-md border border-neutral-100 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all hover:scale-110 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
-              <FiChevronRight className="text-xl stroke-[2.5]" />
-            </button>
-
-          </div>
-        )}
+        </div>
 
       </div>
     </section>
