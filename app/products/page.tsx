@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/products/page.tsx
 
+export const dynamic = "force-dynamic";
+
 import ProductsListingClient from "./ProductsListingClient";
 
 const API_BASE =
@@ -35,7 +37,7 @@ async function getProducts(params: {
 
   const url = `${API_BASE}/publicproducts?${qs.toString()}`;
 
-  const res = await fetch(url, { next: { revalidate: 300 } });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return { items: [], pagination: null };
 
   const json = await res.json();

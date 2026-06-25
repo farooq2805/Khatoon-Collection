@@ -7,12 +7,12 @@ import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
 import { reportSystemError } from "@/utils/errorHandler";
 
-// Enable Incremental Static Regeneration (ISR) - Rebuilds page in background every 1 hour
-export const revalidate = 3600;
+// Force dynamic rendering to ensure real-time synchronization with the dashboard
+export const dynamic = "force-dynamic";
 
 async function fetchWithReporting(url: string, tag: string) {
   try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
       throw new Error(`API returned status ${res.status}`);
     }

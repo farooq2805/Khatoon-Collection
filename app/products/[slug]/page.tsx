@@ -5,7 +5,7 @@
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "./ProductDetailsClient";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
@@ -14,7 +14,7 @@ type ApiResponse = { success: boolean; data?: any };
 
 async function getProduct(slug: string) {
   const res = await fetch(`${API_URL}/publicproducts/slug/${slug}`, {
-    next: { revalidate: 3600 },
+    cache: "no-store",
   });
 
   if (res.status === 404) return null;
@@ -26,7 +26,7 @@ async function getProduct(slug: string) {
 
 async function getRelated(slug: string) {
   const res = await fetch(`${API_URL}/publicproducts/related/${slug}?limit=8`, {
-    next: { revalidate: 3600 },
+    cache: "no-store",
   });
 
   if (!res.ok) return [];

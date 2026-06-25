@@ -89,7 +89,7 @@ export default function InstagramReels() {
 
         {/* Behold.so Widget (if configured) */}
         {BEHOLD_FEED_ID ? (
-          <div className="max-w-7xl mx-auto rounded-2xl border border-neutral-100 p-3 bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto md:rounded-2xl border-y md:border border-neutral-100 p-0 md:p-3 bg-white md:shadow-sm">
             <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>
           </div>
         ) : (

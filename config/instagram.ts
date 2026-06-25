@@ -146,5 +146,5 @@ export const INSTAGRAM_REELS: ReelItem[] = [
 // 2. Link your Instagram profile and create a widget
 // 3. Paste the Feed ID from Behold here (e.g. "abcDE123fgh")
 // Set to "" to fall back to your dashboard/JSON manual reels management.
-export const BEHOLD_FEED_ID = "";
+export const BEHOLD_FEED_ID = "GWoyi7QRoH11ALrrLqg6";
 
