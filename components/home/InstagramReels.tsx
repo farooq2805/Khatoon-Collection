@@ -22,27 +22,16 @@ interface BeholdPost {
 
 const ReelCard = ({ post }: { post: BeholdPost }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (!post.isEmbed && videoRef.current) {
-      videoRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch(err => {
-        console.warn("Video playback interrupted:", err);
+  // Play video automatically on mount when autoplay is set, handles potential promise interruptions
+  useEffect(() => {
+    if (videoRef.current && !post.isEmbed) {
+      videoRef.current.play().catch(() => {
+        // Fallback for browsers with strict autoplay policies
       });
     }
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (!post.isEmbed && videoRef.current) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
+  }, [post.isEmbed]);
 
   if (post.isEmbed) {
     return (
@@ -80,67 +69,50 @@ const ReelCard = ({ post }: { post: BeholdPost }) => {
   return (
     <div
       className="relative w-full aspect-[9/16] overflow-hidden bg-neutral-950 select-none cursor-pointer group"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <a href={post.permalink} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-        {/* Video Tag */}
+        {/* Video Tag with Autoplay */}
         <video
           ref={videoRef}
           src={post.mediaUrl}
           poster={post.thumbnailUrl}
           muted
           loop
+          autoPlay
           playsInline
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
-        {/* Hover/Play overlay */}
-        <div className={`absolute inset-0 flex flex-col justify-between p-4 transition-all duration-300 ${
-          isHovered ? "bg-black/40" : "bg-black/10"
-        }`}>
-          {/* Top Right Play indicator */}
-          <div className="self-end">
-            {!isPlaying ? (
-              <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
-                <FiPlay className="text-xs ml-0.5" />
-              </div>
-            ) : (
-              <div className="text-white text-[9px] font-bold uppercase tracking-wider bg-pink-600/95 px-2.5 py-1 rounded-full shadow-xs">
-                Playing
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Info Overlay */}
-          <div className={`transition-all duration-300 transform ${
-            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
-          } text-white`}>
-            {post.caption && (
-              <p className="text-[11px] line-clamp-2 mb-2 font-medium leading-relaxed text-neutral-100">
-                {post.caption}
-              </p>
-            )}
-            
-            <div className="flex items-center justify-between text-xs font-semibold mt-1">
-              <div className="flex items-center gap-3">
-                {post.likeCount !== undefined && (
-                  <span className="flex items-center gap-1">
-                    <FiHeart className="text-red-500 fill-red-500 text-xs" />
-                    {post.likeCount}
-                  </span>
-                )}
-                {post.commentsCount !== undefined && (
-                  <span className="flex items-center gap-1">
-                    <FiMessageCircle className="text-white fill-white/10 text-xs" />
-                    {post.commentsCount}
-                  </span>
-                )}
-              </div>
-              <span className="text-[10px] tracking-wider uppercase text-pink-400 font-bold flex items-center gap-1">
-                <FiInstagram /> Visit
-              </span>
+        {/* Hover overlay */}
+        <div className={`absolute inset-0 flex flex-col justify-end p-4 transition-all duration-300 ${
+          isHovered ? "bg-black/40 opacity-100" : "bg-black/0 opacity-0 group-hover:opacity-100"
+        } text-white`}>
+          {post.caption && (
+            <p className="text-[11px] line-clamp-2 mb-2 font-medium leading-relaxed text-neutral-100">
+              {post.caption}
+            </p>
+          )}
+          
+          <div className="flex items-center justify-between text-xs font-semibold mt-1">
+            <div className="flex items-center gap-3">
+              {post.likeCount !== undefined && (
+                <span className="flex items-center gap-1">
+                  <FiHeart className="text-red-500 fill-red-500 text-xs" />
+                  {post.likeCount}
+                </span>
+              )}
+              {post.commentsCount !== undefined && (
+                <span className="flex items-center gap-1">
+                  <FiMessageCircle className="text-white fill-white/10 text-xs" />
+                  {post.commentsCount}
+                </span>
+              )}
             </div>
+            <span className="text-[10px] tracking-wider uppercase text-pink-400 font-bold flex items-center gap-1">
+              <FiInstagram /> Visit
+            </span>
           </div>
         </div>
       </a>
@@ -150,6 +122,7 @@ const ReelCard = ({ post }: { post: BeholdPost }) => {
 
 export default function InstagramReels() {
   const [reels, setReels] = useState<BeholdPost[]>([]);
+  const [followers, setFollowers] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -160,6 +133,12 @@ export default function InstagramReels() {
           const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
           if (!res.ok) throw new Error("Behold API error");
           const data = await res.json();
+          
+          // Capture biography stats if present
+          if (data.followersCount) {
+            setFollowers(data.followersCount);
+          }
+
           const posts = data.posts || [];
           const videoPosts = posts
             .filter((p: any) => p.mediaType === "VIDEO" || p.isReel)
@@ -238,14 +217,21 @@ export default function InstagramReels() {
           <h2 className="font-serif text-[24px] sm:text-[30px] tracking-[0.1em] text-neutral-900 uppercase font-medium">
             Follow Us On Instagram
           </h2>
-          <a 
-            href="https://www.instagram.com/khatooncollection25/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] tracking-[0.2em] text-pink-600 hover:text-pink-700 uppercase mt-2 font-bold inline-flex items-center gap-1.5 transition-colors"
-          >
-            <FiInstagram /> @khatooncollection25
-          </a>
+          <div className="flex flex-col items-center justify-center gap-1.5 mt-2">
+            <a 
+              href="https://www.instagram.com/khatooncollection25/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[12px] tracking-[0.2em] text-pink-600 hover:text-pink-700 uppercase font-bold inline-flex items-center gap-1.5 transition-colors"
+            >
+              <FiInstagram /> @khatooncollection25
+            </a>
+            {followers !== null && (
+              <span className="text-[11px] tracking-[0.1em] text-neutral-500 font-semibold uppercase">
+                {followers.toLocaleString()}+ Followers
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Custom Swiper Showcase containing working Reels embeds */}
@@ -257,10 +243,10 @@ export default function InstagramReels() {
               prevEl: ".prev-reels-btn",
               nextEl: ".next-reels-btn",
             }}
-            slidesPerView={1.2}
+            slidesPerView={2}
             spaceBetween={4}
             breakpoints={{
-              360: { slidesPerView: 1.5, spaceBetween: 4 },
+              320: { slidesPerView: 2, spaceBetween: 4 },
               480: { slidesPerView: 2.2, spaceBetween: 6 },
               640: { slidesPerView: 3.2, spaceBetween: 6 },
               768: { slidesPerView: 4.2, spaceBetween: 8 },
