@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -46,7 +47,7 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const payIntent = searchParams.get("pay"); // pay=razorpay after login
 
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, cartLoading } = useCart();
   const { token, isLoggedIn, loading: authLoading, login } = useAuth();
 
   // const [payMethod, setPayMethod] = useState<"COD" | "RAZORPAY">("COD");
@@ -76,8 +77,18 @@ const [draftLoaded, setDraftLoaded] =
   useState(false);
 
   const autoPayRef = useRef(false);
+  const autoResumeAfterMergeRef = useRef(false);
 
   const [prospectId, setProspectId] = useState<number | null>(null);
+
+  if (authLoading || cartLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-pink-600" />
+        <p className="text-gray-500 font-medium animate-pulse">Syncing your cart...</p>
+      </div>
+    );
+  }
 
   // Helper to mark prospect as completed
   async function markProspectCompleted(id: number) {
@@ -129,13 +140,10 @@ const [draftLoaded, setDraftLoaded] =
 
       if (!tokenVal) throw new Error("Missing token from server");
 
+      autoResumeAfterMergeRef.current = true;
       login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
       toast.success("Logged in successfully! Resuming payment...");
       setShowLoginModal(false);
-
-      setTimeout(() => {
-        void handleRazorpay(tokenVal);
-      }, 500);
     } catch (err: any) {
       toast.error(err?.message || "Login failed", { id: "checkout-auth" });
     } finally {
@@ -173,13 +181,10 @@ const [draftLoaded, setDraftLoaded] =
 
       if (!tokenVal) throw new Error("Missing token from server");
 
+      autoResumeAfterMergeRef.current = true;
       login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
       toast.success("Account created & logged in! Launching payment...");
       setShowLoginModal(false);
-
-      setTimeout(() => {
-        void handleRazorpay(tokenVal);
-      }, 500);
     } catch (err: any) {
       toast.error(err?.message || "Registration failed", { id: "checkout-auth" });
     } finally {
@@ -209,19 +214,26 @@ const [draftLoaded, setDraftLoaded] =
 
       if (!tokenVal) throw new Error("Missing token from server");
 
+      autoResumeAfterMergeRef.current = true;
       login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
       toast.success("Account verified & logged in! Launching payment gateway...");
       setShowLoginModal(false);
-
-      setTimeout(() => {
-        void handleRazorpay(tokenVal);
-      }, 500);
     } catch (err: any) {
       toast.error(err?.message || "Verification check failed. Please verify your email first.", { id: "checkout-auth" });
     } finally {
       setModalLoading(false);
     }
   }
+
+  // Auto-resume payment after cart merge finishes
+  useEffect(() => {
+    if (!cartLoading && autoResumeAfterMergeRef.current) {
+      autoResumeAfterMergeRef.current = false;
+      if (cartItems?.length) {
+        void handleRazorpay();
+      }
+    }
+  }, [cartLoading, cartItems]);
 
   const totals = useMemo(() => {
     const items = cartItems || [];

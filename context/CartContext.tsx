@@ -946,6 +946,7 @@ useEffect(() => {
   const initCart =
     async () => {
       try {
+        setCartLoading(true);
         const guestCart =
           readGuest();
 
@@ -983,6 +984,8 @@ useEffect(() => {
           "Cart init failed:",
           error
         );
+      } finally {
+        setCartLoading(false);
       }
     };
 

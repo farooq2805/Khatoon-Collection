@@ -143,8 +143,16 @@ export default function LoginPage() {
       );
 
       setTimeout(() => {
+        const guestCart = localStorage.getItem("guestCart");
+        let hasCart = false;
+        try {
+          if (guestCart && JSON.parse(guestCart).length > 0) {
+            hasCart = true;
+          }
+        } catch {}
+
         router.push(
-          nextUrl || "/account"
+          nextUrl || (hasCart ? "/checkout" : "/account")
         );
       }, 700);
     } catch (e: any) {

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { resetPassword } from "@/lib/auth";
+import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 
 function extractErrorMessage(e: any, fallback: string) {
   if (e?.message && typeof e.message === "string") return e.message;
@@ -21,6 +22,8 @@ export default function ResetPasswordClient() {
   const [confirm, setConfirm] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -57,48 +60,92 @@ export default function ResetPasswordClient() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-semibold">Reset password</h1>
-      <p className="text-sm text-gray-500 mt-1">Set a new password for your account.</p>
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl border border-white/30 p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900">Reset Password</h1>
+            <p className="text-gray-500 mt-2">Set a new password for your account</p>
+          </div>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-3">
-        <input
-          className="border rounded px-3 py-2 w-full"
-          type="password"
-          placeholder="New password (min 6 chars)"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          autoComplete="new-password"
-          required
-        />
+          <form onSubmit={onSubmit} className="space-y-5">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                New Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="At least 6 characters"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-12 py-4 outline-none focus:ring-2 focus:ring-pink-500 transition"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
 
-        <input
-          className="border rounded px-3 py-2 w-full"
-          type="password"
-          placeholder="Confirm new password"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          autoComplete="new-password"
-          required
-        />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Confirm new password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  autoComplete="new-password"
+                  className="w-full rounded-2xl border border-gray-200 bg-white px-12 py-4 outline-none focus:ring-2 focus:ring-pink-500 transition"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
 
-        {err && <div className="text-sm text-red-600">{err}</div>}
-        {msg && <div className="text-sm text-green-700">{msg}</div>}
+            {err && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">{err}</div>}
+            {msg && <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl p-3">{msg}</div>}
 
-        <button
-          disabled={loading || !canSubmit}
-          className="w-full rounded bg-black text-white py-2 disabled:opacity-60"
-        >
-          {loading ? "Please wait..." : "Reset password"}
-        </button>
+            <button
+              type="submit"
+              disabled={loading || !canSubmit}
+              className="w-full bg-gradient-to-r from-pink-600 to-rose-500 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-white font-semibold py-4 rounded-2xl shadow-lg disabled:opacity-70 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Please wait...
+                </>
+              ) : (
+                "Reset Password"
+              )}
+            </button>
 
-        <p className="text-sm text-gray-600">
-          Back to{" "}
-          <Link className="underline" href="/login">
-            Login
-          </Link>
-        </p>
-      </form>
+            <div className="text-center text-gray-600">
+              Back to{" "}
+              <Link className="font-semibold text-pink-600 hover:text-pink-700" href="/login">
+                Login
+              </Link>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
