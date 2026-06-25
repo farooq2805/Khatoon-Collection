@@ -126,75 +126,86 @@ export default function InstagramReels() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchReels = async () => {
-      try {
-        setLoading(true);
-        if (BEHOLD_FEED_ID) {
-          const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
-          if (!res.ok) throw new Error("Behold API error");
-          const data = await res.json();
-          
-          // Capture biography stats if present
-          if (data.followersCount) {
-            setFollowers(data.followersCount);
-          }
+    const fetchAllReels = async () => {
+      let dbReelsList: BeholdPost[] = [];
+      let beholdReelsList: BeholdPost[] = [];
 
-          const posts = data.posts || [];
-          const videoPosts = posts
-            .filter((p: any) => p.mediaType === "VIDEO" || p.isReel)
-            .map((p: any) => ({
-              id: p.id,
-              caption: p.prunedCaption || p.caption || "",
-              permalink: p.permalink,
-              mediaUrl: p.mediaUrl,
-              thumbnailUrl: p.thumbnailUrl || p.mediaUrl,
-              likeCount: p.likeCount,
-              commentsCount: p.commentsCount,
-            }));
-          if (videoPosts.length > 0) {
-            setReels(videoPosts.slice(0, 6)); // Display first 6 reels as requested
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn("Failed to fetch Behold reels, falling back to database/JSON:", err);
-      }
-
-      // Fallback 1: load from backend API
+      // 1. Fetch from Database first (Immediate sync, 0-cache)
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
       try {
         const res = await fetch(`${apiBaseUrl}/instagram-reels`);
         const resData = await res.json();
         if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
           const activeReels = resData.data.filter((r: any) => r.isActive !== false);
-          const dbReels = activeReels.map((r: any) => ({
+          dbReelsList = activeReels.map((r: any) => ({
             id: r.id,
-            caption: r.label || "Khatoon Collection Showcase",
+            caption: r.label || "Khatoon Collection",
             permalink: `https://www.instagram.com/reel/${r.id}/`,
             mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
             thumbnailUrl: "",
             isEmbed: true
           }));
-          setReels(dbReels.slice(0, 6));
-          setLoading(false);
-          return;
         }
       } catch (dbErr) {
-        console.warn("Database fallback failed:", dbErr);
+        console.warn("Failed to fetch database reels:", dbErr);
       }
 
-      // Fallback 2: Hardcoded seed fallback
-      setReels([
-        { id: "DYzXKZNMVbf", caption: "Latest Drop", permalink: "https://www.instagram.com/reel/DYzXKZNMVbf/", mediaUrl: "https://www.instagram.com/reel/DYzXKZNMVbf/embed/", thumbnailUrl: "" },
-        { id: "DYt2uQHMh7G", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DYt2uQHMh7G/", mediaUrl: "https://www.instagram.com/reel/DYt2uQHMh7G/embed/", thumbnailUrl: "" },
-        { id: "DYr4IFLM4J-", caption: "Party Wear", permalink: "https://www.instagram.com/reel/DYr4IFLM4J-/", mediaUrl: "https://www.instagram.com/reel/DYr4IFLM4J-/embed/", thumbnailUrl: "" },
-        { id: "DYo42mOs_q7", caption: "Ethnic Wear", permalink: "https://www.instagram.com/reel/DYo42mOs_q7/", mediaUrl: "https://www.instagram.com/reel/DYo42mOs_q7/embed/", thumbnailUrl: "" }
-      ]);
+      // 2. Fetch from Behold (Cached feed)
+      try {
+        if (BEHOLD_FEED_ID) {
+          const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.followersCount) {
+              setFollowers(data.followersCount);
+            }
+            const posts = data.posts || [];
+            beholdReelsList = posts
+              .filter((p: any) => p.mediaType === "VIDEO" || p.isReel)
+              .map((p: any) => ({
+                id: p.id,
+                caption: p.prunedCaption || p.caption || "",
+                permalink: p.permalink,
+                mediaUrl: p.mediaUrl,
+                thumbnailUrl: p.thumbnailUrl || p.mediaUrl,
+                likeCount: p.likeCount,
+                commentsCount: p.commentsCount,
+              }));
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch Behold reels:", err);
+      }
+
+      // 3. Combine them: Database reels first (real-time manual overrides) followed by Behold feed.
+      // Filter out duplicate reels by comparing shortcode IDs.
+      const combined: BeholdPost[] = [...dbReelsList];
+      const dbIds = new Set(dbReelsList.map(r => r.id.toLowerCase()));
+
+      beholdReelsList.forEach((r) => {
+        const shortcodeMatch = r.permalink.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
+        const shortcode = (shortcodeMatch ? shortcodeMatch[1] : r.id).toLowerCase();
+        
+        if (!dbIds.has(r.id.toLowerCase()) && !dbIds.has(shortcode)) {
+          combined.push(r);
+        }
+      });
+
+      // Final fallback seed in case list remains empty
+      if (combined.length === 0) {
+        setReels([
+          { id: "DYzXKZNMVbf", caption: "Latest Drop", permalink: "https://www.instagram.com/reel/DYzXKZNMVbf/", mediaUrl: "https://www.instagram.com/reel/DYzXKZNMVbf/embed/", thumbnailUrl: "" },
+          { id: "DYt2uQHMh7G", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DYt2uQHMh7G/", mediaUrl: "https://www.instagram.com/reel/DYt2uQHMh7G/embed/", thumbnailUrl: "" },
+          { id: "DYr4IFLM4J-", caption: "Party Wear", permalink: "https://www.instagram.com/reel/DYr4IFLM4J-/", mediaUrl: "https://www.instagram.com/reel/DYr4IFLM4J-/embed/", thumbnailUrl: "" },
+          { id: "DYo42mOs_q7", caption: "Ethnic Wear", permalink: "https://www.instagram.com/reel/DYo42mOs_q7/", mediaUrl: "https://www.instagram.com/reel/DYo42mOs_q7/embed/", thumbnailUrl: "" }
+        ]);
+      } else {
+        setReels(combined.slice(0, 12)); // Allow up to 12 reels for swiping
+      }
       setLoading(false);
     };
 
-    fetchReels();
+    fetchAllReels();
   }, []);
 
   if (loading) {
@@ -213,24 +224,28 @@ export default function InstagramReels() {
       <div className="mx-auto w-full max-w-[1600px] px-2 md:px-4">
 
         {/* Heading Block */}
-        <div className="text-center mb-8">
-          <h2 className="font-serif text-[24px] sm:text-[30px] tracking-[0.1em] text-neutral-900 uppercase font-medium">
+        <div className="text-center mb-10">
+          <h2 className="font-serif text-[26px] sm:text-[32px] tracking-[0.1em] text-neutral-900 uppercase font-medium">
             Follow Us On Instagram
           </h2>
-          <div className="flex flex-col items-center justify-center gap-1.5 mt-2">
+          <div className="flex flex-col items-center justify-center gap-3 mt-4">
             <a 
               href="https://www.instagram.com/khatooncollection25/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[12px] tracking-[0.2em] text-pink-600 hover:text-pink-700 uppercase font-bold inline-flex items-center gap-1.5 transition-colors"
+              className="group relative inline-flex items-center justify-center gap-3 px-6 py-2.5 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
             >
-              <FiInstagram /> @khatooncollection25
+              <FiInstagram className="text-sm group-hover:rotate-12 transition-transform" />
+              <span>@khatooncollection25</span>
+              {followers !== null && (
+                <span className="h-4 w-px bg-white/30 mx-0.5" />
+              )}
+              {followers !== null && (
+                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-extrabold backdrop-blur-xs">
+                  {(followers / 1000).toFixed(1)}K Followers
+                </span>
+              )}
             </a>
-            {followers !== null && (
-              <span className="text-[11px] tracking-[0.1em] text-neutral-500 font-semibold uppercase">
-                {followers.toLocaleString()}+ Followers
-              </span>
-            )}
           </div>
         </div>
 
