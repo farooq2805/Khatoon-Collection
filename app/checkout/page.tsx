@@ -77,12 +77,18 @@ export default function CheckoutPage() {
 const [draftLoaded, setDraftLoaded] =
   useState(false);
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const autoPayRef = useRef(false);
   const autoResumeAfterMergeRef = useRef(false);
 
   const [prospectId, setProspectId] = useState<number | null>(null);
 
-  if (authLoading || cartLoading) {
+  if (!mounted || authLoading || cartLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-pink-600" />
