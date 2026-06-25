@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
@@ -1245,6 +1246,16 @@ const timer =
                       className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition text-sm"
                       required
                     />
+                  </div>
+
+                  <div className="flex justify-end !mt-1">
+                    <Link
+                      href="/forgot-password"
+                      target="_blank"
+                      className="text-xs text-[#f57bb4] hover:underline font-semibold"
+                    >
+                      Forgot Password?
+                    </Link>
                   </div>
 
                   <button
