@@ -44,22 +44,23 @@ function isValidPincode(pin: string) {
 }
 
 function CheckoutContent() {
+  // ═══════════════════════════════════════════════════════════════
+  // ALL HOOKS MUST BE AT THE TOP — React Rules of Hooks
+  // Never place hooks after an early return or inside conditions
+  // ═══════════════════════════════════════════════════════════════
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const payIntent = searchParams.get("pay"); // pay=razorpay after login
+  const payIntent = searchParams.get("pay");
 
   const { cartItems, clearCart, cartLoading } = useCart();
   const { token, isLoggedIn, loading: authLoading, login } = useAuth();
 
-  // const [payMethod, setPayMethod] = useState<"COD" | "RAZORPAY">("COD");
+  // ── Form & UI State ──────────────────────────────────────────
   const [payMethod, setPayMethod] = useState<"COD" | "RAZORPAY">("RAZORPAY");
   const [couponCode, setCouponCode] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().slice(0, 10);
-  });
+  const [deliveryDate, setDeliveryDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [deliveryTimeSlot, setDeliveryTimeSlot] = useState("Anytime");
-
   const [guestEmail, setGuestEmail] = useState("");
   const [form, setForm] = useState<AddressForm>({
     fullName: "",
@@ -70,177 +71,27 @@ function CheckoutContent() {
     state: "",
     pincode: "",
   });
-
   const [loading, setLoading] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const autoPayRef = useRef(false);
-  const autoResumeAfterMergeRef = useRef(false);
-
   const [prospectId, setProspectId] = useState<number | null>(null);
 
-  // ✅ ALL modal/auth hooks MUST be declared BEFORE any early returns (Rules of Hooks)
+  // ── Modal State ──────────────────────────────────────────────
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [modalEmail, setModalEmail] = useState("");
   const [modalPassword, setModalPassword] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
-
-  // Dual-mode modal states
   const [modalAuthMode, setModalAuthMode] = useState<"login" | "register" | "pending-verify">("login");
   const [regFirstName, setRegFirstName] = useState("");
   const [regLastName, setRegLastName] = useState("");
   const [regPhone, setRegPhone] = useState("");
   const [regPassword, setRegPassword] = useState("");
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // ── Refs ─────────────────────────────────────────────────────
+  const autoPayRef = useRef(false);
+  const autoResumeAfterMergeRef = useRef(false);
 
-  // ✅ Early return AFTER all hooks - this fixes React Error #310
-  if (!mounted || authLoading || cartLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-pink-600" />
-        <p className="text-gray-500 font-medium animate-pulse">Syncing your cart...</p>
-      </div>
-    );
-  }
-
-  // Helper to mark prospect as completed
-  async function markProspectCompleted(id: number) {
-    try {
-      await fetch("/api/prospects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, status: "completed" }),
-      });
-    } catch (err) {
-      console.error("Failed to mark prospect completed:", err);
-    }
-  }
-
-
-  async function handleModalLogin(e: React.FormEvent) {
-    e.preventDefault();
-    if (!modalEmail.trim() || !modalPassword) {
-      toast.error("Email and password are required", { id: "checkout-auth" });
-      return;
-    }
-
-    setModalLoading(true);
-    try {
-      const res = await loginUser({
-        email: modalEmail.trim().toLowerCase(),
-        password: modalPassword,
-      });
-
-      if (!res?.data?.success) {
-        throw new Error(res?.data?.message || "Login failed");
-      }
-
-      const tokenVal = res?.data?.data?.token;
-      const userVal = res?.data?.data?.user;
-
-      if (!tokenVal) throw new Error("Missing token from server");
-
-      autoResumeAfterMergeRef.current = true;
-      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
-      toast.success("Logged in successfully! Resuming payment...");
-      setShowLoginModal(false);
-    } catch (err: any) {
-      toast.error(err?.message || "Login failed", { id: "checkout-auth" });
-    } finally {
-      setModalLoading(false);
-    }
-  }
-
-  async function handleModalRegister(e: React.FormEvent) {
-    e.preventDefault();
-    if (!regFirstName.trim() || !regLastName.trim() || !modalEmail.trim() || !regPassword) {
-      toast.error("First Name, Last Name, Email and Password are required", { id: "checkout-auth" });
-      return;
-    }
-    if (regPassword.length < 6) {
-      toast.error("Password must be at least 6 characters", { id: "checkout-auth" });
-      return;
-    }
-
-    setModalLoading(true);
-    try {
-      const res = await registerUser({
-        firstName: regFirstName.trim(),
-        lastName: regLastName.trim(),
-        email: modalEmail.trim().toLowerCase(),
-        phone: regPhone.trim() || undefined,
-        password: regPassword,
-      });
-
-      if (!res?.data?.success) {
-        throw new Error(res?.data?.message || "Registration failed");
-      }
-
-      const tokenVal = res?.data?.data?.token;
-      const userVal = res?.data?.data?.user;
-
-      if (!tokenVal) throw new Error("Missing token from server");
-
-      autoResumeAfterMergeRef.current = true;
-      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
-      toast.success("Account created & logged in! Launching payment...");
-      setShowLoginModal(false);
-    } catch (err: any) {
-      toast.error(err?.message || "Registration failed", { id: "checkout-auth" });
-    } finally {
-      setModalLoading(false);
-    }
-  }
-
-  async function handleModalVerifyAndPay() {
-    if (!modalEmail.trim() || !regPassword) {
-      toast.error("Email and password are required to verify account state", { id: "checkout-auth" });
-      return;
-    }
-
-    setModalLoading(true);
-    try {
-      const res = await loginUser({
-        email: modalEmail.trim().toLowerCase(),
-        password: regPassword,
-      });
-
-      if (!res?.data?.success) {
-        throw new Error("Account not verified yet or credentials invalid. Please check your email and click the verification link.");
-      }
-
-      const tokenVal = res?.data?.data?.token;
-      const userVal = res?.data?.data?.user;
-
-      if (!tokenVal) throw new Error("Missing token from server");
-
-      autoResumeAfterMergeRef.current = true;
-      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
-      toast.success("Account verified & logged in! Launching payment gateway...");
-      setShowLoginModal(false);
-    } catch (err: any) {
-      toast.error(err?.message || "Verification check failed. Please verify your email first.", { id: "checkout-auth" });
-    } finally {
-      setModalLoading(false);
-    }
-  }
-
-  // Auto-resume payment after cart merge finishes
-  useEffect(() => {
-    if (!cartLoading && autoResumeAfterMergeRef.current) {
-      autoResumeAfterMergeRef.current = false;
-      if (cartItems?.length) {
-        void handleRazorpay();
-      }
-    }
-  }, [cartLoading, cartItems]);
-
+  // ── Memos ────────────────────────────────────────────────────
   const totals = useMemo(() => {
     const items = cartItems || [];
     const subtotal = items.reduce((sum: number, it: any) => {
@@ -248,37 +99,87 @@ function CheckoutContent() {
       const qty = Number(it?.quantity ?? 1);
       return sum + price * qty;
     }, 0);
-
     return {
       subtotal,
-      itemsCount: items.reduce(
-        (s: number, it: any) => s + Number(it?.quantity ?? 1),
-        0
-      ),
+      itemsCount: items.reduce((s: number, it: any) => s + Number(it?.quantity ?? 1), 0),
     };
   }, [cartItems]);
 
   const pincodeStatus = useMemo(() => {
     const pin = (form.pincode || "").trim();
-    if (!/^\d{6}$/.test(pin)) {
-      return "incomplete";
-    }
+    if (!/^\d{6}$/.test(pin)) return "incomplete";
     return checkPincodeServiceability(pin);
   }, [form.pincode]);
 
-  const shippingAmount = useMemo(() => {
-    return 0;
-  }, []);
-
+  const shippingAmount = useMemo(() => 0, []);
   const taxAmount = 0;
   const previewTotal = totals.subtotal + shippingAmount + taxAmount;
 
-  const showGuestFields = !isLoggedIn;
+  // ── Effects ──────────────────────────────────────────────────
 
-  // Real-time debounced prospect capture
+  // 1. Mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 2. Restore draft
+  useEffect(() => {
+    const restoreDraft = async () => {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (!raw) { setDraftLoaded(true); return; }
+        const d = JSON.parse(raw);
+        if (d?.form) {
+          setForm((prev) => ({
+            ...prev,
+            fullName: d.form.fullName || d.form.name || "",
+            phone: d.form.phone || "",
+            addressLine1: d.form.addressLine1 || d.form.address || "",
+            addressLine2: d.form.addressLine2 || "",
+            city: d.form.city || "",
+            state: d.form.state || "",
+            pincode: d.form.pincode || "",
+          }));
+        }
+        if (typeof d?.guestEmail === "string") setGuestEmail(d.guestEmail);
+        if (typeof d?.couponCode === "string") setCouponCode(d.couponCode);
+        if (typeof d?.deliveryDate === "string") setDeliveryDate(d.deliveryDate);
+        if (typeof d?.deliveryTimeSlot === "string") setDeliveryTimeSlot(d.deliveryTimeSlot);
+        setPayMethod("RAZORPAY");
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        setDraftLoaded(true);
+      } catch (err) {
+        console.error("Draft restore failed", err);
+        setDraftLoaded(true);
+      }
+    };
+    void restoreDraft();
+  }, []);
+
+  // 3. Save draft on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ form, guestEmail, couponCode, deliveryDate, deliveryTimeSlot, payMethod })
+      );
+    } catch {}
+  }, [form, guestEmail, couponCode, deliveryDate, deliveryTimeSlot, payMethod]);
+
+  // 4. Auto-resume payment after cart merge
+  useEffect(() => {
+    if (!cartLoading && autoResumeAfterMergeRef.current) {
+      autoResumeAfterMergeRef.current = false;
+      if (cartItems?.length) {
+        void handleRazorpay();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartLoading, cartItems]);
+
+  // 5. Prospect capture (debounced)
   useEffect(() => {
     if (!form.fullName.trim() && !form.phone.trim()) return;
-
     const timer = setTimeout(async () => {
       try {
         const payload = {
@@ -300,15 +201,11 @@ function CheckoutContent() {
           cartTotal: previewTotal,
           status: "pending",
         };
-
         const response = await fetch("/api/prospects", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-
         const data = await response.json();
         if (data.success && data.prospect?.id && !prospectId) {
           setProspectId(data.prospect.id);
@@ -316,69 +213,83 @@ function CheckoutContent() {
       } catch (err) {
         console.error("Failed to capture prospect:", err);
       }
-    }, 2000); // 2-second debounce
-
+    }, 2000);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, guestEmail, cartItems, previewTotal, prospectId]);
 
-  function updateField<K extends keyof AddressForm>(
-    key: K,
-    val: AddressForm[K]
-  ) {
+  // 6. Auto-resume Razorpay after login redirect
+  useEffect(() => {
+    if (autoPayRef.current) return;
+    if (!draftLoaded) return;
+    if (payIntent !== "razorpay") return;
+    if (authLoading) return;
+    if (!isLoggedIn || !token) return;
+    if (!cartItems?.length) return;
+
+    const timer = setTimeout(() => {
+      if (!form.fullName?.trim()) {
+        autoPayRef.current = false;
+        return;
+      }
+      autoPayRef.current = true;
+      setPayMethod("RAZORPAY");
+      void handleRazorpay();
+    }, 700);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftLoaded, payIntent, authLoading, isLoggedIn, token, cartItems?.length, form.fullName]);
+
+  // ═══════════════════════════════════════════════════════════════
+  // EARLY RETURN — safe because ALL hooks are above this line
+  // ═══════════════════════════════════════════════════════════════
+  if (!mounted || authLoading || cartLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-pink-600" />
+        <p className="text-gray-500 font-medium animate-pulse">Syncing your cart...</p>
+      </div>
+    );
+  }
+
+  // ── Derived Values (safe after early return) ─────────────────
+  const showGuestFields = !isLoggedIn;
+
+  // ── Helper Functions ─────────────────────────────────────────
+
+  async function markProspectCompleted(id: number) {
+    try {
+      await fetch("/api/prospects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: "completed" }),
+      });
+    } catch (err) {
+      console.error("Failed to mark prospect completed:", err);
+    }
+  }
+
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+  }
+
+  function updateField<K extends keyof AddressForm>(key: K, val: AddressForm[K]) {
     setForm((p) => ({ ...p, [key]: val }));
   }
-  
-function redirectToLoginForRazorpay() {
-  const next =
-    typeof window !== "undefined"
-      ? window.location.pathname +
-        window.location.search
-      : "/checkout";
-
-  const separator =
-    next.includes("?")
-      ? "&"
-      : "?";
-
-  router.push(
-    `/login?next=${encodeURIComponent(
-      `${next}${separator}pay=razorpay`
-    )}`
-  );
-}
-  
 
   function validateCommon() {
     toast.dismiss();
-    if (!cartItems?.length) {
-      toast.error("Your cart is empty.");
-      return false;
-    }
-    if (!form.fullName.trim())
-      return (toast.error("Full name is required."), false);
-    if (!isValidPhoneIN(form.phone))
-      return (toast.error("Enter a valid 10-digit Indian phone number."), false);
-    if (!form.addressLine1.trim())
-      return (toast.error("Address Line 1 is required."), false);
+    if (!cartItems?.length) { toast.error("Your cart is empty."); return false; }
+    if (!form.fullName.trim()) return (toast.error("Full name is required."), false);
+    if (!isValidPhoneIN(form.phone)) return (toast.error("Enter a valid 10-digit Indian phone number."), false);
+    if (!form.addressLine1.trim()) return (toast.error("Address Line 1 is required."), false);
     if (!form.city.trim()) return (toast.error("City is required."), false);
     if (!form.state.trim()) return (toast.error("State is required."), false);
-    if (!isValidPincode(form.pincode))
-      return (toast.error("Enter a valid 6-digit pincode."), false);
-
+    if (!isValidPincode(form.pincode)) return (toast.error("Enter a valid 6-digit pincode."), false);
     const serviceability = checkPincodeServiceability(form.pincode);
-    if (serviceability === "unserviceable") {
-      return (
-        toast.error("We do not ship to this pincode. Please enter a serviceable pincode."),
-        false
-      );
-    }
-
-    if (showGuestFields) {
-      if (guestEmail && !/^\S+@\S+\.\S+$/.test(guestEmail)) {
-        return (toast.error("Enter a valid email or keep it empty."), false);
-      }
-    }
-
+    if (serviceability === "unserviceable") return (toast.error("We do not ship to this pincode. Please enter a serviceable pincode."), false);
+    if (showGuestFields && guestEmail && !/^\S+@\S+\.\S+$/.test(guestEmail)) return (toast.error("Enter a valid email or keep it empty."), false);
     return true;
   }
 
@@ -396,213 +307,104 @@ function redirectToLoginForRazorpay() {
       form.phone?.trim(),
       form.addressLine1?.trim(),
       form.addressLine2?.trim(),
-    ]
-      .filter(Boolean)
-      .join(", ");
-
+    ].filter(Boolean).join(", ");
     return {
       paymentMethod,
       couponCode: couponCode.trim() || null,
       items: buildItemsPayload(),
-
       shippingAddress: addressStr,
       shippingCity: form.city.trim(),
       shippingCountry: "India",
       shippingPostalCode: form.pincode.trim(),
       contactPhone: form.phone.trim(),
-
       deliveryDate,
       deliveryTimeSlot,
     };
   }
 
-  // ✅ Restore draft after refresh/login
-  // useEffect(() => {
-  //   try {
-  //     const raw = localStorage.getItem(DRAFT_KEY);
-  //     if (!raw) return;
-  //     const d = JSON.parse(raw);
-
-  //     if (d?.form) setForm((p) => ({ ...p, ...d.form }));
-  //     if (typeof d?.guestEmail === "string") setGuestEmail(d.guestEmail);
-  //     if (typeof d?.couponCode === "string") setCouponCode(d.couponCode);
-  //     if (typeof d?.deliveryDate === "string") setDeliveryDate(d.deliveryDate);
-  //     if (typeof d?.deliveryTimeSlot === "string")
-  //       setDeliveryTimeSlot(d.deliveryTimeSlot);
-  //     if (d?.payMethod === "COD" || d?.payMethod === "RAZORPAY")
-  //       setPayMethod(d.payMethod);
-  //   } catch {}
-  // }, []);
-
-  // ✅ Restore draft after refresh/login
-useEffect(() => {
-  const restoreDraft =
-    async () => {
-      try {
-        const raw =
-          localStorage.getItem(
-            DRAFT_KEY
-          );
-
-        if (!raw) {
-          setDraftLoaded(
-            true
-          );
-          return;
-        }
-
-        const d =
-          JSON.parse(raw);
-
-       if (d?.form) {
-  setForm((prev) => ({
-    ...prev,
-
-    // support old + new key
-    fullName:
-      d.form.fullName ||
-      d.form.name ||
-      "",
-
-    phone:
-      d.form.phone ||
-      "",
-
-    addressLine1:
-      d.form.addressLine1 ||
-      d.form.address ||
-      "",
-
-    addressLine2:
-      d.form.addressLine2 ||
-      "",
-
-    city:
-      d.form.city ||
-      "",
-
-    state:
-      d.form.state ||
-      "",
-
-    pincode:
-      d.form.pincode ||
-      "",
-  }));
-}
-
-        if (
-          typeof d?.guestEmail ===
-          "string"
-        ) {
-          setGuestEmail(
-            d.guestEmail
-          );
-        }
-
-        if (
-          typeof d?.couponCode ===
-          "string"
-        ) {
-          setCouponCode(
-            d.couponCode
-          );
-        }
-
-        if (
-          typeof d?.deliveryDate ===
-          "string"
-        ) {
-          setDeliveryDate(
-            d.deliveryDate
-          );
-        }
-
-        if (
-          typeof d?.deliveryTimeSlot ===
-          "string"
-        ) {
-          setDeliveryTimeSlot(
-            d.deliveryTimeSlot
-          );
-        }
-
-        // if (
-        //   d?.payMethod ===
-        //     "COD" ||
-        //   d?.payMethod ===
-        //     "RAZORPAY"
-        // ) {
-        //   setPayMethod(
-        //     d.payMethod
-        //   );
-        // }
-
-        setPayMethod("RAZORPAY");
-//         if (
-//   d?.payMethod === "COD" ||
-//   d?.payMethod === "RAZORPAY"
-// ) {
-//   setPayMethod(d.payMethod);
-// } else {
-//   setPayMethod("RAZORPAY");
-// }
-
-        // wait for React state update
-        await new Promise(
-          (
-            resolve
-          ) =>
-            setTimeout(
-              resolve,
-              300
-            )
-        );
-
-        setDraftLoaded(
-          true
-        );
-      } catch (err) {
-        console.error(
-          "Draft restore failed",
-          err
-        );
-
-        setDraftLoaded(
-          true
-        );
-      }
-    };
-
-  void restoreDraft();
-}, []);
-
-  // ✅ Save draft on change
-  useEffect(() => {
+  async function handleModalLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!modalEmail.trim() || !modalPassword) {
+      toast.error("Email and password are required", { id: "checkout-auth" });
+      return;
+    }
+    setModalLoading(true);
     try {
-      localStorage.setItem(
-        DRAFT_KEY,
-        JSON.stringify({
-          form,
-          guestEmail,
-          couponCode,
-          deliveryDate,
-          deliveryTimeSlot,
-          payMethod,
-        })
-      );
-    } catch {}
-  }, [form, guestEmail, couponCode, deliveryDate, deliveryTimeSlot, payMethod]);
+      const res = await loginUser({ email: modalEmail.trim().toLowerCase(), password: modalPassword });
+      if (!res?.data?.success) throw new Error(res?.data?.message || "Login failed");
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+      if (!tokenVal) throw new Error("Missing token from server");
+      autoResumeAfterMergeRef.current = true;
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Logged in successfully! Resuming payment...");
+      setShowLoginModal(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Login failed", { id: "checkout-auth" });
+    } finally {
+      setModalLoading(false);
+    }
+  }
 
-  function clearDraft() {
+  async function handleModalRegister(e: React.FormEvent) {
+    e.preventDefault();
+    if (!regFirstName.trim() || !regLastName.trim() || !modalEmail.trim() || !regPassword) {
+      toast.error("First Name, Last Name, Email and Password are required", { id: "checkout-auth" });
+      return;
+    }
+    if (regPassword.length < 6) {
+      toast.error("Password must be at least 6 characters", { id: "checkout-auth" });
+      return;
+    }
+    setModalLoading(true);
     try {
-      localStorage.removeItem(DRAFT_KEY);
-    } catch {}
+      const res = await registerUser({
+        firstName: regFirstName.trim(),
+        lastName: regLastName.trim(),
+        email: modalEmail.trim().toLowerCase(),
+        phone: regPhone.trim() || undefined,
+        password: regPassword,
+      });
+      if (!res?.data?.success) throw new Error(res?.data?.message || "Registration failed");
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+      if (!tokenVal) throw new Error("Missing token from server");
+      autoResumeAfterMergeRef.current = true;
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Account created & logged in! Launching payment...");
+      setShowLoginModal(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Registration failed", { id: "checkout-auth" });
+    } finally {
+      setModalLoading(false);
+    }
+  }
+
+  async function handleModalVerifyAndPay() {
+    if (!modalEmail.trim() || !regPassword) {
+      toast.error("Email and password are required to verify account state", { id: "checkout-auth" });
+      return;
+    }
+    setModalLoading(true);
+    try {
+      const res = await loginUser({ email: modalEmail.trim().toLowerCase(), password: regPassword });
+      if (!res?.data?.success) throw new Error("Account not verified yet or credentials invalid. Please check your email and click the verification link.");
+      const tokenVal = res?.data?.data?.token;
+      const userVal = res?.data?.data?.user;
+      if (!tokenVal) throw new Error("Missing token from server");
+      autoResumeAfterMergeRef.current = true;
+      login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
+      toast.success("Account verified & logged in! Launching payment gateway...");
+      setShowLoginModal(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Verification check failed. Please verify your email first.", { id: "checkout-auth" });
+    } finally {
+      setModalLoading(false);
+    }
   }
 
   async function handleCOD() {
     if (!validateCommon()) return;
-
     setLoading(true);
     try {
       const payload = showGuestFields
@@ -610,19 +412,14 @@ useEffect(() => {
             paymentMethod: "COD",
             couponCode: couponCode.trim() || null,
             items: buildItemsPayload(),
-
-            shippingAddress: `${form.fullName.trim()}, ${form.phone.trim()}, ${form.addressLine1.trim()} ${
-              form.addressLine2?.trim() || ""
-            }`.trim(),
+            shippingAddress: `${form.fullName.trim()}, ${form.phone.trim()}, ${form.addressLine1.trim()} ${form.addressLine2?.trim() || ""}`.trim(),
             shippingCity: form.city.trim(),
             shippingCountry: "India",
             shippingPostalCode: form.pincode.trim(),
             contactPhone: form.phone.trim(),
-
             customerName: form.fullName.trim(),
             customerEmail: guestEmail || "guest@example.com",
             guestPhone: form.phone.trim(),
-
             deliveryDate,
             deliveryTimeSlot,
           }
@@ -632,25 +429,16 @@ useEffect(() => {
         ? await checkoutGuest(payload as any)
         : await checkoutUser(payload as any, token as string);
 
-      const orderId =
-        res?.data?.orderId ?? res?.data?.order?.id ?? res?.data?.id ?? null;
-
-      if (!orderId)
-        throw new Error("Order created but orderId not returned by API.");
+      const orderId = res?.data?.orderId ?? res?.data?.order?.id ?? res?.data?.id ?? null;
+      if (!orderId) throw new Error("Order created but orderId not returned by API.");
 
       toast.success("Order placed successfully!");
       clearDraft();
       await clearCart(true);
-
-      // Mark prospect as completed in Supabase DB
-      if (prospectId) {
-        await markProspectCompleted(prospectId);
-      }
+      if (prospectId) await markProspectCompleted(prospectId);
 
       if (showGuestFields) {
-        router.push(
-          `/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`
-        );
+        router.push(`/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`);
       } else {
         router.push(`/thank-you/${orderId}`);
       }
@@ -662,19 +450,12 @@ useEffect(() => {
   }
 
   async function handleRazorpay(tokenOverride?: string | React.MouseEvent) {
-    if (authLoading) {
-      toast("Please wait...");
-      return;
-    }
+    if (authLoading) { toast("Please wait..."); return; }
 
     const activeToken = typeof tokenOverride === "string" ? tokenOverride : token;
     const activeIsLoggedIn = !!activeToken;
 
-    if (!activeIsLoggedIn) {
-      setShowLoginModal(true);
-      return;
-    }
-
+    if (!activeIsLoggedIn) { setShowLoginModal(true); return; }
     if (!validateCommon()) return;
 
     setLoading(true);
@@ -682,15 +463,12 @@ useEffect(() => {
       const ok = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
       if (!ok) throw new Error("Razorpay SDK failed to load.");
 
-      // Guest checkout supports Prepaid as well
       const checkoutRes = !activeIsLoggedIn
         ? await checkoutGuest({
             paymentMethod: "Prepaid",
             couponCode: couponCode.trim() || null,
             items: buildItemsPayload(),
-            shippingAddress: `${form.fullName.trim()}, ${form.phone.trim()}, ${form.addressLine1.trim()} ${
-              form.addressLine2?.trim() || ""
-            }`.trim(),
+            shippingAddress: `${form.fullName.trim()}, ${form.phone.trim()}, ${form.addressLine1.trim()} ${form.addressLine2?.trim() || ""}`.trim(),
             shippingCity: form.city.trim(),
             shippingCountry: "India",
             shippingPostalCode: form.pincode.trim(),
@@ -703,22 +481,11 @@ useEffect(() => {
           } as any)
         : await checkoutUser(buildUserCheckoutPayload("Prepaid") as any, activeToken as string);
 
-      const orderId =
-        checkoutRes?.data?.orderId ??
-        checkoutRes?.data?.order?.id ??
-        checkoutRes?.data?.id ??
-        null;
-
+      const orderId = checkoutRes?.data?.orderId ?? checkoutRes?.data?.order?.id ?? checkoutRes?.data?.id ?? null;
       if (!orderId) throw new Error("Checkout created but orderId not returned.");
 
       const rpRes = await razorpayCreateOrder({ orderId } as any, activeToken || "");
-
-      const razorpayOrderId =
-        rpRes?.data?.razorpayOrderId ??
-        rpRes?.data?.order?.id ??
-        rpRes?.data?.id ??
-        null;
-
+      const razorpayOrderId = rpRes?.data?.razorpayOrderId ?? rpRes?.data?.order?.id ?? rpRes?.data?.id ?? null;
       const amount = rpRes?.data?.amount ?? rpRes?.data?.order?.amount ?? null;
       const key = rpRes?.data?.key ?? process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
@@ -741,23 +508,13 @@ useEffect(() => {
         handler: async (response: any) => {
           try {
             const verifyRes = await razorpayVerifyPayment(response as any, activeToken || "");
-            if (verifyRes?.success === false) {
-              throw new Error(verifyRes?.message || "Payment verification failed");
-            }
-
+            if (verifyRes?.success === false) throw new Error(verifyRes?.message || "Payment verification failed");
             toast.success("Payment successful!");
             clearDraft();
             await clearCart(true);
-
-            // Mark prospect as completed in Supabase DB
-            if (prospectId) {
-              await markProspectCompleted(prospectId);
-            }
-
+            if (prospectId) await markProspectCompleted(prospectId);
             if (!activeIsLoggedIn) {
-              router.push(
-                `/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`
-              );
+              router.push(`/thank-you/${orderId}?phone=${encodeURIComponent(form.phone.trim())}`);
             } else {
               router.push(`/thank-you/${orderId}`);
             }
@@ -777,87 +534,9 @@ useEffect(() => {
     }
   }
 
-  // ✅ Auto-resume Razorpay after login (only once)
-// ✅ Auto resume Razorpay after login
-// ✅ Auto resume Razorpay after login
-useEffect(() => {
-  if (
-    autoPayRef.current
-  )
-    return;
-
-  // wait for draft restore
-  if (!draftLoaded)
-    return;
-
-  if (
-    payIntent !==
-    "razorpay"
-  )
-    return;
-
-  if (authLoading)
-    return;
-
-  if (
-    !isLoggedIn ||
-    !token
-  )
-    return;
-
-  if (
-    !cartItems?.length
-  )
-    return;
-
-  // wait for form hydration
-const timer =
-  setTimeout(() => {
-    // wait until form exists
-    if (
-      !form.fullName?.trim()
-    ) {
-      console.log(
-        "Waiting form restore..."
-      );
-
-      autoPayRef.current =
-        false;
-
-      return;
-    }
-
-    autoPayRef.current =
-      true;
-
-    setPayMethod(
-      "RAZORPAY"
-    );
-
-    console.log(
-      "Auto Razorpay:",
-      form.fullName
-    );
-
-    void handleRazorpay();
-  }, 700);
-
-  return () =>
-    clearTimeout(
-      timer
-    );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [
-  draftLoaded,
-  payIntent,
-  authLoading,
-  isLoggedIn,
-  token,
-  cartItems?.length,
-  form.fullName,
-]);
-
+  // ═══════════════════════════════════════════════════════════════
+  // RENDER
+  // ═══════════════════════════════════════════════════════════════
   return (
     <div className="bg-white">
       <div className="border-b">
@@ -952,24 +631,6 @@ const timer =
             <h2 className="text-base font-semibold">Payment Method</h2>
 
             <div className="mt-3 space-y-2">
-              {/* <label className="flex cursor-pointer items-center justify-between rounded-xl border p-3">
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="pay"
-                    checked={payMethod === "COD"}
-                    onChange={() => setPayMethod("COD")}
-                  />
-                  <div>
-                    <div className="font-medium">Cash on Delivery</div>
-                    <div className="text-xs text-gray-600">
-                      Pay when you receive the order.
-                    </div>
-                  </div>
-                </div>
-                <span className="text-sm font-semibold">COD</span>
-              </label> */}
-
               <label className="flex cursor-pointer items-center justify-between rounded-xl border p-3">
                 <div className="flex items-center gap-3">
                   <input
@@ -1002,9 +663,7 @@ const timer =
                   type="button"
                   className="rounded-xl px-4 py-2 text-white"
                   style={{ backgroundColor: THEME }}
-                  onClick={() =>
-                    toast("Coupon will be validated by backend on place order.")
-                  }
+                  onClick={() => toast("Coupon will be validated by backend on place order.")}
                 >
                   Apply
                 </button>
@@ -1037,48 +696,30 @@ const timer =
                       {item.name}
                     </p>
 
-                    {/* {item.variantLabel && (
-                      <p className="text-xs text-gray-500">
-                        {item.variantLabel}
-                      </p>
-                    )} */}
                     {item.variant && (
-  <p className="text-xs text-gray-500">
-    {[
-      item.variant.color,
-      item.variant.size,
-      item.variant.weight,
-    ]
-      .filter(Boolean)
-      .join(" / ")}
-  </p>
-)}
+                      <p className="text-xs text-gray-500">
+                        {[item.variant.color, item.variant.size, item.variant.weight]
+                          .filter(Boolean)
+                          .join(" / ")}
+                      </p>
+                    )}
 
                     <p className="mt-1 text-xs text-gray-600">
-                      Qty {item.quantity} × ₹
-                      {moneyINR(item.effectivePrice ?? item.price ?? 0)}
+                      Qty {item.quantity} × ₹{moneyINR(item.effectivePrice ?? item.price ?? 0)}
                     </p>
                   </div>
 
                   <div className="text-sm font-semibold text-gray-900">
-                    ₹
-                    {moneyINR(
-                      (item.effectivePrice ?? item.price ?? 0) * item.quantity
-                    )}
+                    ₹{moneyINR((item.effectivePrice ?? item.price ?? 0) * item.quantity)}
                   </div>
                 </div>
               ))}
             </div>
 
-           <div className="mt-2 flex items-center justify-between text-sm">
-  <span className="text-gray-600">
-    Delivery Charge
-  </span>
-
-  <span className="font-semibold text-emerald-600">
-    FREE
-  </span>
-</div>
+            <div className="mt-2 flex items-center justify-between text-sm">
+              <span className="text-gray-600">Delivery Charge</span>
+              <span className="font-semibold text-emerald-600">FREE</span>
+            </div>
 
             <div className="mt-2 flex items-center justify-between text-sm">
               <span className="text-gray-600">Tax</span>
@@ -1095,29 +736,14 @@ const timer =
               calculated by backend at checkout.
             </div>
 
-            {/* <button
+            <button
               disabled={loading}
               className="mt-4 w-full rounded-2xl px-4 py-3 font-semibold text-white disabled:opacity-60"
               style={{ backgroundColor: THEME }}
-              onClick={payMethod === "COD" ? handleCOD : handleRazorpay}
+              onClick={handleRazorpay}
             >
-              {loading
-                ? "Processing..."
-                : payMethod === "COD"
-                ? "Place Order (COD)"
-                : "Pay with Razorpay"}
-            </button> */}
-
-          <button
-  disabled={loading}
-  className="mt-4 w-full rounded-2xl px-4 py-3 font-semibold text-white disabled:opacity-60"
-  style={{ backgroundColor: THEME }}
-  onClick={handleRazorpay}
->
-  {loading
-    ? "Processing..."
-    : "Pay Online"}
-</button>
+              {loading ? "Processing..." : "Pay Online"}
+            </button>
             <button
               type="button"
               className="mt-3 w-full rounded-2xl border px-4 py-3 font-semibold"
@@ -1134,9 +760,8 @@ const timer =
               </svg>
               Khatoon Brand Promises
             </h4>
-            
+
             <div className="space-y-4">
-              {/* Item 1: Original Products */}
               <div className="flex gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1149,7 +774,6 @@ const timer =
                 </div>
               </div>
 
-              {/* Item 2: Secure Payments */}
               <div className="flex gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1162,7 +786,6 @@ const timer =
                 </div>
               </div>
 
-              {/* Item 3: Returns & Exchange */}
               <div className="flex gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1175,7 +798,6 @@ const timer =
                 </div>
               </div>
 
-              {/* Item 4: Delivery */}
               <div className="flex gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-[#f57bb4]">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1192,7 +814,7 @@ const timer =
         </div>
       </div>
 
-      {/* GORGEOUS INLINE LOGIN / REGISTER MODAL FOR ONLINE PAYMENT */}
+      {/* LOGIN / REGISTER MODAL */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-pink-100 flex flex-col relative animate-in fade-in zoom-in duration-300">
@@ -1212,12 +834,8 @@ const timer =
                   </p>
                 </div>
 
-                {/* Tabs */}
                 <div className="flex border-b border-gray-100 mb-5">
-                  <button
-                    type="button"
-                    className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]"
-                  >
+                  <button type="button" className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]">
                     Sign In
                   </button>
                   <button
@@ -1254,11 +872,7 @@ const timer =
                   </div>
 
                   <div className="flex justify-end !mt-1">
-                    <Link
-                      href="/forgot-password"
-                      target="_blank"
-                      className="text-xs text-[#f57bb4] hover:underline font-semibold"
-                    >
+                    <Link href="/forgot-password" target="_blank" className="text-xs text-[#f57bb4] hover:underline font-semibold">
                       Forgot Password?
                     </Link>
                   </div>
@@ -1275,11 +889,7 @@ const timer =
 
                 <div className="text-center text-xs text-gray-500 mt-5">
                   New to Khatoon Collection?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setModalAuthMode("register")}
-                    className="font-bold text-[#f57bb4] hover:underline"
-                  >
+                  <button type="button" onClick={() => setModalAuthMode("register")} className="font-bold text-[#f57bb4] hover:underline">
                     Create an account
                   </button>
                 </div>
@@ -1295,7 +905,6 @@ const timer =
                   </p>
                 </div>
 
-                {/* Tabs */}
                 <div className="flex border-b border-gray-100 mb-5">
                   <button
                     type="button"
@@ -1304,10 +913,7 @@ const timer =
                   >
                     Sign In
                   </button>
-                  <button
-                    type="button"
-                    className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]"
-                  >
+                  <button type="button" className="flex-1 pb-2.5 text-sm font-semibold border-b-2 border-[#f57bb4] text-[#f57bb4]">
                     Create Account
                   </button>
                 </div>
@@ -1387,11 +993,7 @@ const timer =
 
                 <div className="text-center text-xs text-gray-500 mt-5">
                   Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setModalAuthMode("login")}
-                    className="font-bold text-[#f57bb4] hover:underline"
-                  >
+                  <button type="button" onClick={() => setModalAuthMode("login")} className="font-bold text-[#f57bb4] hover:underline">
                     Sign in
                   </button>
                 </div>
