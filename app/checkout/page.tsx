@@ -71,23 +71,33 @@ function CheckoutContent() {
     pincode: "",
   });
 
-  const [loading, setLoading] =
-  useState(false);
-
-const [draftLoaded, setDraftLoaded] =
-  useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const autoPayRef = useRef(false);
   const autoResumeAfterMergeRef = useRef(false);
 
   const [prospectId, setProspectId] = useState<number | null>(null);
 
+  // ✅ ALL modal/auth hooks MUST be declared BEFORE any early returns (Rules of Hooks)
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [modalEmail, setModalEmail] = useState("");
+  const [modalPassword, setModalPassword] = useState("");
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // Dual-mode modal states
+  const [modalAuthMode, setModalAuthMode] = useState<"login" | "register" | "pending-verify">("login");
+  const [regFirstName, setRegFirstName] = useState("");
+  const [regLastName, setRegLastName] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // ✅ Early return AFTER all hooks - this fixes React Error #310
   if (!mounted || authLoading || cartLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-100 flex flex-col items-center justify-center gap-4">
@@ -112,17 +122,6 @@ const [draftLoaded, setDraftLoaded] =
     }
   }
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [modalEmail, setModalEmail] = useState("");
-  const [modalPassword, setModalPassword] = useState("");
-  const [modalLoading, setModalLoading] = useState(false);
-
-  // Dual-mode modal states
-  const [modalAuthMode, setModalAuthMode] = useState<"login" | "register" | "pending-verify">("login");
-  const [regFirstName, setRegFirstName] = useState("");
-  const [regLastName, setRegLastName] = useState("");
-  const [regPhone, setRegPhone] = useState("");
-  const [regPassword, setRegPassword] = useState("");
 
   async function handleModalLogin(e: React.FormEvent) {
     e.preventDefault();
