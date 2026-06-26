@@ -366,9 +366,19 @@ function CheckoutContent() {
         password: regPassword,
       });
       if (!res?.data?.success) throw new Error(res?.data?.message || "Registration failed");
+
       const tokenVal = res?.data?.data?.token;
       const userVal = res?.data?.data?.user;
-      if (!tokenVal) throw new Error("Missing token from server");
+
+      if (!tokenVal) {
+        // Backend requires email verification first — no token returned yet.
+        // Show the verification pending screen instead of throwing an error.
+        setModalAuthMode("pending-verify");
+        toast.success("Account created! Please check your email to verify your account.");
+        return;
+      }
+
+      // Token returned — user is auto-verified (e.g. dev mode), log them in directly
       autoResumeAfterMergeRef.current = true;
       login(userVal?.email || modalEmail.trim().toLowerCase(), tokenVal);
       toast.success("Account created & logged in! Launching payment...");
