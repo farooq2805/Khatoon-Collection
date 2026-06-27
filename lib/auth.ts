@@ -46,6 +46,10 @@ export async function loginUser(payload: LoginPayload) {
   return api.post<ApiEnvelope<LoginData>>("/auth/login", payload, { withAuth: false });
 }
 
+export async function loginWithGoogle(idToken: string) {
+  return api.post<ApiEnvelope<LoginData>>("/auth/google-login", { idToken }, { withAuth: false });
+}
+
 export async function verifyEmail(token: string) {
   return api.get<ApiEnvelope>(
     `/auth/verify-email?token=${encodeURIComponent(token)}`,

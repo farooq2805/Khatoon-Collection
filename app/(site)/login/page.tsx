@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useMemo, useState, Suspense } from "react";
+import { useMemo, useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import {
   loginUser,
   resendVerification,
+  loginWithGoogle,
 } from "@/lib/auth";
 
 import { useAuth } from "@/context/AuthContext";
@@ -69,6 +70,80 @@ function LoginContent() {
     () => email.trim().toLowerCase(),
     [email]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!document.getElementById("google-gsi-client")) {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-gsi-client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "1008719970978-gp2e211952157df455gps4ww.apps.googleusercontent.com";
+
+    const handleGoogleCallback = async (response: any) => {
+      const idToken = response.credential;
+      if (!idToken) return;
+
+      setLoading(true);
+      try {
+        const res = await loginWithGoogle(idToken);
+        if (!res?.data?.success) {
+          throw new Error(res?.data?.message || "Google Sign-In failed");
+        }
+
+        const tokenVal = res?.data?.data?.token;
+        const userVal = res?.data?.data?.user;
+
+        if (!tokenVal) {
+          throw new Error("Missing token from server");
+        }
+
+        login(userVal?.email || userVal?.firstName || "", tokenVal);
+        toast.success("Google Sign-In successful 🎉");
+
+        setTimeout(() => {
+          router.push(nextUrl || "/account");
+        }, 700);
+      } catch (err: any) {
+        toast.error(extractErrorMessage(err, "Google Sign-In failed"));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const initGoogle = () => {
+      if ((window as any).google?.accounts?.id) {
+        (window as any).google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleCallback,
+        });
+
+        const container = document.getElementById("google-login-btn");
+        if (container) {
+          (window as any).google.accounts.id.renderButton(container, {
+            theme: "outline",
+            size: "large",
+            width: "380",
+          });
+        }
+      }
+    };
+
+    const interval = setInterval(() => {
+      if ((window as any).google?.accounts?.id) {
+        initGoogle();
+        clearInterval(interval);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [nextUrl, login, router]);
 
   async function onSubmit(
     e: React.FormEvent
@@ -342,6 +417,19 @@ function LoginContent() {
                 Resend Verification Email
               </button>
             )}
+
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-400">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center mb-4">
+              <div id="google-login-btn"></div>
+            </div>
 
             <div className="text-center text-gray-600">
               Don&apos;t have an account?{" "}

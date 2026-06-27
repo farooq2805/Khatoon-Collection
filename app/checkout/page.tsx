@@ -19,7 +19,7 @@ import {
   razorpayCreateOrder,
   razorpayVerifyPayment,
 } from "@/services/checkoutApi";
-import { loginUser, registerUser } from "@/lib/auth";
+import { loginUser, registerUser, loginWithGoogle } from "@/lib/auth";
 
 const THEME = "#f57bb4";
 const DRAFT_KEY = "checkoutDraft_v1";
@@ -121,6 +121,82 @@ function CheckoutContent() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Load Google script in checkout
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!document.getElementById("google-gsi-client")) {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-gsi-client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Initialize and Render Google Sign-In Button inside Login Modal
+  useEffect(() => {
+    if (!showLoginModal || modalAuthMode !== "login") return;
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "1008719970978-gp2e211952157df455gps4ww.apps.googleusercontent.com";
+
+    const handleGoogleCheckoutCallback = async (response: any) => {
+      const idToken = response.credential;
+      if (!idToken) return;
+
+      setModalLoading(true);
+      try {
+        const res = await loginWithGoogle(idToken);
+        if (!res?.data?.success) {
+          throw new Error(res?.data?.message || "Google Sign-In failed");
+        }
+
+        const tokenVal = res?.data?.data?.token;
+        const userVal = res?.data?.data?.user;
+
+        if (!tokenVal) {
+          throw new Error("Missing token from server");
+        }
+
+        autoResumeAfterMergeRef.current = true;
+        login(userVal?.email || userVal?.firstName || "", tokenVal);
+        toast.success("Google Sign-In successful! Resuming payment...");
+        setShowLoginModal(false);
+      } catch (err: any) {
+        toast.error(err?.message || "Google Sign-In failed", { id: "checkout-auth" });
+      } finally {
+        setModalLoading(false);
+      }
+    };
+
+    const initGoogleCheckout = () => {
+      if ((window as any).google?.accounts?.id) {
+        (window as any).google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleCheckoutCallback,
+        });
+
+        const container = document.getElementById("google-checkout-btn");
+        if (container) {
+          (window as any).google.accounts.id.renderButton(container, {
+            theme: "outline",
+            size: "large",
+            width: "380",
+          });
+        }
+      }
+    };
+
+    const interval = setInterval(() => {
+      if ((window as any).google?.accounts?.id) {
+        initGoogleCheckout();
+        clearInterval(interval);
+      }
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, [showLoginModal, modalAuthMode, login]);
 
   // 2. Restore draft
   useEffect(() => {
@@ -896,6 +972,19 @@ function CheckoutContent() {
                     {modalLoading ? "Authenticating..." : "Verify & Pay"}
                   </button>
                 </form>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase">
+                    <span className="bg-white px-2 text-gray-400">Or continue with</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-center mb-4">
+                  <div id="google-checkout-btn"></div>
+                </div>
 
                 <div className="text-center text-xs text-gray-500 mt-5">
                   New to Khatoon Collection?{" "}
