@@ -25,6 +25,7 @@ import { CatalogMenuProvider } from "@/components/header/CatalogMenuProvider";
 import ToasterClient from "@/components/ToasterClient"; // ✅ client wrapper
 import SalesNotification from "@/components/SalesNotification"; // ✅ purchase popup wrapper
 import WhatsAppFloating from "@/components/WhatsAppFloating"; // ✅ WhatsApp chat floating widget
+import LaunchSparkle from "@/components/LaunchSparkle"; // ✨ 8-second launch sparkle animation
 
 import { Suspense } from "react";
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Suspense fallback={null}>{children}</Suspense>
 
               {/* CLIENT-ONLY */}
+              <LaunchSparkle />
               <ToasterClient />
               <SalesNotification />
               <WhatsAppFloating />
