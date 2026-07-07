@@ -1,202 +1,138 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-// ─── Sparkle particle config ──────────────────────────────────────────────────
 const COLORS = [
-  "#FFD700", // gold
-  "#FF69B4", // hot pink
-  "#FF1493", // deep pink
-  "#FFC0CB", // pink
-  "#FFFFFF", // white flash
-  "#FFE066", // champagne gold
-  "#FF85C1", // soft pink
-  "#FFFACD", // lemon chiffon
+  "#FFD700", "#FF69B4", "#FF1493", "#FFC0CB",
+  "#FFFFFF", "#FFE066", "#FF85C1", "#FFF0A0",
+  "#F9A8D4", "#FBBF24",
 ];
 
-const DURATION_MS = 8000; // 8 seconds sparkle
-const SPAWN_RATE = 6;     // new particles per frame
-const MAX_PARTICLES = 600;
-
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;       // 0 → 1 (0 = alive, 1 = dead)
-  decay: number;      // how fast it dies
-  size: number;
-  color: string;
-  twinkle: number;    // twinkle phase offset
-  shape: "star" | "circle" | "sparkle";
-  rotation: number;
-  rotSpeed: number;
-}
+const TOTAL_DURATION = 8000;
+const SPAWN_INTERVAL = 60; // ms between batch spawns
+const BATCH_SIZE = 8;
 
 function randomBetween(a: number, b: number) {
   return a + Math.random() * (b - a);
 }
 
-function spawnParticle(W: number, H: number): Particle {
-  const angle = randomBetween(0, Math.PI * 2);
-  const speed = randomBetween(1.5, 5.5);
-  const shapes: Particle["shape"][] = ["star", "circle", "sparkle"];
-  return {
-    x: randomBetween(0, W),
-    y: randomBetween(0, H),
-    vx: Math.cos(angle) * speed,
-    vy: Math.sin(angle) * speed - randomBetween(0.5, 2), // slight upward drift
-    life: 0,
-    decay: randomBetween(0.006, 0.018),
-    size: randomBetween(3, 12),
-    color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    twinkle: randomBetween(0, Math.PI * 2),
-    shape: shapes[Math.floor(Math.random() * shapes.length)],
-    rotation: randomBetween(0, Math.PI * 2),
-    rotSpeed: randomBetween(-0.15, 0.15),
-  };
-}
+function createSparkleEl(): HTMLElement {
+  const el = document.createElement("div");
+  const size = randomBetween(6, 18);
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const x = randomBetween(0, window.innerWidth);
+  const y = randomBetween(0, window.innerHeight);
+  const tx = randomBetween(-120, 120);
+  const ty = randomBetween(-180, 40);
+  const duration = randomBetween(1000, 2200);
+  const delay = randomBetween(0, 200);
+  const rotation = randomBetween(0, 360);
+  const isSparkle = Math.random() > 0.4;
 
-function drawStar(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rotation: number) {
-  const spikes = 5;
-  const outerRadius = r;
-  const innerRadius = r * 0.45;
-  ctx.beginPath();
-  for (let i = 0; i < spikes * 2; i++) {
-    const ang = (i * Math.PI) / spikes + rotation;
-    const rad = i % 2 === 0 ? outerRadius : innerRadius;
-    ctx.lineTo(x + Math.cos(ang) * rad, y + Math.sin(ang) * rad);
+  el.style.cssText = `
+    position: fixed;
+    pointer-events: none;
+    left: ${x}px;
+    top: ${y}px;
+    width: ${size}px;
+    height: ${size}px;
+    opacity: 0;
+    z-index: 99999;
+    transform-origin: center center;
+  `;
+
+  if (isSparkle) {
+    // 4-point star using clip-path
+    el.style.background = color;
+    el.style.clipPath =
+      "polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%)";
+    el.style.filter = `drop-shadow(0 0 ${size / 2}px ${color})`;
+  } else {
+    el.style.borderRadius = "50%";
+    el.style.background = color;
+    el.style.boxShadow = `0 0 ${size}px ${size / 2}px ${color}`;
   }
-  ctx.closePath();
-  ctx.fill();
-}
 
-function drawSparkle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rotation: number) {
-  // 4-point cross sparkle (like ✦)
-  ctx.beginPath();
-  for (let i = 0; i < 4; i++) {
-    const ang = (i * Math.PI) / 2 + rotation;
-    const angOff = Math.PI / 4 + rotation;
-    const peak = r;
-    const side = r * 0.15;
-    if (i === 0) {
-      ctx.moveTo(x + Math.cos(angOff + (i * Math.PI) / 2) * side, y + Math.sin(angOff + (i * Math.PI) / 2) * side);
+  el.animate(
+    [
+      {
+        transform: `translate(0, 0) rotate(${rotation}deg) scale(0)`,
+        opacity: 0,
+      },
+      {
+        transform: `translate(${tx * 0.3}px, ${ty * 0.3}px) rotate(${rotation + 90}deg) scale(1)`,
+        opacity: 1,
+        offset: 0.15,
+      },
+      {
+        transform: `translate(${tx}px, ${ty}px) rotate(${rotation + 270}deg) scale(0.6)`,
+        opacity: 0.7,
+        offset: 0.7,
+      },
+      {
+        transform: `translate(${tx * 1.2}px, ${ty * 1.4 + 60}px) rotate(${rotation + 360}deg) scale(0)`,
+        opacity: 0,
+      },
+    ],
+    {
+      duration,
+      delay,
+      easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      fill: "forwards",
     }
-    ctx.quadraticCurveTo(x, y, x + Math.cos(ang) * peak, y + Math.sin(ang) * peak);
-    ctx.quadraticCurveTo(x, y, x + Math.cos(angOff + ((i + 1) * Math.PI) / 2) * side, y + Math.sin(angOff + ((i + 1) * Math.PI) / 2) * side);
-  }
-  ctx.closePath();
-  ctx.fill();
+  ).onfinish = () => {
+    el.remove();
+  };
+
+  return el;
 }
 
 export default function LaunchSparkle() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [visible, setVisible] = useState(true);
-  const frameRef = useRef<number>(0);
-  const startRef = useRef<number>(0);
-  const particlesRef = useRef<Particle[]>([]);
-  const opacityRef = useRef<number>(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    let W = (canvas.width = window.innerWidth);
-    let H = (canvas.height = window.innerHeight);
+    // Burst immediately with 60 particles
+    for (let i = 0; i < 60; i++) {
+      container.appendChild(createSparkleEl());
+    }
 
-    const onResize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", onResize);
-
-    startRef.current = performance.now();
-
-    const animate = (now: number) => {
-      const elapsed = now - startRef.current;
-      const progress = Math.min(elapsed / DURATION_MS, 1);
-
-      // Fade out in last 1.5 seconds
-      const fadeStart = DURATION_MS - 1500;
-      if (elapsed > fadeStart) {
-        opacityRef.current = Math.max(0, 1 - (elapsed - fadeStart) / 1500);
-      } else {
-        opacityRef.current = 1;
+    // Keep spawning every 60ms
+    timerRef.current = setInterval(() => {
+      for (let i = 0; i < BATCH_SIZE; i++) {
+        container.appendChild(createSparkleEl());
       }
+    }, SPAWN_INTERVAL);
 
-      // Stop spawning new particles after 6.5s
-      const spawning = elapsed < DURATION_MS - 1500;
-
-      // Clear canvas
-      ctx.clearRect(0, 0, W, H);
-
-      // Spawn new particles
-      if (spawning && particlesRef.current.length < MAX_PARTICLES) {
-        for (let i = 0; i < SPAWN_RATE; i++) {
-          particlesRef.current.push(spawnParticle(W, H));
-        }
-      }
-
-      // Update & draw particles
-      particlesRef.current = particlesRef.current.filter((p) => p.life < 1);
-      for (const p of particlesRef.current) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.04; // gentle gravity
-        p.vx *= 0.99;
-        p.life += p.decay;
-        p.rotation += p.rotSpeed;
-
-        const alpha = opacityRef.current * (1 - p.life) * (0.6 + 0.4 * Math.sin(p.twinkle + p.life * 20));
-        ctx.globalAlpha = Math.max(0, alpha);
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = p.size * 2;
-
-        if (p.shape === "star") {
-          drawStar(ctx, p.x, p.y, p.size, p.rotation);
-        } else if (p.shape === "sparkle") {
-          drawSparkle(ctx, p.x, p.y, p.size, p.rotation);
-        } else {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        ctx.shadowBlur = 0;
-      }
-
-      ctx.globalAlpha = 1;
-
-      if (progress < 1) {
-        frameRef.current = requestAnimationFrame(animate);
-      } else {
-        setVisible(false);
-      }
-    };
-
-    frameRef.current = requestAnimationFrame(animate);
+    // Stop spawning after 6.5s, then remove container at 8s
+    stopTimerRef.current = setTimeout(() => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      setTimeout(() => {
+        container.style.transition = "opacity 0.5s ease";
+        container.style.opacity = "0";
+        setTimeout(() => container.remove(), 600);
+      }, 1500);
+    }, 6500);
 
     return () => {
-      cancelAnimationFrame(frameRef.current);
-      window.removeEventListener("resize", onResize);
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
     };
   }, []);
 
-  if (!visible) return null;
-
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={containerRef}
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 99999,
         pointerEvents: "none",
-        width: "100vw",
-        height: "100vh",
+        overflow: "hidden",
       }}
     />
   );
