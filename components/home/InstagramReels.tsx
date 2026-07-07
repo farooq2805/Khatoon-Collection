@@ -18,6 +18,9 @@ interface BeholdPost {
   likeCount?: number;
   commentsCount?: number;
   isEmbed?: boolean;
+  date?: any;
+  timestamp?: string;
+  createdAt?: string;
 }
 
 const ReelCard = ({ post }: { post: BeholdPost }) => {
@@ -143,7 +146,8 @@ export default function InstagramReels() {
             permalink: `https://www.instagram.com/reel/${r.id}/`,
             mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
             thumbnailUrl: "",
-            isEmbed: true
+            isEmbed: true,
+            createdAt: r.createdAt
           }));
         }
       } catch (dbErr) {
@@ -170,6 +174,7 @@ export default function InstagramReels() {
                 thumbnailUrl: p.thumbnailUrl || p.mediaUrl,
                 likeCount: p.likeCount,
                 commentsCount: p.commentsCount,
+                timestamp: p.timestamp
               }));
           }
         }
@@ -177,19 +182,53 @@ export default function InstagramReels() {
         console.warn("Failed to fetch Behold reels:", err);
       }
 
-      // 3. Combine them: Database reels first (real-time manual overrides) followed by Behold feed.
-      // Filter out duplicate reels by comparing shortcode IDs.
-      const combined: BeholdPost[] = [...dbReelsList];
-      const dbIds = new Set(dbReelsList.map(r => r.id.toLowerCase()));
+      // 3. Combine them and sort by date descending (newest first).
+      const combinedMap = new Map<string, any>();
 
+      const getShortcode = (permalink: string, id: string): string => {
+        const match = permalink.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
+        return (match ? match[1] : id).toLowerCase();
+      };
+
+      const beholdByShortcode = new Map<string, any>();
       beholdReelsList.forEach((r) => {
-        const shortcodeMatch = r.permalink.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
-        const shortcode = (shortcodeMatch ? shortcodeMatch[1] : r.id).toLowerCase();
-        
-        if (!dbIds.has(r.id.toLowerCase()) && !dbIds.has(shortcode)) {
-          combined.push(r);
+        const shortcode = getShortcode(r.permalink || "", r.id);
+        beholdByShortcode.set(shortcode, r);
+      });
+
+      dbReelsList.forEach((dbReel: any) => {
+        const shortcode = dbReel.id.toLowerCase();
+        const beholdMatch = beholdByShortcode.get(shortcode);
+
+        if (beholdMatch) {
+          combinedMap.set(shortcode, {
+            ...beholdMatch,
+            caption: dbReel.caption !== "Khatoon Collection" ? dbReel.caption : beholdMatch.caption,
+            isEmbed: false,
+            date: new Date((beholdMatch.timestamp || dbReel.createdAt || 0) as any),
+          });
+        } else {
+          combinedMap.set(shortcode, {
+            ...dbReel,
+            date: new Date((dbReel.createdAt || 0) as any),
+          });
         }
       });
+
+      beholdReelsList.forEach((r) => {
+        const shortcode = getShortcode(r.permalink || "", r.id);
+        if (!combinedMap.has(shortcode)) {
+          combinedMap.set(shortcode, {
+            ...r,
+            isEmbed: false,
+            date: new Date((r.timestamp || 0) as any),
+          });
+        }
+      });
+
+      const combined: BeholdPost[] = Array.from(combinedMap.values()).sort(
+        (a, b) => b.date.getTime() - a.date.getTime()
+      );
 
       // Final fallback seed in case list remains empty
       if (combined.length === 0) {
