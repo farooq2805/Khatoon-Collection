@@ -111,7 +111,19 @@ function CheckoutContent() {
     return checkPincodeServiceability(pin);
   }, [form.pincode]);
 
-  const shippingAmount = useMemo(() => 0, []);
+  const shippingAmount = useMemo(() => {
+    if (pincodeStatus === "incomplete" || pincodeStatus === "unserviceable") return 0;
+    return (cartItems || []).reduce((sum: number, item: any) => {
+      const quantity = Number(item.quantity || 1);
+      if (pincodeStatus === "mumbai") {
+        const fee = item.shippingFeeMumbai != null ? Number(item.shippingFeeMumbai) : 0;
+        return sum + (fee * quantity);
+      } else {
+        const fee = item.shippingFeeOutside != null ? Number(item.shippingFeeOutside) : 0;
+        return sum + (fee * quantity);
+      }
+    }, 0);
+  }, [cartItems, pincodeStatus]);
   const taxAmount = 0;
   const previewTotal = totals.subtotal + shippingAmount + taxAmount;
 
@@ -804,7 +816,7 @@ function CheckoutContent() {
 
             <div className="mt-2 flex items-center justify-between text-sm">
               <span className="text-gray-600">Delivery Charge</span>
-              <span className="font-semibold text-emerald-600">FREE</span>
+              <span className="font-semibold text-gray-800">₹{moneyINR(shippingAmount)}</span>
             </div>
 
             <div className="mt-2 flex items-center justify-between text-sm">

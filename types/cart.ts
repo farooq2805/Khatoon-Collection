@@ -4,4 +4,6 @@ export interface CartItem {
   price: number;
   imageUrl: string;
   name: string;
+  shippingFeeMumbai?: number | null;
+  shippingFeeOutside?: number | null;
 }

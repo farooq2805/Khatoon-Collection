@@ -342,7 +342,7 @@ const confirmOrder = async (
             </div>
             <div className="flex justify-between text-gray-600">
               <span>Delivery Charge</span>
-              <span className="font-semibold text-emerald-600">FREE</span>
+              <span className="font-semibold text-gray-800">As per destination</span>
             </div>
             <div className="flex justify-between font-bold text-base text-gray-900 pt-2 border-t">
               <span>Total (Estimated)</span>

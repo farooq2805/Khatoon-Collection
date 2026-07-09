@@ -28,7 +28,7 @@ const formatRs = (n: number) =>
 
 function safeImg(v: any) {
   const s = typeof v === "string" ? v.trim() : "";
-  return s.length ? s : null;
+  return s.length && s !== "null" && s !== "undefined" ? s : null;
 }
 
 function pickMainImage(p: Product) {

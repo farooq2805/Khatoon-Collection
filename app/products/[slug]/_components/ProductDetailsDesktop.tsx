@@ -693,9 +693,16 @@ export default function ProductDetailsDesktop(props: any) {
 
       <div className="flex items-center gap-3 text-sm text-gray-700">
         <FiCreditCard className="text-black" />
-        <span className="font-semibold text-emerald-600">
-          FREE Shipping in India
-        </span>
+        {((product?.shippingFeeMumbai != null && Number(product.shippingFeeMumbai) > 0) ||
+          (product?.shippingFeeOutside != null && Number(product.shippingFeeOutside) > 0)) ? (
+          <span className="font-semibold text-gray-800">
+            Shipping charges applied as per destination
+          </span>
+        ) : (
+          <span className="font-semibold text-gray-800">
+            Shipping charges applied as per destination
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-3 text-sm text-gray-700">
@@ -846,7 +853,12 @@ export default function ProductDetailsDesktop(props: any) {
     <li>Shipping is available only within India.</li>
     <li>Orders placed on weekends or holidays are processed next business day.</li>
     <li>Delivery generally takes 3–7 business days depending on location.</li>
-    <li>Shipping is completely free of charge.</li>
+    {((product?.shippingFeeMumbai != null && Number(product.shippingFeeMumbai) > 0) ||
+      (product?.shippingFeeOutside != null && Number(product.shippingFeeOutside) > 0)) ? (
+      <li>Shipping charges are calculated at checkout as per destination.</li>
+    ) : (
+      <li>Shipping is completely free of charge.</li>
+    )}
     <li>Tracking details are shared through email or SMS after dispatch.</li>
     <li>
       Delivery timelines may vary due to weather conditions, courier delays,

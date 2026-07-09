@@ -25,6 +25,8 @@ type CartItem = {
   mrp?: number | null;
   quantity: number;
   imageUrl?: string;
+  shippingFeeMumbai?: number | null;
+  shippingFeeOutside?: number | null;
   variant?: {
     size?: string;
     color?: string;
@@ -148,6 +150,8 @@ function normalizeCartItemFromApi(
         ci?.qty,
       1
     ),
+    shippingFeeMumbai: product?.shippingFeeMumbai != null ? safeNum(product.shippingFeeMumbai, null as any) : null,
+    shippingFeeOutside: product?.shippingFeeOutside != null ? safeNum(product.shippingFeeOutside, null as any) : null,
     variant: {
       size:
         variant?.size ??

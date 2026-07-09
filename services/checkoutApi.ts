@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-//const API_BASE = "http://localhost:6103/api";
- const API_BASE = "https://api.khatooncollection.in/api";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api").replace(/\/+$/, "");
 
 
 
@@ -111,8 +110,7 @@ export async function retryRazorpay(orderId: string, paymentId: string, token: s
 
 export async function getMyOrder(orderId: string, token: string) {
   const res = await fetch(
-    // `http://localhost:6103/api/checkout/order/${encodeURIComponent(orderId)}`,
-    `https://api.khatooncollection.in/api/checkout/order/${encodeURIComponent(orderId)}`,
+    `${API_BASE}/checkout/order/${encodeURIComponent(orderId)}`,
     {
       method: "GET",
       headers: makeJsonHeaders(token),
