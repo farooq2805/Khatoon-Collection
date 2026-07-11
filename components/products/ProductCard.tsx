@@ -586,7 +586,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 
@@ -657,8 +657,18 @@ export default function PlumProductCard({
     [product]
   );
 
+  // Default active color should be the first color that has stock!
+  const firstInStockColorIdx = useMemo(() => {
+    const idx = colors.findIndex((c) => c.sizes?.some((s) => (s.stockQuantity ?? 0) > 0));
+    return idx !== -1 ? idx : 0;
+  }, [colors]);
+
   const [activeColorIdx, setActiveColorIdx] = useState(0);
   const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    setActiveColorIdx(firstInStockColorIdx);
+  }, [product.id, firstInStockColorIdx]);
 
   const activeColor = colors[activeColorIdx] ?? colors[0] ?? null;
   const firstSize = activeColor?.sizes?.[0] ?? null;

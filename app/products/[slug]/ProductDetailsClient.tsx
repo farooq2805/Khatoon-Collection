@@ -180,8 +180,9 @@ export default function ProductDetailsClient({
 
   useEffect(() => {
     if (!selectedVariantId && variants.length > 0) {
+      const firstInStock = variants.find(v => (v.stockQuantity ?? 0) > 0);
       setSelectedVariantId(
-        variants[0]?.id ?? null
+        firstInStock?.id ?? variants[0]?.id ?? null
       );
     }
   }, [variants, selectedVariantId]);
