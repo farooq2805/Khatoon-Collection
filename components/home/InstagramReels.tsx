@@ -130,9 +130,31 @@ export default function InstagramReels() {
 
   useEffect(() => {
     const fetchAllReels = async () => {
-      let beholdReelsList: any[] = [];
+      let dbReelsList: BeholdPost[] = [];
+      let beholdReelsList: BeholdPost[] = [];
 
-      // 1. Fetch from Behold (Cached feed)
+      // 1. Fetch from Database first
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+      try {
+        const res = await fetch(`${apiBaseUrl}/instagram-reels`);
+        const resData = await res.json();
+        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const activeReels = resData.data.filter((r: any) => r.isActive !== false);
+          dbReelsList = activeReels.map((r: any) => ({
+            id: r.id,
+            caption: r.label || "Khatoon Collection",
+            permalink: `https://www.instagram.com/reel/${r.id}/`,
+            mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
+            thumbnailUrl: "",
+            isEmbed: true,
+            date: new Date(r.createdAt || 0)
+          }));
+        }
+      } catch (dbErr) {
+        console.warn("Failed to fetch database reels:", dbErr);
+      }
+
+      // 2. Fetch from Behold (Cached feed)
       try {
         if (BEHOLD_FEED_ID) {
           const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
@@ -153,6 +175,7 @@ export default function InstagramReels() {
                 likeCount: p.likeCount,
                 commentsCount: p.commentsCount,
                 timestamp: p.timestamp,
+                isEmbed: false,
                 date: new Date(p.timestamp || 0)
               }));
           }
@@ -161,21 +184,66 @@ export default function InstagramReels() {
         console.warn("Failed to fetch Behold reels:", err);
       }
 
-      // Sort by date descending (newest first).
-      const combined = beholdReelsList.sort(
+      // Combine them.
+      const combinedMap = new Map<string, any>();
+
+      const getShortcode = (permalink: string, id: string): string => {
+        const match = permalink.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
+        return (match ? match[1] : id).toLowerCase();
+      };
+
+      const beholdByShortcode = new Map<string, any>();
+      beholdReelsList.forEach((r) => {
+        const shortcode = getShortcode(r.permalink || "", r.id);
+        beholdByShortcode.set(shortcode, r);
+      });
+
+      dbReelsList.forEach((dbReel: any) => {
+        const shortcode = dbReel.id.toLowerCase();
+        const beholdMatch = beholdByShortcode.get(shortcode);
+
+        if (beholdMatch) {
+          combinedMap.set(shortcode, {
+            ...beholdMatch,
+            caption: dbReel.caption !== "Khatoon Collection" ? dbReel.caption : beholdMatch.caption,
+            isEmbed: false,
+            date: beholdMatch.date,
+          });
+        } else {
+          combinedMap.set(shortcode, {
+            ...dbReel,
+            isEmbed: true,
+          });
+        }
+      });
+
+      beholdReelsList.forEach((r) => {
+        const shortcode = getShortcode(r.permalink || "", r.id);
+        if (!combinedMap.has(shortcode)) {
+          combinedMap.set(shortcode, r);
+        }
+      });
+
+      const combined: BeholdPost[] = Array.from(combinedMap.values()).sort(
         (a, b) => b.date.getTime() - a.date.getTime()
       );
 
+      // Filter out the old May 30th reels
+      const oldReelIds = ["dyzxkznmvbf", "dyt2uqhmh7g", "dyr4iflm4j-", "dyo42mos_q7"];
+      const filteredCombined = combined.filter(
+        (r) => !oldReelIds.includes(r.id.toLowerCase())
+      );
+
       // Final fallback seed in case list remains empty
-      if (combined.length === 0) {
+      if (filteredCombined.length === 0) {
         setReels([
-          { id: "DYzXKZNMVbf", caption: "Latest Drop", permalink: "https://www.instagram.com/reel/DYzXKZNMVbf/", mediaUrl: "https://www.instagram.com/reel/DYzXKZNMVbf/embed/", thumbnailUrl: "" },
-          { id: "DYt2uQHMh7G", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DYt2uQHMh7G/", mediaUrl: "https://www.instagram.com/reel/DYt2uQHMh7G/embed/", thumbnailUrl: "" },
-          { id: "DYr4IFLM4J-", caption: "Party Wear", permalink: "https://www.instagram.com/reel/DYr4IFLM4J-/", mediaUrl: "https://www.instagram.com/reel/DYr4IFLM4J/embed/", thumbnailUrl: "" },
-          { id: "DYo42mOs_q7", caption: "Ethnic Wear", permalink: "https://www.instagram.com/reel/DYo42mOs_q7/", mediaUrl: "https://www.instagram.com/reel/DYo42mOs_q7/embed/", thumbnailUrl: "" }
+          { id: "Dag42D2sjTZ", caption: "Website Live", permalink: "https://www.instagram.com/reel/Dag42D2sjTZ/", mediaUrl: "https://www.instagram.com/reel/Dag42D2sjTZ/embed/", thumbnailUrl: "", isEmbed: true },
+          { id: "Dadj5FxMT3Q", caption: "Grand Opening", permalink: "https://www.instagram.com/reel/Dadj5FxMT3Q/", mediaUrl: "https://www.instagram.com/reel/Dadj5FxMT3Q/embed/", thumbnailUrl: "", isEmbed: true },
+          { id: "Daa7eq-sxe0", caption: "New Cotton Suits", permalink: "https://www.instagram.com/reel/Daa7eq-sxe0/", mediaUrl: "https://www.instagram.com/reel/Daa7eq-sxe0/embed/", thumbnailUrl: "", isEmbed: true },
+          { id: "DaYaHQfMbrS", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DaYaHQfMbrS/", mediaUrl: "https://www.instagram.com/reel/DaYaHQfMbrS/embed/", thumbnailUrl: "", isEmbed: true }
         ]);
       } else {
-        setReels(combined.slice(0, 12)); // Allow up to 12 reels for swiping
+        setReels(filteredCombined.slice(0, 12)); // Allow up to 12 reels for swiping
       }
       setLoading(false);
     };
