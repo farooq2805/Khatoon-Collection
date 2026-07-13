@@ -130,41 +130,20 @@ export default function InstagramReels() {
 
   useEffect(() => {
     const fetchAllReels = async () => {
-      let dbReelsList: BeholdPost[] = [];
-      let beholdReelsList: BeholdPost[] = [];
-
-      // 1. Fetch from Database first
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
-      try {
-        const res = await fetch(`${apiBaseUrl}/instagram-reels`);
-        const resData = await res.json();
-        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-          const activeReels = resData.data.filter((r: any) => r.isActive !== false);
-          dbReelsList = activeReels.map((r: any) => ({
-            id: r.id,
-            caption: r.label || "Khatoon Collection",
-            permalink: `https://www.instagram.com/reel/${r.id}/`,
-            mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
-            thumbnailUrl: "",
-            isEmbed: true,
-            date: new Date(r.createdAt || 0)
-          }));
-        }
-      } catch (dbErr) {
-        console.warn("Failed to fetch database reels:", dbErr);
-      }
-
-      // 2. Fetch from Behold (Cached feed)
+      // 1. Behold feed is the source of truth — it stays in sync with the
+      //    Instagram account, so the newest reels always come from here.
       try {
         if (BEHOLD_FEED_ID) {
-          const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`);
+          const res = await fetch(`https://feeds.behold.so/${BEHOLD_FEED_ID}`, {
+            cache: "no-store",
+          });
           if (res.ok) {
             const data = await res.json();
             if (data.followersCount) {
               setFollowers(data.followersCount);
             }
             const posts = data.posts || [];
-            beholdReelsList = posts
+            const beholdReels: BeholdPost[] = posts
               .filter((p: any) => p.mediaType === "VIDEO" || p.isReel)
               .map((p: any) => ({
                 id: p.id,
@@ -176,74 +155,44 @@ export default function InstagramReels() {
                 commentsCount: p.commentsCount,
                 timestamp: p.timestamp,
                 isEmbed: false,
-                date: new Date(p.timestamp || 0)
-              }));
+                date: new Date(p.timestamp || 0),
+              }))
+              .sort((a: BeholdPost, b: BeholdPost) => b.date.getTime() - a.date.getTime());
+
+            if (beholdReels.length > 0) {
+              setReels(beholdReels.slice(0, 12));
+              setLoading(false);
+              return;
+            }
           }
         }
       } catch (err) {
         console.warn("Failed to fetch Behold reels:", err);
       }
 
-      // Combine them.
-      const combinedMap = new Map<string, any>();
-
-      const getShortcode = (permalink: string, id: string): string => {
-        const match = permalink.match(/(?:reel|p)\/([A-Za-z0-9_-]+)/);
-        return (match ? match[1] : id).toLowerCase();
-      };
-
-      const beholdByShortcode = new Map<string, any>();
-      beholdReelsList.forEach((r) => {
-        const shortcode = getShortcode(r.permalink || "", r.id);
-        beholdByShortcode.set(shortcode, r);
-      });
-
-      dbReelsList.forEach((dbReel: any) => {
-        const shortcode = dbReel.id.toLowerCase();
-        const beholdMatch = beholdByShortcode.get(shortcode);
-
-        if (beholdMatch) {
-          combinedMap.set(shortcode, {
-            ...beholdMatch,
-            caption: dbReel.caption !== "Khatoon Collection" ? dbReel.caption : beholdMatch.caption,
-            isEmbed: false,
-            date: beholdMatch.date,
-          });
-        } else {
-          combinedMap.set(shortcode, {
-            ...dbReel,
-            isEmbed: true,
-          });
+      // 2. Fallback only when Behold has nothing: manually managed reels from
+      //    the database, rendered as Instagram embeds.
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+      try {
+        const res = await fetch(`${apiBaseUrl}/instagram-reels`, { cache: "no-store" });
+        const resData = await res.json();
+        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const dbReels: BeholdPost[] = resData.data
+            .filter((r: any) => r.isActive !== false)
+            .map((r: any) => ({
+              id: r.id,
+              caption: r.label || "Khatoon Collection",
+              permalink: `https://www.instagram.com/reel/${r.id}/`,
+              mediaUrl: `https://www.instagram.com/reel/${r.id}/embed/`,
+              thumbnailUrl: "",
+              isEmbed: true,
+              date: new Date(r.createdAt || 0),
+            }))
+            .sort((a: BeholdPost, b: BeholdPost) => b.date.getTime() - a.date.getTime());
+          setReels(dbReels.slice(0, 12));
         }
-      });
-
-      beholdReelsList.forEach((r) => {
-        const shortcode = getShortcode(r.permalink || "", r.id);
-        if (!combinedMap.has(shortcode)) {
-          combinedMap.set(shortcode, r);
-        }
-      });
-
-      const combined: BeholdPost[] = Array.from(combinedMap.values()).sort(
-        (a, b) => b.date.getTime() - a.date.getTime()
-      );
-
-      // Filter out the old May 30th reels
-      const oldReelIds = ["dyzxkznmvbf", "dyt2uqhmh7g", "dyr4iflm4j-", "dyo42mos_q7"];
-      const filteredCombined = combined.filter(
-        (r) => !oldReelIds.includes(r.id.toLowerCase())
-      );
-
-      // Final fallback seed in case list remains empty
-      if (filteredCombined.length === 0) {
-        setReels([
-          { id: "Dag42D2sjTZ", caption: "Website Live", permalink: "https://www.instagram.com/reel/Dag42D2sjTZ/", mediaUrl: "https://www.instagram.com/reel/Dag42D2sjTZ/embed/", thumbnailUrl: "", isEmbed: true },
-          { id: "Dadj5FxMT3Q", caption: "Grand Opening", permalink: "https://www.instagram.com/reel/Dadj5FxMT3Q/", mediaUrl: "https://www.instagram.com/reel/Dadj5FxMT3Q/embed/", thumbnailUrl: "", isEmbed: true },
-          { id: "Daa7eq-sxe0", caption: "New Cotton Suits", permalink: "https://www.instagram.com/reel/Daa7eq-sxe0/", mediaUrl: "https://www.instagram.com/reel/Daa7eq-sxe0/embed/", thumbnailUrl: "", isEmbed: true },
-          { id: "DaYaHQfMbrS", caption: "New Arrivals", permalink: "https://www.instagram.com/reel/DaYaHQfMbrS/", mediaUrl: "https://www.instagram.com/reel/DaYaHQfMbrS/embed/", thumbnailUrl: "", isEmbed: true }
-        ]);
-      } else {
-        setReels(filteredCombined.slice(0, 12)); // Allow up to 12 reels for swiping
+      } catch (dbErr) {
+        console.warn("Failed to fetch database reels:", dbErr);
       }
       setLoading(false);
     };
@@ -260,6 +209,11 @@ export default function InstagramReels() {
         </div>
       </section>
     );
+  }
+
+  // No stale hardcoded fallback: if nothing fresh could be loaded, hide the section
+  if (reels.length === 0) {
+    return null;
   }
 
   return (
