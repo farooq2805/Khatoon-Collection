@@ -25,47 +25,33 @@ interface BeholdPost {
 
 const SuperyouReelCard = ({ post }: { post: BeholdPost }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Fallback for browsers with strict autoplay policies
-      });
+      videoRef.current.play().catch(() => {});
     }
   }, [post.mediaUrl]);
-
-  const formatViews = (likes?: number | string) => {
-    let likesNum = 0;
-    if (typeof likes === "number") {
-      likesNum = likes;
-    } else if (typeof likes === "string") {
-      const parsed = parseFloat(likes.replace(/[^0-9.]/g, ""));
-      if (!isNaN(parsed)) {
-        likesNum = likes.toLowerCase().includes("k") ? parsed * 1000 : parsed;
-      }
-    }
-    const viewsNum = likesNum > 0 ? Math.round(likesNum * 15) : 8500 + (post.id.charCodeAt(0) * 23) % 12000;
-    if (viewsNum >= 1000) {
-      return (viewsNum / 1000).toFixed(1) + "K Views";
-    }
-    return viewsNum + " Views";
-  };
 
   const isInstagramEmbed = post.mediaUrl?.includes("instagram.com") || post.isEmbed;
 
   return (
     <div className="relative w-full aspect-[9/16] overflow-hidden bg-neutral-950 rounded-2xl shadow-xl border border-white/10 group select-none transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl">
-      <a href={post.permalink} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+      <a href={post.permalink} target="_blank" rel="noopener noreferrer" className="block w-full h-full relative overflow-hidden">
         {isInstagramEmbed ? (
-          <iframe
-            src={post.mediaUrl?.includes("/embed") ? post.mediaUrl : `https://www.instagram.com/reel/${post.id}/embed/`}
-            title={`Instagram Reel ${post.id}`}
-            className="absolute inset-0 w-full h-full border-0 pointer-events-none"
-            scrolling="no"
-            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-            loading="lazy"
-          />
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
+            <iframe
+              src={
+                post.mediaUrl?.includes("/embed")
+                  ? `${post.mediaUrl}?autoplay=1&muted=1`
+                  : `https://www.instagram.com/reel/${post.id}/embed/?autoplay=1&muted=1`
+              }
+              title={`Instagram Reel ${post.id}`}
+              className="absolute w-[125%] h-[132%] -top-[15%] -left-[12.5%] border-0 pointer-events-none"
+              scrolling="no"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              loading="lazy"
+            />
+          </div>
         ) : (
           <video
             ref={videoRef}
@@ -78,58 +64,6 @@ const SuperyouReelCard = ({ post }: { post: BeholdPost }) => {
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         )}
-
-        {/* Superyou Style Bottom Overlay & Actions Bar */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-3 pb-3.5 z-10 pointer-events-auto">
-          {/* Caption text */}
-          {post.caption && (
-            <p className="text-white text-[11px] sm:text-xs font-bold uppercase tracking-wide mb-3 px-1 leading-snug drop-shadow-md line-clamp-2 opacity-90 group-hover:opacity-100 transition-opacity">
-              {post.caption}
-            </p>
-          )}
-
-          {/* Action Row: Views Pill & Interactive Social Icons */}
-          <div className="flex items-center justify-between mt-auto">
-            {/* Views Pill (Superyou Glassmorphism) */}
-            <div className="bg-black/60 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md border border-white/10 shadow-sm">
-              {formatViews(post.likeCount)}
-            </div>
-
-            {/* Heart and Share Icons */}
-            <div className="flex items-center gap-3 text-white drop-shadow-lg">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLiked(!liked);
-                }}
-                className="p-1 hover:scale-125 active:scale-95 transition-transform"
-                title="Like"
-              >
-                <FiHeart
-                  className={`text-lg sm:text-xl transition-colors ${
-                    liked ? "fill-red-500 text-red-500" : "text-white hover:text-red-400"
-                  }`}
-                />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (navigator.share) {
-                    navigator.share({ url: post.permalink, title: "Khatoon Collection Reel" }).catch(() => {});
-                  } else {
-                    window.open(post.permalink, "_blank");
-                  }
-                }}
-                className="p-1 hover:scale-125 active:scale-95 transition-transform"
-                title="Share"
-              >
-                <FiSend className="text-lg sm:text-xl -rotate-12 hover:text-pink-400 transition-colors" />
-              </button>
-            </div>
-          </div>
-        </div>
       </a>
     </div>
   );
