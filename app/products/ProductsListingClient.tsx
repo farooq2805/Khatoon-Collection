@@ -688,8 +688,25 @@ export default function ProductsListingClient({
         </div>
 
         {/* PRODUCT GRID */}
-        <div className="mt-4 grid grid-cols-2 gap-[2px] sm:grid-cols-3 lg:grid-cols-4">
-          {paginatedItems.map((p) => {
+        {paginatedItems.length === 0 ? (
+          <div className="my-16 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 mb-4 rounded-full bg-gray-100 flex items-center justify-center text-2xl text-gray-400">
+              🛍️
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-1">No products found</h3>
+            <p className="text-sm text-gray-500 max-w-md">
+              We couldn't find any products matching your selection, or the catalog is temporarily updating. Please check back shortly.
+            </p>
+            <button
+              onClick={() => router.push("/products")}
+              className="mt-5 px-5 py-2.5 bg-black text-white text-xs font-semibold uppercase tracking-wider rounded-md hover:bg-gray-800 transition"
+            >
+              Clear Filters
+            </button>
+          </div>
+        ) : (
+          <div className="mt-4 grid grid-cols-2 gap-[2px] sm:grid-cols-3 lg:grid-cols-4">
+            {paginatedItems.map((p) => {
             const slug =
               getProductSlug(p);
 
@@ -797,6 +814,7 @@ export default function ProductsListingClient({
             );
           })}
         </div>
+        )}
 
         {/* PAGINATION */}
         <div className="mt-10 flex items-center justify-center gap-2 text-sm">

@@ -7,12 +7,12 @@ import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
 import { reportSystemError } from "@/utils/errorHandler";
 
-// Force dynamic rendering to ensure real-time synchronization with the dashboard
-export const dynamic = "force-dynamic";
+// Enable 60-second Incremental Static Regeneration for fast edge caching
+export const revalidate = 60;
 
 async function fetchWithReporting(url: string, tag: string) {
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) {
       throw new Error(`API returned status ${res.status}`);
     }
@@ -34,7 +34,7 @@ async function getHomeData() {
       fetchWithReporting(`${api}/home-slider`, "home-slider"),
       fetchWithReporting(`${api}/categories`, "categories"),
       fetchWithReporting(`${api}/banner-grid`, "banner-grid"),
-      fetchWithReporting(`${api}/publicproducts?limit=40`, "publicproducts"),
+      fetchWithReporting(`${api}/publicproducts?limit=16`, "publicproducts"),
     ]);
 
     return {

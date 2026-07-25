@@ -141,11 +141,11 @@ export default function ProductDetailsClient({
         flat.push({
           id: sizeObj.id,
 
-          color: colorObj.color,
-          colorHex: colorObj.colorHex,
+          color: typeof colorObj.color === "string" ? colorObj.color.trim() : colorObj.color,
+          colorHex: typeof colorObj.colorHex === "string" ? colorObj.colorHex.trim() : colorObj.colorHex,
 
-          size: sizeObj.size,
-          weight: sizeObj.weight,
+          size: typeof sizeObj.size === "string" ? sizeObj.size.trim() : sizeObj.size,
+          weight: typeof sizeObj.weight === "string" ? sizeObj.weight.trim() : sizeObj.weight,
 
           price: Number(sizeObj.price || 0),
 
@@ -161,7 +161,7 @@ export default function ProductDetailsClient({
             sizeObj.stockQuantity || 0
           ),
 
-          sku: sizeObj.sku,
+          sku: typeof sizeObj.sku === "string" ? sizeObj.sku.trim() : sizeObj.sku,
 
           images: Array.isArray(sizeObj.images)
             ? sizeObj.images

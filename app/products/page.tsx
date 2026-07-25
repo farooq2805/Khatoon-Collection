@@ -37,15 +37,23 @@ async function getProducts(params: {
 
   const url = `${API_BASE}/publicproducts?${qs.toString()}`;
 
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return { items: [], pagination: null };
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return { items: [], pagination: null };
 
-  const json = await res.json();
-  const data = json?.data;
-  const items = Array.isArray(data) ? data : data?.items || [];
-  const pagination = data?.pagination || json?.pagination || null;
+    const json = await res.json();
+    const data = json?.data;
+    const items = Array.isArray(data) ? data : data?.items || [];
+    const pagination = data?.pagination || json?.pagination || null;
 
-  return { items, pagination };
+    return { items, pagination };
+  } catch (err) {
+    console.error("❌ Failed to fetch products in getProducts:", err);
+    return { items: [], pagination: null };
+  }
 }
 
 import productGroups from "@/config/productGroups.json";

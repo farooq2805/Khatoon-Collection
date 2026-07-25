@@ -152,12 +152,6 @@ const Footer = () => {
                 <div className="space-y-1">
                   <p className="text-[11px] uppercase tracking-widest text-white/50 font-bold">Call / WhatsApp</p>
                   <a
-                    href="tel:+919867196860"
-                    className="block text-white hover:text-white/80 transition-colors text-sm font-medium"
-                  >
-                    +91 98671 96860
-                  </a>
-                  <a
                     href="tel:+919136868443"
                     className="block text-white hover:text-white/80 transition-colors text-sm font-medium"
                   >

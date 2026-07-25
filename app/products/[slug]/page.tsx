@@ -13,25 +13,37 @@ const API_URL =
 type ApiResponse = { success: boolean; data?: any };
 
 async function getProduct(slug: string) {
-  const res = await fetch(`${API_URL}/publicproducts/slug/${slug}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${API_URL}/publicproducts/slug/${slug}`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error("Failed to load product");
+    if (res.status === 404) return null;
+    if (!res.ok) return null;
 
-  const json = (await res.json()) as ApiResponse;
-  return json?.data ?? null;
+    const json = (await res.json()) as ApiResponse;
+    return json?.data ?? null;
+  } catch (err) {
+    console.error(`❌ Error fetching product ${slug}:`, err);
+    return null;
+  }
 }
 
 async function getRelated(slug: string) {
-  const res = await fetch(`${API_URL}/publicproducts/related/${slug}?limit=8`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${API_URL}/publicproducts/related/${slug}?limit=8`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (!res.ok) return [];
-  const json = (await res.json()) as ApiResponse;
-  return json?.data ?? [];
+    if (!res.ok) return [];
+    const json = (await res.json()) as ApiResponse;
+    return json?.data ?? [];
+  } catch (err) {
+    console.error(`❌ Error fetching related products for ${slug}:`, err);
+    return [];
+  }
 }
 
 export default async function ProductDetailsPage({

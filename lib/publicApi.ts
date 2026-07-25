@@ -70,15 +70,16 @@ export async function fetchJson(path: string, init?: RequestInit) {
 
   const url = path.startsWith("http") ? path : `${base}${path.startsWith("/") ? "" : "/"}${path}`;
 
-  const res = await fetch(url, {
+  const fetchOptions: RequestInit = {
+    next: { revalidate: 30 },
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...(init?.headers || {}),
     },
-    // Next.js caching hint (safe default for product list)
-    cache: "no-store",
-  });
+  };
+
+  const res = await fetch(url, fetchOptions);
 
   const text = await res.text();
   let json: any = null;

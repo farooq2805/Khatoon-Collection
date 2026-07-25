@@ -138,9 +138,6 @@ export default function ContactPage() {
                 <div className="space-y-1">
                   <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">Call Support</p>
                   <p className="text-[#333333] text-base font-semibold flex flex-col gap-1">
-                    <a href="tel:+919867196860" className="hover:text-[#f57bb4] transition-colors">
-                      +91 98671 96860
-                    </a>
                     <a href="tel:+919136868443" className="hover:text-[#f57bb4] transition-colors">
                       +91 91368 68443
                     </a>
@@ -242,7 +239,7 @@ export default function ContactPage() {
                   <p className="font-bold text-gray-900 text-sm">Khatoon Collection</p>
                   <p className="text-gray-400 text-[10px] font-bold">Women&apos;s Fashion</p>
                   <p className="mt-1">✨ Modest Wear, Premium Rayon Suits & Dupattas</p>
-                  <p>💬 Whatsapp Group - 9867196860</p>
+                  <p>💬 Whatsapp Group - 9136868443</p>
                   <p>📍 2 Stores in Mumbai (Yogi Vaishali & Rabia Shopping Hub) ... <span className="text-gray-400 cursor-pointer font-bold">more</span></p>
                 </div>
               </div>
