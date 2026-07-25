@@ -137,7 +137,7 @@ const SuperyouReelCard = ({ post }: { post: BeholdPost }) => {
 
 export default function InstagramReels() {
   const [reels, setReels] = useState<BeholdPost[]>([]);
-  const [followers, setFollowers] = useState<number>(25400); // Fixed 25.4K followers default
+  const [followers, setFollowers] = useState<number>(33800); // 33.8K Followers
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
