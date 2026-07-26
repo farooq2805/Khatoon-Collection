@@ -239,20 +239,8 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              {/* Banner */}
-              <div className="relative mt-5 rounded-xl bg-white/95 p-3 text-[12px] text-gray-700 flex items-center justify-between gap-3">
-                <div className="leading-snug">
-                  Download app now to view your <br />
-                  balance charms 🧿
-                </div>
-                <button
-                  type="button"
-                  className="shrink-0 rounded-lg px-3 py-1.5 text-white text-xs font-medium"
-                  style={{ backgroundColor: THEME }}
-                >
-                  get app &gt;
-                </button>
-              </div>
+
+
             </div>
 
             {/* Menu */}
