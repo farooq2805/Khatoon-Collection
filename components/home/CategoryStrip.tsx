@@ -6,6 +6,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 
 type Category = {
   id: number;
@@ -83,7 +84,7 @@ export default function CategoryStrip({ initialData }: { initialData?: Category[
                   aria-label={c.name}
                 >
                   <Image
-                    src={c.imageUrl || FALLBACK}
+                    src={getOptimizedImageUrl(c.imageUrl, 500) || FALLBACK}
                     alt={c.name}
                     fill
                     priority={false}

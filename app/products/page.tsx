@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/products/page.tsx
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 import ProductsListingClient from "./ProductsListingClient";
 
@@ -39,7 +39,7 @@ async function getProducts(params: {
 
   try {
     const res = await fetch(url, {
-      cache: "no-store",
+      next: { revalidate: 60 },
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return { items: [], pagination: null };

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 
 type BannerGridApiData = {
   id: string;
@@ -118,7 +119,7 @@ export default function TwoBannerGrid({ initialData }: { initialData?: any }) {
             >
               {/* ✅ AUTO HEIGHT BANNER (NO CROP) */}
               <Image
-                src={b.image}
+                src={getOptimizedImageUrl(b.image, 1000)}
                 alt="Promotional Banner"
                 width={1600}
                 height={600}

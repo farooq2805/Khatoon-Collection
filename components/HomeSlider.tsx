@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
@@ -82,8 +83,10 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
         >
           {slides.map((slide, index) => {
             const href = slide.ctaHref || "#";
-            const mobileSrc = slide.mobileImageUrl || slide.desktopImageUrl || "/slider/khatoon_mobile_banner.png";
-            const desktopSrc = slide.desktopImageUrl || "/slider/khatoon_desktop_banner_clean.png";
+            const rawMobile = slide.mobileImageUrl || slide.desktopImageUrl || "/slider/khatoon_mobile_banner.png";
+            const rawDesktop = slide.desktopImageUrl || "/slider/khatoon_desktop_banner_clean.png";
+            const mobileSrc = getOptimizedImageUrl(rawMobile, 800);
+            const desktopSrc = getOptimizedImageUrl(rawDesktop, 1920);
 
             const inner = (
               <picture>
