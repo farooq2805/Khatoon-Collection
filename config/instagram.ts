@@ -35,6 +35,19 @@ export interface ReelItem {
 
 export const INSTAGRAM_REELS: ReelItem[] = [
   {
+    id: "DbOgE5ws091",
+    reelUrl: "https://www.instagram.com/reel/DbOgE5ws091/",
+    embedUrl: "https://www.instagram.com/reel/DbOgE5ws091/embed/",
+    videoUrl: "https://res.cloudinary.com/techsrow/video/upload/v1785049446/khatoon_reels/DbOgE5ws091.mp4",
+    thumbnail: "",
+    caption: "Latest Exclusive Collection Reel ✨",
+    views: "142K",
+    likes: "21.8K",
+    productLink: "/products",
+    productName: "Featured Collection",
+    price: "₹2,199",
+  },
+  {
     id: "DbL8FQLsd_2",
     reelUrl: "https://www.instagram.com/reel/DbL8FQLsd_2/",
     embedUrl: "https://www.instagram.com/reel/DbL8FQLsd_2/embed/",
