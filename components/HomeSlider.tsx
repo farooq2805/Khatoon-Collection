@@ -16,13 +16,22 @@ type Slide = {
 };
 
 export default function HomeSlider({ initialData }: { initialData?: any }) {
-  const slides = useMemo<Slide[]>(() => [
-    {
-      desktopImageUrl: "/slider/khatoon_desktop_banner_clean.png",
-      mobileImageUrl:  "/slider/khatoon_mobile_banner.png",
-      ctaHref: "/products",
-    },
-  ], []);
+  const slides = useMemo<Slide[]>(() => {
+    if (Array.isArray(initialData) && initialData.length > 0) {
+      return initialData.map((item: any) => ({
+        desktopImageUrl: item.desktopImageUrl || item.imageUrl || "/slider/khatoon_desktop_banner_clean.png",
+        mobileImageUrl: item.mobileImageUrl || item.desktopImageUrl || item.imageUrl || "/slider/khatoon_mobile_banner.png",
+        ctaHref: item.ctaHref || item.linkUrl || "/products",
+      }));
+    }
+    return [
+      {
+        desktopImageUrl: "/slider/khatoon_desktop_banner_clean.png",
+        mobileImageUrl: "/slider/khatoon_mobile_banner.png",
+        ctaHref: "/products",
+      },
+    ];
+  }, [initialData]);
 
   if (!slides.length) return null;
 
@@ -73,22 +82,25 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
         >
           {slides.map((slide, index) => {
             const href = slide.ctaHref || "#";
+            const mobileSrc = slide.mobileImageUrl || slide.desktopImageUrl || "/slider/khatoon_mobile_banner.png";
+            const desktopSrc = slide.desktopImageUrl || "/slider/khatoon_desktop_banner_clean.png";
+
             const inner = (
               <picture>
                 {/* Mobile source (max-width: 767px) */}
                 <source
                   media="(max-width: 767px)"
-                  srcSet={`/_next/image?url=${encodeURIComponent(slide.mobileImageUrl)}&w=750&q=75`}
+                  srcSet={mobileSrc}
                 />
                 {/* Desktop source (min-width: 768px) */}
                 <source
                   media="(min-width: 768px)"
-                  srcSet={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
+                  srcSet={desktopSrc}
                 />
                 {/* Fallback img */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
+                  src={desktopSrc}
                   alt="Khatoon Collection — Premium Ethnic Wear"
                   className="absolute inset-0 w-full h-full object-cover object-center md:object-top"
                   loading={index === 0 ? "eager" : "lazy"}
@@ -104,13 +116,13 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                     <link
                       rel="preload"
                       as="image"
-                      href={`/_next/image?url=${encodeURIComponent(slide.mobileImageUrl)}&w=750&q=75`}
+                      href={mobileSrc}
                       media="(max-width: 767px)"
                     />
                     <link
                       rel="preload"
                       as="image"
-                      href={`/_next/image?url=${encodeURIComponent(slide.desktopImageUrl)}&w=1200&q=75`}
+                      href={desktopSrc}
                       media="(min-width: 768px)"
                     />
                   </>
