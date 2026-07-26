@@ -315,16 +315,15 @@ export default function ProductDetailsMobile(props: any) {
                 isActive ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
-              {(isActive || i === 0) && (
-                <Image
-                  src={src}
-                  alt={`image-${i}`}
-                  fill
-                  priority={i === 0}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-contain"
-                />
-              )}
+              <Image
+                src={src}
+                alt={`image-${i}`}
+                fill
+                priority={i === 0}
+                unoptimized
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain"
+              />
             </div>
           );
         })}
@@ -398,7 +397,7 @@ export default function ProductDetailsMobile(props: any) {
             isActive ? "border-black" : "border-gray-200"
           }`}
         >
-          <Image src={src} alt={`thumb-${i}`} fill sizes="60px" className="object-contain" />
+          <Image src={src} alt={`thumb-${i}`} fill unoptimized sizes="60px" className="object-contain" />
         </button>
       );
     })}

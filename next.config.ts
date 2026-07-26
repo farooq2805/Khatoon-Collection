@@ -2,32 +2,24 @@
 const nextConfig = {
   transpilePackages: ["react-icons"],
   images: {
+    unoptimized: true,
     domains: [
       "api.khatooncollection.in",
+      "khatooncollection.in",
       "res.cloudinary.com",
       "images.unsplash.com",
+      "72.62.196.65",
+      "31.97.231.233",
       "localhost",
-      "yourcdn.com",
     ],
     remotePatterns: [
-      // Cloudinary (covers all paths, safest)
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
+        hostname: "**",
       },
-      // Unsplash (for Instagram Reels placeholders)
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      // Localhost with port (if you ever use it)
       {
         protocol: "http",
-        hostname: "localhost",
-        port: "3003",
-        pathname: "/**",
+        hostname: "**",
       },
     ],
   },
