@@ -33,9 +33,7 @@ export default function CategoryStrip({ initialData }: { initialData?: Category[
 
     async function load() {
       try {
-        const res = await fetch("https://api.khatooncollection.in/api/categories", {
-          cache: "no-store",
-        });
+        const res = await fetch("https://api.khatooncollection.in/api/categories");
         const json = await res.json();
         setCats(Array.isArray(json?.data) ? json.data : []);
       } catch (e) {

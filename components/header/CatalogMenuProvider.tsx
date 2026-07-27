@@ -151,7 +151,7 @@ function buildMenu(categories: any[], subcategories: any[]): MenuItem[] {
 
 async function fetchJson(url: string) {
   console.log("📡 fetching:", url);
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url);
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Fetch failed ${res.status} ${url} ${text}`);

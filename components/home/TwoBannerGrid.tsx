@@ -55,7 +55,6 @@ export default function TwoBannerGrid({ initialData }: { initialData?: any }) {
       try {
         const res = await fetch(API_URL, {
           method: "GET",
-          cache: "no-store",
           signal: ac.signal,
         });
 
