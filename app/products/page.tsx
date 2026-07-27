@@ -23,14 +23,16 @@ async function getProducts(params: {
   q?: string;
   category?: string;
   subcategory?: string;
+  sort?: string;
 }) {
-  const { page, limit, q, category, subcategory } = params;
+  const { page, limit, q, category, subcategory, sort } = params;
 
   const qs = new URLSearchParams();
   qs.set("page", String(page));
   qs.set("limit", String(limit));
+  if (sort) qs.set("sort", sort);
 
-  // ✅ forward filters to backend (backend can use/ignore)
+  // ✅ forward filters to backend
   if (q) qs.set("q", q);
   if (category) qs.set("category", category);
   if (subcategory) qs.set("subcategory", subcategory);
@@ -47,7 +49,7 @@ async function getProducts(params: {
     const json = await res.json();
     const data = json?.data;
     const items = Array.isArray(data) ? data : data?.items || [];
-    const pagination = data?.pagination || json?.pagination || null;
+    const pagination = json?.pagination || data?.pagination || null;
 
     return { items, pagination };
   } catch (err) {
@@ -56,9 +58,6 @@ async function getProducts(params: {
   }
 }
 
-import productGroups from "@/config/productGroups.json";
-
-// ✅ Next.js 15+ expects `searchParams` to be a Promise in PageProps typing
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -67,24 +66,29 @@ export default async function ProductsPage({
   const sp = (await searchParams) ?? {};
 
   const page = Math.max(1, Number(sp.page ?? "1"));
-  const sort = sp.sort?.trim() || "latest";
-  
-  // Fetch all products at once to perform accurate global deduplication and sorting
-  const limit = 1000;
+  const sort = sp.sort?.trim() || "newest";
+  const limit = 16; // ✅ Server-side pagination: fetch ONLY current page
 
   const q = sp.q?.trim() || "";
   const category = sp.category?.trim() || "";
   const subcategory = sp.subcategory?.trim() || "";
 
-  const { items } = await getProducts({
-    page: 1,
+  // Map frontend sort values to backend sort values
+  const backendSort =
+    sort === "clearance" ? "newest" :  // clearance is client-side filtered
+    sort === "latest" ? "newest" :
+    sort; // price_asc, price_desc passed directly
+
+  const { items, pagination } = await getProducts({
+    page,
     limit,
+    sort: backendSort,
     q: q || undefined,
     category: category || undefined,
     subcategory: subcategory || undefined,
   });
 
-  // Filter out test products (any name/slug containing "test" case-insensitively, or ID 252 "big size for daily")
+  // Filter out test products (any name/slug containing "test", or known bad IDs)
   const uniqueItems = items.filter((p: any) => {
     const name = (p.name || "").toLowerCase();
     const slug = (p.slug || "").toLowerCase();
@@ -96,19 +100,27 @@ export default async function ProductsPage({
     return !isTest;
   });
 
-  const computedPagination = {
-    page,
-    limit: 16,
-    totalItems: uniqueItems.length,
-    totalPages: Math.max(1, Math.ceil(uniqueItems.length / 16)),
-  };
+  const computedPagination = pagination
+    ? {
+        page: pagination.page ?? page,
+        limit: pagination.limit ?? limit,
+        totalItems: pagination.totalItems ?? uniqueItems.length,
+        totalPages: pagination.totalPages ?? Math.max(1, Math.ceil((pagination.totalItems ?? uniqueItems.length) / limit)),
+      }
+    : {
+        page,
+        limit,
+        totalItems: uniqueItems.length,
+        totalPages: Math.max(1, Math.ceil(uniqueItems.length / limit)),
+      };
 
   return (
     <ProductsListingClient
       initialItems={uniqueItems}
       initialPagination={computedPagination}
       page={page}
-      limit={16}
+      limit={limit}
+      sort={sort}
     />
   );
 }

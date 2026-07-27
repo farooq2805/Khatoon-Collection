@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import productGroups from "@/config/productGroups.json";
@@ -50,8 +50,26 @@ function getPrices(p: Product) {
 }
 
 export default function NewArrivalsClearance({ initialData }: { initialData?: Product[] }) {
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]);
+
+  // Client-side fallback: if SSR returned no products (stale cache / timeout),
+  // fetch directly from the API in the browser
+  useEffect(() => {
+    if (initialData && initialData.length > 0) return; // SSR data is fine
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+    fetch(`${apiBase}/publicproducts?limit=16&sort=newest`)
+      .then((r) => r.json())
+      .then((json) => {
+        const data = json?.data;
+        if (Array.isArray(data) && data.length > 0) {
+          setFetchedProducts(data);
+        }
+      })
+      .catch(() => {}); // silent fallback
+  }, [initialData]);
+
   const products = useMemo(() => {
-    const list = initialData || [];
+    const list = (initialData && initialData.length > 0) ? initialData : fetchedProducts;
     const seenGroupIds = new Set<string>();
     const out: Product[] = [];
     
@@ -71,7 +89,7 @@ export default function NewArrivalsClearance({ initialData }: { initialData?: Pr
       out.push(p);
     }
     return out;
-  }, [initialData]);
+  }, [initialData, fetchedProducts]);
 
   const newArrivalsRef = useRef<HTMLDivElement>(null);
   const clearanceRef = useRef<HTMLDivElement>(null);

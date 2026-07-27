@@ -346,6 +346,7 @@ function OverlayPanel({
 
   sort:
     | "latest"
+    | "newest"
     | "price_asc"
     | "price_desc"
     | "clearance";
@@ -473,11 +474,13 @@ export default function ProductsListingClient({
   initialPagination,
   page,
   limit,
+  sort: sortProp,
 }: {
   initialItems: Product[];
   initialPagination: Pagination | null;
   page: number;
   limit: number;
+  sort?: string;
 }) {
   const router = useRouter();
 
@@ -492,14 +495,14 @@ export default function ProductsListingClient({
     useState<OverlayMode>(null);
 
   const sort =
-    ((sp?.get(
-      "sort"
-    ) as any) as
+    ((sp?.get("sort") as any) as
       | "latest"
+      | "newest"
       | "price_asc"
       | "price_desc"
       | "clearance") ||
-    "latest";
+    (sortProp as any) ||
+    "newest";
 
   function setQueryParam(
     key: string,
@@ -522,80 +525,24 @@ export default function ProductsListingClient({
     );
   }
 
-  const sorted = useMemo(() => {
-    const items = [
-      ...(initialItems || []),
-    ];
-
-    if (sort === "latest") {
-      items.sort((a, b) => {
-        const da = a.createdAt
-          ? new Date(
-              a.createdAt
-            ).getTime()
-          : 0;
-
-        const db = b.createdAt
-          ? new Date(
-              b.createdAt
-            ).getTime()
-          : 0;
-
-        return db - da;
-      });
-
-      return items;
-    }
-
-    if (sort === "price_asc") {
-      items.sort(
-        (a, b) =>
-          getSaleAndMrp(a).sale -
-          getSaleAndMrp(b).sale
-      );
-
-      return items;
-    }
-
-    if (sort === "price_desc") {
-      items.sort(
-        (a, b) =>
-          getSaleAndMrp(b).sale -
-          getSaleAndMrp(a).sale
-      );
-
-      return items;
-    }
-
+  // Items come pre-sorted and pre-paginated from server.
+  // For "clearance" sort we do a lightweight client-side discount filter on the current page.
+  const paginatedItems = useMemo(() => {
     if (sort === "clearance") {
-      return items
+      return (initialItems || [])
         .map((p) => {
           const { sale, mrp } = getSaleAndMrp(p);
           const discountPercent = getDiscountPercent(mrp, sale) || 0;
           return { ...p, discountPercent };
         })
-        .filter((p) => p.discountPercent > 0)
-        .sort((a, b) => b.discountPercent - a.discountPercent);
+        .filter((p) => (p as any).discountPercent > 0)
+        .sort((a, b) => (b as any).discountPercent - (a as any).discountPercent);
     }
-
-    return items;
+    return initialItems || [];
   }, [initialItems, sort]);
 
-  const filteredSorted = useMemo(() => {
-    return sorted;
-  }, [sorted]);
-
-  const paginatedItems = useMemo(() => {
-    const start = (page - 1) * limit;
-    return filteredSorted.slice(start, start + limit);
-  }, [filteredSorted, page, limit]);
-
-  const totalItems = filteredSorted.length;
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(totalItems / limit)
-  );
+  const totalItems = initialPagination?.totalItems ?? paginatedItems.length;
+  const totalPages = initialPagination?.totalPages ?? Math.max(1, Math.ceil(totalItems / limit));
 
   function goToPage(pn: number) {
     const next = Math.min(

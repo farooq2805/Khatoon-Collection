@@ -12,47 +12,42 @@ export const revalidate = 60;
 
 async function fetchWithReporting(url: string, tag: string) {
   try {
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url, {
+      next: { revalidate: 120 },
+      signal: AbortSignal.timeout(8000), // 8s max — never hang
+    });
     if (!res.ok) {
       throw new Error(`API returned status ${res.status}`);
     }
     return await res.json();
   } catch (e: any) {
     console.error(`❌ Fetching ${tag} failed:`, e);
-    // Report error asynchronously to backend API (to trigger email notification)
-    reportSystemError(`Homepage Fetch - ${tag}`, e, { url });
+    // Report error asynchronously (fire-and-forget, don't await)
+    reportSystemError(`Homepage Fetch - ${tag}`, e, { url }).catch(() => {});
     return null;
   }
 }
 
 async function getHomeData() {
-  const api = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+  // Always use production API — NEXT_PUBLIC_ vars may be undefined during SSR on Vercel
+  const api = process.env.NEXT_PUBLIC_API_URL ||
+    process.env.API_URL ||
+    "https://api.khatooncollection.in/api";
 
-  try {
-    // Parallel fetching on the server with revalidate tag (cache-friendly)
-    const [sliderRes, catRes, bannerRes, productsRes] = await Promise.all([
-      fetchWithReporting(`${api}/home-slider`, "home-slider"),
-      fetchWithReporting(`${api}/categories`, "categories"),
-      fetchWithReporting(`${api}/banner-grid`, "banner-grid"),
-      fetchWithReporting(`${api}/publicproducts?limit=16`, "publicproducts"),
-    ]);
+  // Run fetches in parallel, each independently guarded — one failure won't block others
+  const [sliderRes, catRes, bannerRes, productsRes] = await Promise.all([
+    fetchWithReporting(`${api}/home-slider`, "home-slider"),
+    fetchWithReporting(`${api}/categories`, "categories"),
+    fetchWithReporting(`${api}/banner-grid`, "banner-grid"),
+    fetchWithReporting(`${api}/publicproducts?limit=16&sort=newest`, "publicproducts"),
+  ]);
 
-    return {
-      sliderData: sliderRes?.data || null,
-      categoriesData: Array.isArray(catRes?.data) ? catRes.data : [],
-      bannerData: bannerRes?.data || null,
-      productsData: Array.isArray(productsRes?.data) ? productsRes.data : [],
-    };
-  } catch (e) {
-    console.error("❌ Failed to pre-fetch home data on server:", e);
-    reportSystemError("Homepage Fetch Parallel Wrapper", e);
-    return {
-      sliderData: null,
-      categoriesData: [],
-      bannerData: null,
-      productsData: [],
-    };
-  }
+  return {
+    sliderData: sliderRes?.data || null,
+    categoriesData: Array.isArray(catRes?.data) ? catRes.data : [],
+    bannerData: bannerRes?.data || null,
+    productsData: Array.isArray(productsRes?.data) ? productsRes.data : [],
+  };
 }
 
 export default async function HomePage() {
