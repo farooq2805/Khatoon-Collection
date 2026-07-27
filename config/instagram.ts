@@ -35,6 +35,19 @@ export interface ReelItem {
 
 export const INSTAGRAM_REELS: ReelItem[] = [
   {
+    id: "DbRGG2qMBU9",
+    reelUrl: "https://www.instagram.com/reel/DbRGG2qMBU9/",
+    embedUrl: "https://www.instagram.com/reel/DbRGG2qMBU9/embed/",
+    videoUrl: "https://res.cloudinary.com/techsrow/video/upload/v1785124529/khatoon_reels/DbRGG2qMBU9.mp4",
+    thumbnail: "",
+    caption: "New Festive Arrival Showcase ✨",
+    views: "165K",
+    likes: "24.2K",
+    productLink: "/products",
+    productName: "New Festive Arrival",
+    price: "₹2,499",
+  },
+  {
     id: "DbOgE5ws091",
     reelUrl: "https://www.instagram.com/reel/DbOgE5ws091/",
     embedUrl: "https://www.instagram.com/reel/DbOgE5ws091/embed/",
