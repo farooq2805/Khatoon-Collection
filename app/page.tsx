@@ -3,7 +3,6 @@ import CategoryStrip from "@/components/home/CategoryStrip";
 import TwoBannerGrid from "@/components/home/TwoBannerGrid";
 import NewArrivalsClearance from "@/components/home/NewArrivalsClearance";
 import ServicePaymentSection from "@/components/ServicePaymentSection";
-import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
 import { reportSystemError } from "@/utils/errorHandler";
 
@@ -59,7 +58,6 @@ export default async function HomePage() {
       <CategoryStrip initialData={categoriesData} />
       <TwoBannerGrid initialData={bannerData} />
       <NewArrivalsClearance initialData={productsData} />
-      <InstagramReels />
       <ReviewsSection />
       <ServicePaymentSection />
     </main>
