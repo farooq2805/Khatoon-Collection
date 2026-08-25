@@ -108,6 +108,9 @@ export default function HomeSlider({ initialData }: { initialData?: any }) {
                   className="absolute inset-0 w-full h-full object-cover object-center md:object-top"
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : "low"}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/slider/khatoon_desktop_banner_clean.png";
+                  }}
                 />
               </picture>
             );

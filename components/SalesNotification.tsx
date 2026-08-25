@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { FiX, FiCheck } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import { productService } from "@/services/productService";
+import SafeImage from "@/components/common/SafeImage";
 
 const INDIAN_NAMES = ["Priya", "Kiran", "Ayesha", "Pooja", "Sneha", "Meera", "Ritu", "Anjali", "Divya", "Neha", "Shalini", "Sunita", "Preeti", "Kavita"];
 const INDIAN_LOCATIONS = ["New Delhi, DL", "Mumbai, MH", "Hyderabad, TS", "Pune, MH", "Bangalore, KA", "Ahmedabad, GJ", "Jaipur, RJ", "Kolkata, WB", "Lucknow, UP", "Surat, GJ"];
@@ -152,13 +152,10 @@ export default function SalesNotification() {
     >
       {/* Product Image Thumbnail */}
       <div className="relative w-12 h-16 flex-none bg-gray-50 rounded-lg overflow-hidden">
-        <Image
+        <SafeImage
           src={currentSale.thumbnail}
           alt={currentSale.productName}
-          fill
-          sizes="48px"
-          className="object-cover"
-          unoptimized={true}
+          className="w-full h-full object-cover"
         />
       </div>
 

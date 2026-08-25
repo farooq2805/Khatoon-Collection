@@ -262,14 +262,9 @@ export default function ProductDetailsClient({
 
   /* ===================== STOCK ===================== */
 
-  const inStock =
-    typeof selectedVariant?.stockQuantity ===
-    "number"
-      ? selectedVariant.stockQuantity > 0
-      : typeof product?.stockQuantity ===
-        "number"
-      ? product.stockQuantity > 0
-      : true;
+  const inStock = selectedVariant
+    ? (Number(selectedVariant.stockQuantity) || 0) > 0
+    : (Number(product?.stockQuantity) || 0) > 0;
 
   /* ===================== META ===================== */
 
@@ -644,11 +639,14 @@ function StickyAddToCartBar({
                 onChange={(e) => setSelectedVariantId(Number(e.target.value))}
                 className="w-full md:w-[190px] h-10 px-3 pr-8 rounded-lg border border-gray-300 text-[12px] md:text-[13px] font-bold text-gray-800 bg-white outline-none appearance-none focus:ring-2 focus:ring-[#f57bb4]/30 focus:border-[#f57bb4] transition cursor-pointer"
               >
-                {variants.map((v: any) => (
-                  <option key={v.id} value={v.id}>
-                    {getOptionLabel(v)}
-                  </option>
-                ))}
+                {variants.map((v: any) => {
+                  const isOut = (Number(v.stockQuantity) || 0) <= 0;
+                  return (
+                    <option key={v.id} value={v.id} disabled={isOut}>
+                      {getOptionLabel(v)}{isOut ? " (Out of Stock)" : ""}
+                    </option>
+                  );
+                })}
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 text-[10px]">
                 ▼

@@ -4,6 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
+import SafeImage from "@/components/common/SafeImage";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import productGroups from "@/config/productGroups.json";
 import { FiChevronDown, FiX } from "react-icons/fi";
@@ -114,27 +115,31 @@ function getProductSlug(p: Product) {
     : String(p.id);
 }
 
-function getProductImage(p: Product) {
-  const first =
-    p.mainImageUrl ||
-    p.imageUrl ||
-    p.image ||
-    (Array.isArray(p.images) &&
-    p.images.length
-      ? p.images[0]
-      : "") ||
-    "";
+function isCategoryImage(url?: string | null): boolean {
+  if (!url) return false;
+  return (
+    url.includes("/uploads/categories/") ||
+    url.includes("/uploads/banners/") ||
+    url.includes("/uploads/system/")
+  );
+}
 
-  if (
-    !first &&
-    Array.isArray(p.images) &&
-    p.images[0]?.url
-  ) {
-    return p.images[0].url;
+function getProductImage(p: Product) {
+  // Check mainImageUrl and imageUrl first, skipping category/system images
+  const topUrls = [p.mainImageUrl, p.imageUrl, p.image];
+  for (const u of topUrls) {
+    if (u && !isCategoryImage(u)) return u;
   }
 
-  return first || "/placeholder.png";
+  // Try images array
+  if (Array.isArray(p.images)) {
+    const img = p.images.find((i) => i && !isCategoryImage(typeof i === "string" ? i : i.url));
+    if (img) return typeof img === "string" ? img : img.url || "";
+  }
+
+  return "/placeholder.png";
 }
+
 
 /**
  * Variant-aware stock check
@@ -683,12 +688,10 @@ export default function ProductsListingClient({
                 className="group block"
               >
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f6f6f6]">
-                  <Image
+                  <SafeImage
                     src={img}
                     alt={getProductName(p)}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
 
                   {(soldOut ||

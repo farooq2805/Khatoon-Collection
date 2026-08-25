@@ -80,16 +80,19 @@ export default function ProductRowCardMobile({
 
   const hasVariantForCart = variants.length > 0;
 
-  const [selected, setSelected] = useState<Variant | null>(
-    hasVariantForCart ? variants[0] : null
+  const firstInStockVariant = useMemo(
+    () => variants.find((v) => (v.stockQuantity ?? 0) > 0) || (variants.length > 0 ? variants[0] : null),
+    [variants]
   );
+
+  const [selected, setSelected] = useState<Variant | null>(firstInStockVariant);
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
-    setSelected(variants.length > 0 ? variants[0] : null);
-  }, [product.id, variants.length]);
+    setSelected(firstInStockVariant);
+  }, [product.id, firstInStockVariant]);
 
-  const v = selected || (variants.length > 0 ? variants[0] : null);
+  const v = selected || firstInStockVariant;
 
   const mrp = Number(v?.price ?? product.price ?? 0);
   const sale = Number(
@@ -114,12 +117,13 @@ export default function ProductRowCardMobile({
           href={`/products/${product.slug}`}
           className="relative w-[88px] h-[88px] rounded-lg bg-white flex-shrink-0"
         >
-          <Image
+          <img
             src={img}
             alt={product.name}
-            fill
-            className="object-contain"
-            sizes="88px"
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/logo.png";
+            }}
           />
           {badge ? (
             <div

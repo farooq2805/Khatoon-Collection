@@ -4,6 +4,7 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import productGroups from "@/config/productGroups.json";
+import SafeImage from "@/components/common/SafeImage";
 
 type Variant = {
   id: number;
@@ -37,8 +38,19 @@ const INR = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
+function isCategoryImage(url?: string | null): boolean {
+  if (!url) return false;
+  return (
+    url.includes("/uploads/categories/") ||
+    url.includes("/uploads/banners/") ||
+    url.includes("/uploads/system/")
+  );
+}
+
 function pickMainImage(p: Product) {
-  return p.mainImageUrl || p.imageUrl || "/placeholder.png";
+  const url = p.mainImageUrl || p.imageUrl;
+  if (url && !isCategoryImage(url)) return url;
+  return "/placeholder.png";
 }
 
 function getPrices(p: Product) {
@@ -321,13 +333,10 @@ function ProductCard({ product, isClearance = false }: { product: Product; isCle
       <Link href={`/products/${product.slug}`} className="block relative flex-grow">
         {/* Aspect Ratio 3:4 */}
         <div className="relative w-full aspect-[3/4] bg-[#f9f9f9] overflow-hidden">
-          <Image
+          <SafeImage
             src={img}
             alt={product.name}
-            fill
-            className="object-cover transition-transform duration-500 hover:scale-[1.03]"
-            sizes="(max-width: 768px) 50vw, 25vw"
-            priority={false}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.03]"
           />
           {discountPercent > 0 && (
             <span 

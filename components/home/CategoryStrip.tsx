@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getOptimizedImageUrl } from "@/lib/cloudinary";
+import SafeImage from "@/components/common/SafeImage";
 
 type Category = {
   id: number;
@@ -81,13 +82,10 @@ export default function CategoryStrip({ initialData }: { initialData?: Category[
                   className="group relative aspect-[4/5] w-full overflow-hidden bg-gray-100"
                   aria-label={c.name}
                 >
-                  <Image
-                    src={getOptimizedImageUrl(c.imageUrl, 500) || FALLBACK}
+                  <SafeImage
+                    src={c.imageUrl || FALLBACK}
                     alt={c.name}
-                    fill
-                    priority={false}
-                    sizes="(max-width: 1024px) 33vw, 16vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                   />
 
                   {/* Bottom fade */}

@@ -17,6 +17,7 @@ import "swiper/css/thumbs";
 import "swiper/css/free-mode";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
+import SafeImage from "@/components/common/SafeImage";
 
 import {
   FiChevronLeft,
@@ -305,7 +306,7 @@ export default function ProductDetailsMobile(props: any) {
       {/* IMAGE FRAME */}
       <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[720px] rounded-[28px] overflow-hidden bg-[#f7f7f7] shadow-sm">
 
-        {galleryImages.map((src: string, i: number) => {
+        {(galleryImages.length > 0 ? galleryImages : [mainImage || "/logo.png"]).map((src: string, i: number) => {
           const isActive = i === Number(active);
 
           return (
@@ -315,14 +316,10 @@ export default function ProductDetailsMobile(props: any) {
                 isActive ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
-              <Image
+              <SafeImage
                 src={src}
                 alt={`image-${i}`}
-                fill
-                priority={i === 0}
-                unoptimized
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain"
+                className="w-full h-full object-contain"
               />
             </div>
           );
@@ -397,7 +394,14 @@ export default function ProductDetailsMobile(props: any) {
             isActive ? "border-black" : "border-gray-200"
           }`}
         >
-          <Image src={src} alt={`thumb-${i}`} fill unoptimized sizes="60px" className="object-contain" />
+          <img
+            src={src}
+            alt={`thumb-${i}`}
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/logo.png";
+            }}
+          />
         </button>
       );
     })}

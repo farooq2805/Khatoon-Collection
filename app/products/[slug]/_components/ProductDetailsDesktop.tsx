@@ -18,6 +18,7 @@ import "swiper/css/thumbs";
 import "swiper/css/free-mode";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
+import SafeImage from "@/components/common/SafeImage";
 
 import {
   FiChevronLeft,
@@ -167,13 +168,10 @@ function MagnifierImageCard({
       }}
       onClick={() => onOpenZoom(index)}
     >
-      <Image
-        src={src || "/placeholder.png"}
+      <SafeImage
+        src={src}
         alt={`${alt}-${index}`}
-        fill
-        priority={index === 0}
-        sizes="(max-width: 1024px) 100vw, 35vw"
-        className={`object-contain transition-transform duration-200 ease-out ${
+        className={`w-full h-full object-contain transition-transform duration-200 ease-out ${
           isHovered ? "scale-[1.25]" : "scale-100"
         }`}
         style={zoomStyle}

@@ -589,6 +589,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
+import SafeImage from "@/components/common/SafeImage";
 
 const THEME = "#f57bb4";
 
@@ -638,8 +639,20 @@ function safeImg(v: any) {
   return s.length ? s : null;
 }
 
+function isCategoryImage(url?: string | null): boolean {
+  const s = typeof url === "string" ? url.trim() : "";
+  if (!s) return false;
+  return (
+    s.includes("/uploads/categories/") ||
+    s.includes("/uploads/banners/") ||
+    s.includes("/uploads/system/")
+  );
+}
+
 function pickMainImage(p: Product) {
-  return safeImg(p.mainImageUrl) || safeImg(p.imageUrl) || "/placeholder.png";
+  const url = safeImg(p.mainImageUrl) || safeImg(p.imageUrl);
+  if (url && !isCategoryImage(url)) return url;
+  return "/placeholder.png";
 }
 
 export default function PlumProductCard({
@@ -685,11 +698,16 @@ export default function PlumProductCard({
   );
   const off = pctOff(mrp, sale);
 
-  // Stock
-  const inStock = activeColor?.sizes?.some((s) => (s.stockQuantity ?? 0) > 0) ?? false;
+  // Stock: find first size in active color that is actually in stock
+  const inStockSize = activeColor?.sizes?.find((s) => (s.stockQuantity ?? 0) > 0);
+  const inStock = Boolean(inStockSize);
 
   // Image: use color-specific or fallback to product image
   const img = useMemo(() => {
+    if (activeColor?.colorImageUrl && !isCategoryImage(activeColor.colorImageUrl)) return activeColor.colorImageUrl;
+    const colorImg = activeColor?.images?.find((i: any) => i?.url && !isCategoryImage(i.url));
+    if (colorImg?.url) return colorImg.url;
+    // fallback to any color image (even if category-like)
     if (activeColor?.colorImageUrl) return activeColor.colorImageUrl;
     if (activeColor?.images?.[0]?.url) return activeColor.images[0].url;
     return pickMainImage(product);
@@ -699,22 +717,23 @@ export default function PlumProductCard({
   const badge = badges[index % badges.length];
 
   const handleAdd = async () => {
-    if (!firstSize?.id) {
+    const targetSize = inStockSize || firstSize;
+    if (!targetSize?.id || (targetSize.stockQuantity ?? 0) <= 0) {
       window.location.href = `/products/${product.slug}`;
       return;
     }
     setAdding(true);
     try {
-      await addToCart(firstSize.id, 1, {
+      await addToCart(targetSize.id, 1, {
         productId: product.id,
         name: product.name,
         price: sale,
         mrp: mrp > sale ? mrp : undefined,
         imageUrl: img,
         variant: {
-          size: firstSize.size || undefined,
+          size: targetSize.size || undefined,
           color: activeColor?.color || undefined,
-          weight: (firstSize.weight as any) || undefined,
+          weight: (targetSize.weight as any) || undefined,
         },
       });
       toast.success("Added to cart 🛒", { position: "top-right", duration: 2000 });
@@ -746,12 +765,10 @@ export default function PlumProductCard({
         )}
 
         <Link href={`/products/${product.slug}`} className="block h-full w-full">
-          <Image
+          <SafeImage
             src={img}
             alt={product.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
 

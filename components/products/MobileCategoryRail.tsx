@@ -3,6 +3,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import SafeImage from "@/components/common/SafeImage";
 
 type SubCategory = { id: number; name: string; slug: string };
 type Category = {
@@ -117,11 +118,9 @@ export default function MobileCategoryRail({
                           style={{ borderColor: isActive ? THEME : "#e5e7eb" }}
                         >
                           {img ? (
-                            <Image
+                            <SafeImage
                               src={img}
                               alt={c.name}
-                              width={40}
-                              height={40}
                               className="h-full w-full object-contain p-1"
                             />
                           ) : (

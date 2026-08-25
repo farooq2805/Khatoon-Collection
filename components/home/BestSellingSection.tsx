@@ -37,8 +37,19 @@ type Product = {
 const INR = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
 
+function isCategoryImage(url?: string | null): boolean {
+  if (!url) return false;
+  return (
+    url.includes("/uploads/categories/") ||
+    url.includes("/uploads/banners/") ||
+    url.includes("/uploads/system/")
+  );
+}
+
 function pickMainImage(p: Product) {
-  return p.mainImageUrl || p.imageUrl || "/placeholder.png";
+  const url = p.mainImageUrl || p.imageUrl;
+  if (url && !isCategoryImage(url)) return url;
+  return "/placeholder.png";
 }
 
 function getBestPrice(p: Product) {

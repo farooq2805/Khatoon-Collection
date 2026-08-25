@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import SafeImage from "@/components/common/SafeImage";
 
 type Variant = {
   price: number;
@@ -62,12 +63,10 @@ export default function RelatedFashionCard({ product }: { product: Product }) {
       {/* Tall fashion image (no border, minimal) */}
       <div className="relative w-full overflow-hidden bg-transparent">
         <div className="relative aspect-[3/4] w-full">
-          <Image
+          <SafeImage
             src={img}
             alt={product.name}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       </div>

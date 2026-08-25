@@ -5,6 +5,7 @@ import { FiStar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import SafeImage from "@/components/common/SafeImage";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -27,89 +28,89 @@ const REVIEWS: ReviewItem[] = [
     rating: 5,
     title: "Absolutely amazing 🤩",
     comment: "The Lavender Bloom Cotton Suit is absolutely stunning! The embroidery work is very intricate, fabric is pure cotton, and the lace detailing is beautiful. It is perfect for hot summers.",
-    productName: "Lavender Bloom Embroidered Cotton Suit",
-    productSlug: "lavender-bloom-embroidered-pure-cotton-suit-with-lace-detail-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364797/products/gallery/IMG_0312_ekpdt7.jpg"
+    productName: "Mocha Brown Embroidered Farshi Suit",
+    productSlug: "mocha-brown-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404773/products/gallery/IMG_3430_a79zoe.jpg"
   },
   {
     id: "rev_2",
     name: "Fouziya khan",
     rating: 5,
     title: "The quality and fabric is too good!",
-    comment: "Very pleased with the Aqua Blue Floral suit. The material is so soft and comfortable, the print looks very premium, and the dupatta completed the premium look perfectly.",
-    productName: "Aqua Blue Floral Cotton Suit",
-    productSlug: "aqua-blue-floral-embroidered-pure-cotton-suit-with-lace-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364769/products/gallery/IMG_0315_de7rmo.jpg"
+    comment: "Very pleased with the Deep Black suit. The material is so soft and comfortable, the print looks very premium, and the dupatta completed the premium look perfectly.",
+    productName: "Deep Black Embroidered Farshi Suit",
+    productSlug: "black-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404829/products/gallery/IMG_3425_cv7u8d.jpg"
   },
   {
     id: "rev_3",
     name: "Anonymous",
     rating: 5,
     title: "Easy online ordering",
-    comment: "Seamless experience buying this Sky Grey Cotton Suit. The product is exactly as shown in the picture, embroidery is elegant, and delivery was exceptionally fast.",
-    productName: "Sky Grey Embroidered Cotton Suit",
-    productSlug: "sky-grey-embroidered-pure-cotton-suit-with-lace-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777364747/products/gallery/IMG_0318_eutsio.jpg"
+    comment: "Seamless experience buying this Navy Blue suit. The product is exactly as shown in the picture, embroidery is elegant, and delivery was exceptionally fast.",
+    productName: "Navy Blue Embroidered Farshi Suit",
+    productSlug: "navy-blue-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404859/products/gallery/IMG_3423_g6mvut.jpg"
   },
   {
     id: "rev_4",
     name: "Rida Fatma",
     rating: 5,
     title: "Perfect fitting!",
-    comment: "This Midnight Blue Cotton Suit is superb! The color is deep and vibrant, embroidery detail is neat, and the sizing is exactly spot on. Highly recommend Khatoon Collection!",
-    productName: "Midnight Blue Cotton Suit",
-    productSlug: "midnight-blue-embroidered-pure-cotton-suit-with-lace-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365025/products/gallery/IMG_0321_wftmk0.jpg"
+    comment: "This Maroon suit is superb! The color is deep and vibrant, embroidery detail is neat, and the sizing is exactly spot on. Highly recommend Khatoon Collection!",
+    productName: "Maroon Embroidered Farshi Suit",
+    productSlug: "maroon-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404889/products/gallery/IMG_3424_oareen.jpg"
   },
   {
     id: "rev_5",
     name: "Sana Malik",
     rating: 5,
     title: "Very beautiful embroidery",
-    comment: "Got this Royal Blue Suit and I'm in love! The premium rayon fabric feels silky and heavy, print quality is high, and the embroidery on the neck is extremely classy.",
-    productName: "Royal Blue Premium Rayon Suit",
-    productSlug: "white-royal-blue-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365719/products/main/IMG_0154_t0x2zq.jpg"
+    comment: "Got this Mocha Brown set and I'm in love! The premium fabric feels silky and heavy, print quality is high, and the embroidery on the neck is extremely classy.",
+    productName: "Mocha Brown Embroidered Farshi Suit",
+    productSlug: "mocha-brown-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404770/products/gallery/8014d4be-6474-472d-9ec7-38ccd112cbed_l3vb3"
   },
   {
     id: "rev_6",
     name: "Zoya N.",
     rating: 5,
     title: "Extremely comfortable",
-    comment: "Olive Green Premium Suit is super comfortable. Perfect for both office wear and daily wear. Fabric does not bleed color, and the lace work on dupatta is very neat.",
-    productName: "Olive Green Premium Rayon Suit",
-    productSlug: "olive-green-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777365889/products/main/IMG_0161_z8c9ii.jpg"
+    comment: "The Deep Black suit is super comfortable. Perfect for both events and daily wear. Fabric does not bleed color, and the embroidery work is very neat.",
+    productName: "Deep Black Embroidered Farshi Suit",
+    productSlug: "black-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404825/products/gallery/475bfc50-1636-4ede-a703-2351c1637f79_ezkpt"
   },
   {
     id: "rev_7",
     name: "Shabana Begum",
     rating: 5,
     title: "Highly recommended",
-    comment: "Loved the Deep Purple shade! It looks incredibly elegant, rayon cotton blend is breathable and premium, and the dupatta is soft and printed beautifully.",
-    productName: "Deep Purple Premium Rayon Suit",
-    productSlug: "deep-purple-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366008/products/main/IMG_0164_huxutc.jpg"
+    comment: "Loved the Navy Blue shade! It looks incredibly elegant, fabric blend is breathable and premium, and the dupatta is soft and printed beautifully.",
+    productName: "Navy Blue Embroidered Farshi Suit",
+    productSlug: "navy-blue-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404857/products/gallery/2d1477be-389e-465a-8ce8-cf40587f68ce_uce9g"
   },
   {
     id: "rev_8",
     name: "Amina K.",
     rating: 5,
     title: "Stunning outfit",
-    comment: "The Sky Blue Floral suit is a head-turner. Got so many compliments at a family lunch. Chiffon dupatta is very flowy and the floral details look so soft and chic.",
-    productName: "Sky Blue Floral Rayon Suit",
-    productSlug: "sky-blue-floral-premium-rayon-cotton-embroidered-suit-with-chiffon-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366236/products/gallery/IMG_9877_avnpzo.jpg"
+    comment: "The Maroon Farshi suit is a head-turner. Got so many compliments at a family lunch. The embroidery details look so soft and chic. 100% worth it!",
+    productName: "Maroon Embroidered Farshi Suit",
+    productSlug: "maroon-embroidered-farshi-suit-set",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785404888/products/gallery/1B21B4AF-9846-4B68-BD1E-51DCA72328CF_c5p4w"
   },
   {
     id: "rev_9",
     name: "Ayisha Siddiqua",
     rating: 5,
     title: "Absolutely amazing 🤩",
-    comment: "Bought the Black & Red suit too and it's as gorgeous as the others. Great customer service, excellent stitching guide, and fast shipping to my doorstep.",
-    productName: "Black & Red Premium Rayon Suit",
-    productSlug: "black-red-premium-rayon-cotton-embroidered-suit-with-printed-dupatta",
-    imageUrl: "https://res.cloudinary.com/techsrow/image/upload/v1777366939/products/main/IMG_9901_dmfhuu.jpg"
+    comment: "Bought the Dusty Rose Pink suit too and it's as gorgeous as the others. Great customer service, excellent stitching guide, and fast shipping to my doorstep.",
+    productName: "Dusty Rose Pink Pure Cotton Suit",
+    productSlug: "dusty-rose-pink-pure-cotton-patch-work-suit",
+    imageUrl: "https://res.cloudinary.com/ifm9ihwo/image/upload/v1785421348/products/gallery/4865e000-e0e7-4b53-94af-9b3c43887bfb_prusx"
   }
 ];
 
@@ -181,12 +182,10 @@ export default function ReviewsSection() {
                 <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-all duration-300">
                   {/* Product Image */}
                   <div className="w-full aspect-[3/4] relative overflow-hidden bg-neutral-50">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={rev.imageUrl}
+                    <SafeImage
+                      src={rev.imageUrl || ""}
                       alt={rev.productName}
                       className="w-full h-full object-cover object-center"
-                      loading="lazy"
                     />
                   </div>
                   

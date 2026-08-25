@@ -343,8 +343,9 @@ export default function PlumProductCard({
   );
   const off = pctOff(mrp, sale);
 
-  // Stock: any size in active color in stock
-  const inStock = activeColor?.sizes?.some((s) => (s.stockQuantity ?? 0) > 0) ?? false;
+  // Stock: find first size in active color that is actually in stock
+  const inStockSize = activeColor?.sizes?.find((s) => (s.stockQuantity ?? 0) > 0);
+  const inStock = Boolean(inStockSize);
 
   // ✅ Image: color-specific image > product main image
   const img = useMemo(() => {
@@ -357,22 +358,23 @@ export default function PlumProductCard({
   const badge = badges[index % badges.length];
 
   const handleAdd = async () => {
-    if (!firstSize?.id) {
+    const targetSize = inStockSize || firstSize;
+    if (!targetSize?.id || (targetSize.stockQuantity ?? 0) <= 0) {
       window.location.href = `/products/${product.slug}`;
       return;
     }
     setAdding(true);
     try {
-      await addToCart(firstSize.id, 1, {
+      await addToCart(targetSize.id, 1, {
         productId: product.id,
         name: product.name,
         price: sale,
         mrp: mrp > sale ? mrp : undefined,
         imageUrl: img,
         variant: {
-          size: firstSize.size || undefined,
+          size: targetSize.size || undefined,
           color: activeColor?.color || undefined,
-          weight: (firstSize.weight as any) || undefined,
+          weight: (targetSize.weight as any) || undefined,
         },
       });
       toast.success("Added to cart 🛒", { position: "top-right", duration: 2000 });
