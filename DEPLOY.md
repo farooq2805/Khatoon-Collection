@@ -1,65 +1,45 @@
-# Deploying khatooncollection.in on our own server
+# Deploying khatooncollection.in
 
-The storefront runs on the same Ubuntu server as the API (72.62.196.65), behind Nginx, managed by PM2 on port 3003.
+The storefront runs on the Hostinger VPS (72.62.196.65, CloudPanel on Ubuntu 24.04), next to the API.
 
 ```
-Browser ──HTTPS──> Nginx (:443) ──> Next.js (PM2, 127.0.0.1:3003) ──> api.khatooncollection.in
+Browser ──HTTPS──> Nginx (CloudPanel site, rate limited) ──> Next.js (PM2 "khatoon-web", 127.0.0.1:3003) ──> api.khatooncollection.in
 ```
 
-## 1. Copy the environment variables from Vercel
+| What | Where |
+|------|-------|
+| Live code | `/home/khatooncollection/htdocs/khatooncollection.in` |
+| Previous release (rollback) | `/home/khatooncollection/release-previous` |
+| Env vars | `.env.production` in the live folder (copied into every release) |
+| Nginx site | `/etc/nginx/sites-enabled/khatooncollection.in.conf` (edit via CloudPanel → Sites → Vhost) |
+| Process | `pm2 list` / `pm2 logs khatoon-web` (as root) |
 
-Vercel → khatoon-collection → Settings → Environment Variables. Note the values for every key listed in `.env.example`.
-Generate a new `PROSPECTS_API_KEY` (any long random string, e.g. `openssl rand -hex 32`).
+## Deploy the latest `main`
 
-## 2. One-time server setup (SSH in as root)
+Open Hostinger → VPS → Web console (or SSH as root) and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/farooq2805/Khatoon-Collection/main/deploy/setup-server.sh -o setup-server.sh
-bash setup-server.sh
-nano /var/www/khatoon-web/.env.production      # paste the values from step 1
-bash /var/www/khatoon-web/deploy/deploy.sh
-pm2 startup                                      # run the command it prints, so the site survives reboots
+bash /home/khatooncollection/htdocs/khatooncollection.in/deploy/deploy.sh
 ```
 
-Check the app answers locally: `curl -I http://127.0.0.1:3003` should return `200`.
+It builds in a separate folder while the current site keeps running, then swaps it in.
 
-## 3. Nginx
+Something wrong after a deploy? Roll back:
 
 ```bash
-cp /var/www/khatoon-web/deploy/nginx-khatooncollection.conf /etc/nginx/sites-available/khatooncollection.in
-ln -s /etc/nginx/sites-available/khatooncollection.in /etc/nginx/sites-enabled/
-nginx -t && systemctl reload nginx
+ROLLBACK=1 bash /home/khatooncollection/htdocs/khatooncollection.in/deploy/deploy.sh
 ```
 
-## 4. Point the domain at the server
+## Rate limiting
 
-At the domain registrar / DNS provider:
+The vhost limits each IP to 20 requests/second (burst 40) and answers `429` beyond that.
+If you edit the vhost in CloudPanel, keep these lines:
 
-| Type | Name | Value |
-|------|------|-------|
-| A | `@` | `72.62.196.65` (replaces `76.76.21.21`) |
-| A | `www` | `72.62.196.65` (replace the Vercel CNAME/A) |
+- top of the file: `limit_req_zone $binary_remote_addr zone=khatoon_web:10m rate=20r/s;` and `limit_req_status 429;`
+- in `location /`, before `proxy_pass`: `limit_req zone=khatoon_web burst=40 nodelay;`
 
-Remove any AAAA records pointing at Vercel. Then remove the domain from the Vercel project (Settings → Domains) so Vercel stops claiming it.
+## SSL
 
-## 5. HTTPS (after DNS has switched — check with `nslookup khatooncollection.in`)
-
-```bash
-certbot --nginx -d khatooncollection.in -d www.khatooncollection.in --redirect
-```
-
-Certbot renews automatically.
-
-## Updating the site later
-
-Push to `main` on GitHub, then on the server:
-
-```bash
-bash /var/www/khatoon-web/deploy/deploy.sh
-```
-
-## Troubleshooting
-
-- Logs: `pm2 logs khatoon-web`
-- Restart: `pm2 restart khatoon-web`
-- Build killed / "JavaScript heap out of memory": the server needs more RAM or swap (setup script adds 2 GB swap on small servers).
+CloudPanel → Sites → khatooncollection.in → SSL/TLS → Actions → New Let's Encrypt Certificate
+(or `clpctl lets-encrypt:install:certificate --domainName=khatooncollection.in --subjectAlternativeName=www.khatooncollection.in`).
+It only works while the domain's DNS points at 72.62.196.65.
