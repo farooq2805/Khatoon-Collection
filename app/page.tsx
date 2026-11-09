@@ -3,7 +3,9 @@ import CategoryStrip from "@/components/home/CategoryStrip";
 import TwoBannerGrid from "@/components/home/TwoBannerGrid";
 import NewArrivalsClearance from "@/components/home/NewArrivalsClearance";
 import ServicePaymentSection from "@/components/ServicePaymentSection";
+import InstagramReels from "@/components/home/InstagramReels";
 import ReviewsSection from "@/components/home/ReviewsSection";
+import { getInstagramFeed } from "@/lib/instagram";
 import { reportSystemError } from "@/utils/errorHandler";
 
 // Enable 60-second Incremental Static Regeneration for fast edge caching
@@ -50,7 +52,10 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { sliderData, categoriesData, bannerData, productsData } = await getHomeData();
+  const [{ sliderData, categoriesData, bannerData, productsData }, instagramFeed] = await Promise.all([
+    getHomeData(),
+    getInstagramFeed(6),
+  ]);
 
   return (
     <main>
