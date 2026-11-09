@@ -32,5 +32,5 @@ pm2 restart khatoon-web
 
 sleep 5
 code=$(curl -sk -o /dev/null -w '%{http_code}' --resolve khatooncollection.in:443:127.0.0.1 https://khatooncollection.in/)
-echo "Deployed $(git -C "$LIVE" log --oneline -1) - homepage HTTP $code"
+echo "Deployed $(git -c safe.directory='*' -C "$LIVE" log --oneline -1) - homepage HTTP $code"
 [ "$code" = "200" ] || echo "WARNING: homepage not 200; run with ROLLBACK=1 to restore the previous release"
