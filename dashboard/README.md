@@ -6,7 +6,7 @@ and shares the login with the classic dashboard (`localStorage.adminToken`).
 ```bash
 cd dashboard
 npm install
-npm run dev      # http://localhost:5173/new/
+npm run dev      # http://localhost:5173/
 npm run build    # dist/ (deploy/deploy.sh builds and publishes it automatically)
 ```
 

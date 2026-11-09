@@ -33,14 +33,21 @@ cd "$NEW"
 npm ci --no-audit --no-fund
 npm run build
 
-# Admin dashboard (dashboard/), published under /new/ until the switch-over
+# Admin dashboard (dashboard/): published as app.html + app-assets/ in the
+# dashboard webroot. Nginx sends the rebuilt pages to app.html and everything
+# else to the classic dashboard (index.html + assets/) on the same domain.
 if [ -d "$NEW/dashboard" ]; then
   (cd "$NEW/dashboard" && npm ci --no-audit --no-fund && npm run build)
-  rm -rf "$DASHBOARD_WEBROOT/new.tmp"
-  cp -a "$NEW/dashboard/dist" "$DASHBOARD_WEBROOT/new.tmp"
+  rm -rf "$DASHBOARD_WEBROOT/app-assets.tmp"
+  cp -a "$NEW/dashboard/dist/app-assets" "$DASHBOARD_WEBROOT/app-assets.tmp"
+  cp "$NEW/dashboard/dist/index.html" "$DASHBOARD_WEBROOT/app.html.tmp"
+  # keep the previous build's chunks so open tabs don't break mid-deploy
+  cp -an "$DASHBOARD_WEBROOT/app-assets/." "$DASHBOARD_WEBROOT/app-assets.tmp/" 2>/dev/null || true
+  rm -rf "$DASHBOARD_WEBROOT/app-assets"
+  mv "$DASHBOARD_WEBROOT/app-assets.tmp" "$DASHBOARD_WEBROOT/app-assets"
+  mv "$DASHBOARD_WEBROOT/app.html.tmp" "$DASHBOARD_WEBROOT/app.html"
   rm -rf "$DASHBOARD_WEBROOT/new"
-  mv "$DASHBOARD_WEBROOT/new.tmp" "$DASHBOARD_WEBROOT/new"
-  chown -R khatoon_sftp:khatooncollection-api "$DASHBOARD_WEBROOT/new"
+  chown -R khatoon_sftp:khatooncollection-api "$DASHBOARD_WEBROOT/app-assets" "$DASHBOARD_WEBROOT/app.html"
   rm -rf "$NEW/dashboard/node_modules"
 fi
 
