@@ -5,7 +5,15 @@ import { api, listFrom, STORE_URL } from "../lib/api";
 import { inr } from "../lib/format";
 import { Badge, Empty, ErrorNote, PageHeader, Spinner, Tabs, Thumb } from "../components/ui";
 
-type Variant = { id: number; size?: string | null; color?: string | null; stockQuantity?: number; isActive?: boolean };
+type Variant = {
+  id: number;
+  size?: string | null;
+  color?: string | null;
+  stockQuantity?: number;
+  isActive?: boolean;
+  price?: string | number;
+  discountPrice?: string | number | null;
+};
 type Product = {
   id: number;
   name: string;
@@ -29,7 +37,16 @@ const imageOf = (p: Product) =>
   p.mainImageUrl || p.imageUrl || (Array.isArray(p.images) && p.images[0] ? (typeof p.images[0] === "string" ? p.images[0] : p.images[0].url) : null);
 const stockOf = (p: Product) => (p.variants?.length ? p.variants.reduce((s, v) => s + Number(v.stockQuantity || 0), 0) : null);
 const soldOutSizes = (p: Product) => (p.variants || []).filter((v) => v.isActive !== false && Number(v.stockQuantity || 0) <= 0);
-const lowSizes = (p: Product) => (p.variants || []).filter((v) => v.isActive !== false && Number(v.stockQuantity || 0) > 0 && Number(v.stockQuantity) <= 5);
+const LOW_STOCK = 2;
+const lowSizes = (p: Product) => (p.variants || []).filter((v) => v.isActive !== false && Number(v.stockQuantity || 0) > 0 && Number(v.stockQuantity) <= LOW_STOCK);
+/** Selling price: lowest active size price (discount if set), else the product's own price. */
+const priceOf = (p: Product) => {
+  const prices = (p.variants || [])
+    .filter((v) => v.isActive !== false)
+    .map((v) => Number(v.discountPrice || v.price || 0))
+    .filter((n) => n > 0);
+  return prices.length ? Math.min(...prices) : Number(p.discountPrice || p.price || 0);
+};
 const categoryOf = (p: Product) => (typeof p.category === "string" ? p.category : p.category?.name) || "";
 
 export default function Products() {
@@ -41,7 +58,7 @@ export default function Products() {
   const [busy, setBusy] = useState<number | null>(null);
 
   useEffect(() => {
-    api("/products/admin/all")
+    api("/products")
       .then((r) => setProducts(listFrom<Product>(r)))
       .catch((e) => setError(e.message));
   }, []);
@@ -101,7 +118,7 @@ export default function Products() {
             { value: "hidden", label: "Hidden", count: count("hidden") },
             ...(hasStock
               ? [
-                  { value: "low" as Filter, label: "Low stock", count: count("low") },
+                  { value: "low" as Filter, label: `${LOW_STOCK} or fewer left`, count: count("low") },
                   { value: "out" as Filter, label: "Sizes sold out", count: count("out") },
                 ]
               : []),
@@ -127,7 +144,7 @@ export default function Products() {
                   const stock = stockOf(p);
                   const out = soldOutSizes(p);
                   const low = lowSizes(p);
-                  const price = Number(p.discountPrice || p.price || 0);
+                  const price = priceOf(p);
                   return (
                     <tr key={p.id} className={`table-row ${p.isActive === false ? "opacity-60" : ""}`}>
                       <td>

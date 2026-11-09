@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ArrowDownRight, ArrowUpRight, PackageCheck, ShoppingCart, Star, AlertTriangle, ChevronRight } from "lucide-react";
 import { api } from "../lib/api";
-import { useOrders, isPaid, customerName, type Order } from "../lib/orders";
+import { useOrders, isPaid, isToShip, isUnpaidAttempt, customerName, TO_SHIP_DAYS, type Order } from "../lib/orders";
 import { inr, istDayStart, orderNo, pctChange, timeAgo } from "../lib/format";
 import { PageHeader, Spinner, StatusBadge, Tabs, Thumb, ErrorNote } from "../components/ui";
 
@@ -115,8 +115,8 @@ export default function Overview() {
       conversion,
       chart,
       top,
-      toShip: orders.filter((o) => o.paymentStatus === "Paid" && o.status === "Confirmed"),
-      unpaid: orders.filter((o) => o.status !== "Cancelled" && o.paymentStatus !== "Paid" && Date.now() - new Date(o.orderDate).getTime() < 7 * 86400e3),
+      toShip: orders.filter(isToShip),
+      unpaid: orders.filter((o) => isUnpaidAttempt(o) && Date.now() - new Date(o.orderDate).getTime() < 7 * 86400e3),
       recent: orders.slice(0, 8),
     };
   }, [orders, range]);
@@ -158,9 +158,9 @@ export default function Overview() {
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:mt-6 lg:grid-cols-4 lg:gap-4">
-        <ActionCard to="/orders?tab=Confirmed" icon={<PackageCheck className="h-5 w-5" />} tone="bg-sky-50 text-sky-600" title="to ship" count={m.toShip.length} text="Paid and confirmed, not shipped yet" />
+        <ActionCard to="/orders?tab=Confirmed" icon={<PackageCheck className="h-5 w-5" />} tone="bg-sky-50 text-sky-600" title="to ship" count={m.toShip.length} text={`Paid in the last ${TO_SHIP_DAYS} days, not marked shipped`} />
         <ActionCard to="/abandoned" icon={<ShoppingCart className="h-5 w-5" />} tone="bg-amber-50 text-amber-600" title="unpaid checkouts" count={m.unpaid.length} text="Last 7 days · follow up on WhatsApp" />
-        <ActionCard to="/products?stock=low" icon={<AlertTriangle className="h-5 w-5" />} tone="bg-red-50 text-red-600" title="stock alerts" count={(stats?.outOfStockVariants ?? 0) + (stats?.lowStockVariants ?? 0)} text={`${stats?.outOfStockVariants ?? 0} sold out · ${stats?.lowStockVariants ?? 0} running low`} />
+        <ActionCard to="/products?filter=out" icon={<AlertTriangle className="h-5 w-5" />} tone="bg-red-50 text-red-600" title="sizes sold out" count={stats?.outOfStockVariants ?? 0} text="Restock or hide so shoppers don't hit dead ends" />
         <ActionCard to={`${window.location.origin}/reviews`} icon={<Star className="h-5 w-5" />} tone="bg-violet-50 text-violet-600" title="reviews to approve" count={stats?.pendingReviews ?? 0} text="Approve to show on product pages" />
       </div>
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Download, Search, ShoppingBag, RefreshCw } from "lucide-react";
-import { useOrders, customerName, customerPhone, customerEmail, type Order } from "../lib/orders";
+import { useOrders, customerName, customerPhone, customerEmail, isToShip, type Order } from "../lib/orders";
 import { dateTime, inr, istDayStart, orderNo, timeAgo } from "../lib/format";
 import { Empty, ErrorNote, PageHeader, Spinner, StatusBadge, Tabs, Thumb } from "../components/ui";
 
@@ -10,7 +10,7 @@ type Period = "7" | "30" | "90" | "all";
 
 const TAB_FILTERS: Record<Tab, (o: Order) => boolean> = {
   all: () => true,
-  Confirmed: (o) => o.paymentStatus === "Paid" && o.status === "Confirmed",
+  Confirmed: isToShip,
   unpaid: (o) => o.paymentStatus !== "Paid" && o.status !== "Cancelled",
   Shipped: (o) => o.status === "Shipped",
   Delivered: (o) => o.status === "Delivered",

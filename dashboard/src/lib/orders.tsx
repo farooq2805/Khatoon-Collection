@@ -45,6 +45,14 @@ export type Order = {
 export const ORDER_STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"] as const;
 
 export const isPaid = (o: Order) => o.paymentStatus === "Paid" && o.status !== "Cancelled";
+
+/** Paid, confirmed and recent. Older "Confirmed" orders were shipped without a status update. */
+export const TO_SHIP_DAYS = 14;
+export const isToShip = (o: Order) =>
+  o.paymentStatus === "Paid" && o.status === "Confirmed" && Date.now() - new Date(o.orderDate).getTime() < TO_SHIP_DAYS * 86400e3;
+
+/** Checkout started but never paid (unpaid orders are auto-cancelled after 30 min). */
+export const isUnpaidAttempt = (o: Order) => o.paymentStatus !== "Paid" && o.paymentStatus !== "Refunded";
 export const customerName = (o: Order) =>
   o.customerName || [o.user?.firstName, o.user?.lastName].filter(Boolean).join(" ") || "Guest";
 export const customerPhone = (o: Order) => o.guestPhone || o.user?.phone || null;

@@ -18,7 +18,7 @@ import {
   Store,
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
-import { useOrders } from "../lib/orders";
+import { useOrders, isToShip } from "../lib/orders";
 import { STORE_URL } from "../lib/api";
 
 // Pages not rebuilt yet open in the classic dashboard (same login).
@@ -56,7 +56,7 @@ function NavItem({ item, onClick }: { item: Item; onClick?: () => void }) {
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { user, logout } = useAuth();
   const { orders } = useOrders();
-  const toConfirm = orders.filter((o) => o.paymentStatus === "Paid" && o.status === "Confirmed").length;
+  const toConfirm = orders.filter(isToShip).length;
   const icon = "h-4 w-4";
 
   const groups: { label: string; items: Item[] }[] = [
