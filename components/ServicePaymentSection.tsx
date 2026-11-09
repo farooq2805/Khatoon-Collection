@@ -17,7 +17,7 @@ export default function ServicePaymentSection() {
               <FiTruck className="w-6 h-6" />
             </div>
             <div>
-              <p className="font-semibold">Shipping Across India</p>
+              <p className="font-semibold">Worldwide Shipping</p>
             </div>
           </div>
 
