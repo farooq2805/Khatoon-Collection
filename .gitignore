@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# large archives must not be served publicly
+/public/*.zip
+!.env.example

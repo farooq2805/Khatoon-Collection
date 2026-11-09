@@ -3,6 +3,11 @@ import fs from "fs";
 import path from "path";
 
 export async function POST(request: Request) {
+  const key = process.env.PROSPECTS_API_KEY;
+  if (!key || request.headers.get("authorization") !== `Bearer ${key}`) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const reels = body.reels;

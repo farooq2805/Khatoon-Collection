@@ -1,14 +1,29 @@
 import { NextResponse } from "next/server";
 
+// Prospects hold customer names, phones and addresses: listing them requires
+// PROSPECTS_API_KEY, sent by the admin dashboard as "Authorization: Bearer <key>".
+function isAuthorized(request: Request): boolean {
+  const key = process.env.PROSPECTS_API_KEY;
+  if (!key) return false;
+  const header = request.headers.get("authorization") || "";
+  return header === `Bearer ${key}` || request.headers.get("x-api-key") === key;
+}
+
 export async function OPTIONS() {
   const response = new NextResponse(null, { status: 204 });
   response.headers.set("Access-Control-Allow-Origin", "*");
   response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
   return response;
 }
 
 export async function GET(request: Request) {
+  if (!isAuthorized(request)) {
+    const errRes = NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    errRes.headers.set("Access-Control-Allow-Origin", "*");
+    return errRes;
+  }
+
   try {
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_ANON_KEY;
@@ -21,7 +36,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") || "100";
+    const limit = Math.min(Math.max(parseInt(searchParams.get("limit") || "100", 10) || 100, 1), 500);
 
     const url = `${supabaseUrl.replace(/\/$/, "")}/rest/v1/prospects?select=*&order=created_at.desc&limit=${limit}`;
 
@@ -88,6 +103,12 @@ export async function POST(request: Request) {
         { success: false, error: "Supabase environment variables are missing." },
         { status: 500 }
       );
+      errRes.headers.set("Access-Control-Allow-Origin", "*");
+      return errRes;
+    }
+
+    if (body.id !== undefined && !/^[A-Za-z0-9-]{1,64}$/.test(String(body.id))) {
+      const errRes = NextResponse.json({ success: false, error: "Invalid id" }, { status: 400 });
       errRes.headers.set("Access-Control-Allow-Origin", "*");
       return errRes;
     }
