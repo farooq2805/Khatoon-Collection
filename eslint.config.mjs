@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Admin dashboard and API patches are separate apps
+    "dashboard/**",
+    "ops/**",
   ]),
 ]);
 

@@ -16,6 +16,15 @@ if [ "${ROLLBACK:-0}" = "1" ]; then
   pm2 restart khatoon-web && echo "Rolled back"; exit 0
 fi
 
+API_ENV=/home/khatooncollection-api/htdocs/api.khatooncollection.in/.env
+DASHBOARD_WEBROOT=/home/khatooncollection-api/htdocs/dashboard.khatooncollection.in
+
+# The store shares the API's database (abandoned-cart storage); copy the
+# connection string over once, without printing it.
+if ! grep -q '^DATABASE_URL=' "$LIVE/.env.production" && grep -q '^DATABASE_URL=' "$API_ENV"; then
+  grep '^DATABASE_URL=' "$API_ENV" >> "$LIVE/.env.production"
+fi
+
 rm -rf "$NEW"
 git clone -q --depth 1 -b "$BRANCH" https://github.com/farooq2805/Khatoon-Collection.git "$NEW"
 cp "$LIVE/.env.production" "$NEW/"
@@ -23,6 +32,17 @@ cp -a "$LIVE/.well-known" "$NEW/" 2>/dev/null || true
 cd "$NEW"
 npm ci --no-audit --no-fund
 npm run build
+
+# Admin dashboard (dashboard/), published under /new/ until the switch-over
+if [ -d "$NEW/dashboard" ]; then
+  (cd "$NEW/dashboard" && npm ci --no-audit --no-fund && npm run build)
+  rm -rf "$DASHBOARD_WEBROOT/new.tmp"
+  cp -a "$NEW/dashboard/dist" "$DASHBOARD_WEBROOT/new.tmp"
+  rm -rf "$DASHBOARD_WEBROOT/new"
+  mv "$DASHBOARD_WEBROOT/new.tmp" "$DASHBOARD_WEBROOT/new"
+  chown -R khatoon_sftp:khatooncollection-api "$DASHBOARD_WEBROOT/new"
+  rm -rf "$NEW/dashboard/node_modules"
+fi
 
 rm -rf "$PREV"
 mv "$LIVE" "$PREV"

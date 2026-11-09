@@ -74,7 +74,7 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [prospectId, setProspectId] = useState<number | null>(null);
+  const [prospectId, setProspectId] = useState<string | null>(null);
 
   // ── Modal State ──────────────────────────────────────────────
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -285,6 +285,8 @@ function CheckoutContent() {
             name: item.name,
             price: item.effectivePrice || item.price,
             quantity: item.quantity,
+            image: item.imageUrl || item.image || null,
+            variant: item.variantLabel || [item.color, item.size].filter(Boolean).join(" / ") || null,
           })),
           cartTotal: previewTotal,
           status: "pending",
@@ -346,7 +348,7 @@ function CheckoutContent() {
 
   // ── Helper Functions ─────────────────────────────────────────
 
-  async function markProspectCompleted(id: number) {
+  async function markProspectCompleted(id: string) {
     try {
       await fetch("/api/prospects", {
         method: "POST",
