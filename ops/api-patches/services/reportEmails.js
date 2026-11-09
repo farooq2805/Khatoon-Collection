@@ -160,24 +160,43 @@ const ORDER_SELECT = {
     paymentStatus: true,
     status: true,
     orderDate: true,
-    orderItems: { select: { productName: true, quantity: true, unitPrice: true } },
+    orderItems: { select: { productName: true, quantity: true, unitPrice: true, imageUrl: true } },
 };
+
+// Photos on the disabled Cloudinary accounts no longer load; skip them.
+function usableImage(url) {
+    return typeof url === "string" && /^https:\/\//.test(url) && !/res\.cloudinary\.com\/(techsrow|ifm9ihwo)\//.test(url);
+}
+function thumb(url, alt, size = 44) {
+    const h = Math.round(size * 1.3);
+    return usableImage(url)
+        ? `<img src="${esc(url)}" alt="${esc(alt)}" width="${size}" height="${h}" style="display:block;width:${size}px;height:${h}px;object-fit:cover;border-radius:6px;border:1px solid ${C.line};">`
+        : `<div style="width:${size}px;height:${h}px;border-radius:6px;background:#f3ece8;"></div>`;
+}
+function productCell(name, url, extra) {
+    return `<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td valign="top" style="padding-right:10px;">${thumb(url, name)}</td>
+      <td valign="middle" style="font-family:${FONT};font-size:13px;color:${C.ink};">${esc(name)}${extra ? `<br><span style="color:${C.muted};font-size:12px;">${extra}</span>` : ""}</td>
+    </tr></table>`;
+}
 
 async function buildSalesReport(now = new Date()) {
     const yStart = istDayStart(now, -1);
     const tStart = istDayStart(now, 0);
     const dbStart = istDayStart(now, -2);
+    const weekStart = istDayStart(now, -7);
     const mStart = istMonthStart(yStart);
 
-    const [yPaid, yPending, yFailed, prevPaid, todayPaid, monthPaid, allPaid] = await Promise.all([
-        prisma.order.findMany({ where: Object.assign({ orderDate: { gte: yStart, lt: tStart } }, PAID), select: ORDER_SELECT, orderBy: { orderDate: "asc" } }),
+    const [week, yPending, yFailed, todayPaid, monthPaid, allPaid] = await Promise.all([
+        prisma.order.findMany({ where: Object.assign({ orderDate: { gte: weekStart, lt: tStart } }, PAID), select: ORDER_SELECT, orderBy: { orderDate: "asc" } }),
         prisma.order.findMany({ where: { orderDate: { gte: yStart, lt: tStart }, paymentStatus: "Pending", status: { not: "Cancelled" } }, select: ORDER_SELECT }),
         prisma.order.findMany({ where: { orderDate: { gte: yStart, lt: tStart }, OR: [{ status: "Cancelled" }, { paymentStatus: "Failed" }] }, select: ORDER_SELECT, orderBy: { orderDate: "asc" } }),
-        prisma.order.findMany({ where: Object.assign({ orderDate: { gte: dbStart, lt: yStart } }, PAID), select: { totalAmount: true } }),
         prisma.order.findMany({ where: Object.assign({ orderDate: { gte: tStart } }, PAID), select: { totalAmount: true } }),
         prisma.order.findMany({ where: Object.assign({ orderDate: { gte: mStart, lt: tStart } }, PAID), select: { totalAmount: true } }),
         prisma.order.aggregate({ where: PAID, _sum: { totalAmount: true }, _count: { _all: true } }),
     ]);
+    const yPaid = week.filter((o) => new Date(o.orderDate) >= yStart);
+    const prevPaid = week.filter((o) => new Date(o.orderDate) >= dbStart && new Date(o.orderDate) < yStart);
 
     const revenue = sum(yPaid);
     const itemsSold = yPaid.reduce((s, o) => s + o.orderItems.reduce((a, it) => a + Number(it.quantity || 0), 0), 0);
@@ -186,18 +205,35 @@ async function buildSalesReport(now = new Date()) {
     const dateLabel = fmtDate(yStart, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     const shortDate = fmtDate(yStart, { day: "2-digit", month: "short", year: "numeric" });
 
-    // Top products by units sold yesterday
+    // Last 7 days, one row per IST day (oldest first)
+    const days = [];
+    for (let d = -7; d <= -1; d++) {
+        const start = istDayStart(now, d);
+        const end = istDayStart(now, d + 1);
+        const orders = week.filter((o) => new Date(o.orderDate) >= start && new Date(o.orderDate) < end);
+        days.push({ label: fmtDate(start, { weekday: "short", day: "numeric", month: "short" }), orders: orders.length, revenue: sum(orders) });
+    }
+    const weekRevenue = days.reduce((s, d) => s + d.revenue, 0);
+    const bestDay = Math.max(1, ...days.map((d) => d.revenue));
+    const bar = (v) => {
+        const w = Math.max(2, Math.round((v / bestDay) * 160));
+        return `<div style="width:${w}px;height:8px;border-radius:4px;background:${v ? C.accent : C.line};"></div>`;
+    };
+
+    // Best sellers over the last 7 days (with product photo)
     const byProduct = new Map();
-    for (const o of yPaid)
+    for (const o of week)
         for (const it of o.orderItems) {
-            const p = byProduct.get(it.productName) || { qty: 0, revenue: 0 };
+            const p = byProduct.get(it.productName) || { qty: 0, revenue: 0, image: null };
             p.qty += Number(it.quantity || 0);
             p.revenue += Number(it.quantity || 0) * Number(it.unitPrice || 0);
+            if (!p.image && usableImage(it.imageUrl))
+                p.image = it.imageUrl;
             byProduct.set(it.productName, p);
         }
     const topProducts = [...byProduct.entries()].sort((a, b) => b[1].qty - a[1].qty || b[1].revenue - a[1].revenue).slice(0, 5);
 
-    const itemsCell = (o) => o.orderItems.map((it) => `${esc(it.productName)} <span style="color:${C.muted};">× ${esc(it.quantity)}</span>`).join("<br>");
+    const itemsCell = (o) => o.orderItems.map((it) => productCell(it.productName, it.imageUrl, `Qty ${esc(it.quantity)} · ${inr(it.unitPrice)}`)).join(`<div style="height:8px;"></div>`);
     const methodLabel = (m) => ({ UPI: "UPI", CARD: "Card", NETBANKING: "Net banking", WALLET: "Wallet" })[m] || (m ? String(m) : "Online");
 
     const body = [
@@ -227,8 +263,14 @@ async function buildSalesReport(now = new Date()) {
                 color: yFailed.length ? C.bad : C.ink,
             },
         ])),
-        section("Best sellers yesterday", table([{ label: "Product" }, { label: "Units", align: "center" }, { label: "Revenue", align: "right" }], topProducts.map(([name, p]) => [esc(name), String(p.qty), `<strong>${inr(p.revenue)}</strong>`]), "No sales yesterday")),
-        section(`Paid orders (${yPaid.length})`, table([{ label: "Order" }, { label: "Customer" }, { label: "Items" }, { label: "Amount", align: "right" }], yPaid.slice(0, 30).map((o) => [
+        section("Last 7 days", table([{ label: "Day" }, { label: "Orders", align: "center" }, { label: "" }, { label: "Revenue", align: "right" }], days.map((d) => [
+            esc(d.label),
+            String(d.orders),
+            bar(d.revenue),
+            d.revenue ? `<strong>${inr(d.revenue)}</strong>` : `<span style="color:${C.muted};">—</span>`,
+        ]).concat([[`<strong>Total</strong>`, `<strong>${week.length}</strong>`, "", `<strong>${inr(weekRevenue)}</strong>`]]), "")),
+        section("Best sellers · last 7 days", table([{ label: "Product" }, { label: "Units", align: "center" }, { label: "Revenue", align: "right" }], topProducts.map(([name, p]) => [productCell(name, p.image), String(p.qty), `<strong>${inr(p.revenue)}</strong>`]), "No sales in the last 7 days")),
+        section(`Yesterday's paid orders (${yPaid.length})`, table([{ label: "Order" }, { label: "Customer" }, { label: "Items" }, { label: "Amount", align: "right" }], yPaid.slice(0, 30).map((o) => [
             `<strong style="white-space:nowrap;">${orderNo(o.id)}</strong><br><span style="color:${C.muted};font-size:12px;">${esc(methodLabel(o.paymentMethod))}</span>`,
             esc(o.customerName || "—"),
             itemsCell(o),
@@ -258,10 +300,21 @@ async function buildSalesReport(now = new Date()) {
     };
 }
 
+/** Sends through the shared transporter and logs the mail server's answer. */
+async function deliver(subject, html) {
+    const info = await mailer_1.transporter.sendMail({
+        from: process.env.MAIL_FROM || process.env.SMTP_USER,
+        to: REPORT_TO,
+        subject,
+        html,
+    });
+    console.log(`   ↳ accepted=${JSON.stringify(info.accepted)} rejected=${JSON.stringify(info.rejected)} id=${info.messageId} response="${info.response}"`);
+}
+
 async function sendDailySalesReport() {
     try {
         const { subject, html } = await buildSalesReport();
-        await mailer_1.sendMail({ to: REPORT_TO, subject, html });
+        await deliver(subject, html);
         console.log(`✅ Daily revenue report sent to ${REPORT_TO}: ${subject}`);
     }
     catch (err) {
@@ -373,7 +426,7 @@ async function buildHealthEmail(report) {
 async function sendHealthEmail(report) {
     try {
         const { subject, html } = await buildHealthEmail(report);
-        await mailer_1.sendMail({ to: REPORT_TO, subject, html });
+        await deliver(subject, html);
         console.log(`📧 [Health Check] Report emailed to ${REPORT_TO}: ${subject}`);
     }
     catch (err) {
