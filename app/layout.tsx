@@ -1,6 +1,24 @@
 import "./globals.css";
 
+import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://khatooncollection.in"),
+  title: {
+    default: "Khatoon Collection | Ethnic Suits, Co-ord Sets & Kaftans",
+    template: "%s | Khatoon Collection",
+  },
+  description:
+    "Shop premium ethnic wear at Khatoon Collection: embroidered suits, co-ord sets, kaftans and daily wear, delivered across India.",
+  openGraph: {
+    type: "website",
+    siteName: "Khatoon Collection",
+    locale: "en_IN",
+    images: ["/logo.png"],
+  },
+  twitter: { card: "summary_large_image" },
+};
 
 const playfair = Playfair_Display({
   subsets: ["latin"],

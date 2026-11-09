@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/products/[slug]/page.tsx
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "./ProductDetailsClient";
 
@@ -44,6 +45,47 @@ async function getRelated(slug: string) {
     console.error(`❌ Error fetching related products for ${slug}:`, err);
     return [];
   }
+}
+
+function plainText(html?: string, max = 160): string {
+  const text = (html || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) return { title: "Product not found" };
+
+  const image =
+    product.mainImageUrl ||
+    product.imageUrl ||
+    (Array.isArray(product.images) && (product.images[0]?.url || product.images[0]));
+  const price = product.discountPrice || product.price;
+  const description =
+    plainText(product.description).replace(product.name, "").trim() ||
+    `Buy ${product.name}${price ? ` at ₹${price}` : ""} from Khatoon Collection.`;
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: `/products/${slug}` },
+    openGraph: {
+      title: product.name,
+      description,
+      url: `/products/${slug}`,
+      images: image ? [image] : undefined,
+    },
+  };
 }
 
 export default async function ProductDetailsPage({

@@ -31,7 +31,7 @@ export default function ReturnPolicy() {
             Non-Returnable Items
           </h2>
           <p className="text-gray-600 text-sm md:text-base">
-            Due to hygiene and safety reasons, certain healthcare and personal care products
+            For hygiene reasons, certain items
             are non-returnable once opened or used.
           </p>
         </section>

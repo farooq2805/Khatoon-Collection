@@ -841,7 +841,7 @@ export default function ProductDetailsDesktop(props: any) {
                 <Accordion title="Shipping Information">
                  <div>
   <p>
-    Khatoon Collection is committed to delivering your healthcare products
+    Khatoon Collection is committed to delivering your orders
     safely and on time across India. Orders are usually processed within
     1–2 business days after payment confirmation.
   </p>

@@ -10,7 +10,7 @@ export default function ShippingPolicy() {
 
         <p className="text-gray-600 mb-6 text-sm md:text-base">
           At <span className="font-semibold">Khatoon Collection</span>, we are committed to delivering
-          your healthcare products safely and on time. Please review our shipping policy below.
+          your orders safely and on time. Please review our shipping policy below.
         </p>
 
         {/* Section */}

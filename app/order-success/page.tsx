@@ -44,7 +44,7 @@ export default function OrderSuccessPage() {
           <div className="flex justify-center">
             <video
     
-        src="https://res.cloudinary.com/techsrow/video/upload/v1764145155/alsaif/o6CXxTKYuL_csqsfv.mp4"        // put your file in /public/videos
+        src="/banner-video.mp4"
         controls                         // show play / pause / seek controls
         autoPlay                         // start automatically
         loop                             // continuous play

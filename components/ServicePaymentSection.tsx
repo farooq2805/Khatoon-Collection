@@ -1,6 +1,7 @@
 "use client";
 
-import { FiAward } from "react-icons/fi";
+import Link from "next/link";
+import { FiAward, FiTruck, FiShield } from "react-icons/fi";
 
 export default function ServicePaymentSection() {
   return (
@@ -9,17 +10,14 @@ export default function ServicePaymentSection() {
 
         {/* TOP INFO ROW */}
         <div className="grid grid-cols-1 md:grid-cols-3 border-b">
-          
-          {/* Worldwide Shipping */}
+
+          {/* Shipping */}
           <div className="flex items-center gap-4 p-6 border-r">
-            <img
-              src="https://res.cloudinary.com/techsrow/image/upload/v1768128314/crescent%20health%20Care/ICONS/fast_j2sk8b.png"
-              alt="Worldwide Shipping"
-              className="w-10 h-10"
-            />
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#f57bb4]/10 text-[#f57bb4]">
+              <FiTruck className="w-6 h-6" />
+            </div>
             <div>
-              <p className="font-semibold">Worldwide Shipping</p>
-             
+              <p className="font-semibold">Shipping Across India</p>
             </div>
           </div>
 
@@ -38,9 +36,12 @@ export default function ServicePaymentSection() {
             <p className="font-semibold text-lg">
               Have Queries or Concerns?
             </p>
-            <button className="border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition px-6 py-2 rounded-md font-semibold">
+            <Link
+              href="/contact"
+              className="border border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white transition px-6 py-2 rounded-md font-semibold"
+            >
               CONTACT US
-            </button>
+            </Link>
           </div>
 
         </div>
@@ -48,22 +49,19 @@ export default function ServicePaymentSection() {
         {/* PAYMENT ROW */}
         <div className="p-6">
           <p className="flex items-center gap-2 text-green-600 font-medium mb-4">
-            <span className="text-lg">✔</span>
-            100% Payment Protection, Easy Return Policy
+            <FiShield className="text-lg" />
+            100% Secure Payments via Razorpay, Easy Return Policy
           </p>
 
-          {/* PAYMENT ICONS */}
+          {/* PAYMENT METHODS */}
           <div className="flex flex-wrap items-center gap-2">
-            {[
-              "upi",
-          
-            ].map((icon) => (
-              <img
-                key={icon}
-                src="https://res.cloudinary.com/techsrow/image/upload/v1768127810/crescent%20health%20Care/End%20icons/Untitled%20design/web-payments_l7mmxs.png"
-                alt={icon}
-                className=" object-contain"
-              />
+            {["UPI", "Visa", "Mastercard", "RuPay", "Net Banking", "Wallets"].map((method) => (
+              <span
+                key={method}
+                className="px-3 py-1 text-xs font-semibold text-gray-700 border border-gray-200 rounded-md bg-gray-50"
+              >
+                {method}
+              </span>
             ))}
           </div>
         </div>
