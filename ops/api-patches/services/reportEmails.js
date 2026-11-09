@@ -19,7 +19,8 @@ const prisma_1 = require("../lib/prisma");
 const mailer_1 = require("../lib/mailer");
 
 const prisma = prisma_1.prisma;
-const REPORT_TO = "farooq2805@gmail.com";
+const REPORT_TO = "farooq2805@gmail.com"; // website health
+const REVENUE_TO = ["farooq2805@gmail.com", "sabirpathan1987@gmail.com", "khatooncollectionkc@gmail.com"];
 const SITE_URL = "https://khatooncollection.in";
 const DASHBOARD_URL = "https://panel.khatooncollection.in";
 const IST = "Asia/Kolkata";
@@ -301,10 +302,10 @@ async function buildSalesReport(now = new Date()) {
 }
 
 /** Sends through the shared transporter and logs the mail server's answer. */
-async function deliver(subject, html) {
+async function deliver(to, subject, html) {
     const info = await mailer_1.transporter.sendMail({
         from: process.env.MAIL_FROM || process.env.SMTP_USER,
-        to: REPORT_TO,
+        to,
         subject,
         html,
     });
@@ -314,8 +315,8 @@ async function deliver(subject, html) {
 async function sendDailySalesReport() {
     try {
         const { subject, html } = await buildSalesReport();
-        await deliver(subject, html);
-        console.log(`✅ Daily revenue report sent to ${REPORT_TO}: ${subject}`);
+        await deliver(REVENUE_TO, subject, html);
+        console.log(`✅ Daily revenue report sent to ${REVENUE_TO.join(", ")}: ${subject}`);
     }
     catch (err) {
         console.error("❌ Failed to send daily revenue report:", err);
@@ -426,7 +427,7 @@ async function buildHealthEmail(report) {
 async function sendHealthEmail(report) {
     try {
         const { subject, html } = await buildHealthEmail(report);
-        await deliver(subject, html);
+        await deliver(REPORT_TO, subject, html);
         console.log(`📧 [Health Check] Report emailed to ${REPORT_TO}: ${subject}`);
     }
     catch (err) {
