@@ -4,7 +4,7 @@ import TwoBannerGrid from "@/components/home/TwoBannerGrid";
 import NewArrivalsClearance from "@/components/home/NewArrivalsClearance";
 import ServicePaymentSection from "@/components/ServicePaymentSection";
 import InstagramReels from "@/components/home/InstagramReels";
-import ReviewsSection from "@/components/home/ReviewsSection";
+import HandpickedSection, { type HandpickedProduct } from "@/components/home/HandpickedSection";
 import { getInstagramFeed } from "@/lib/instagram";
 import { reportSystemError } from "@/utils/errorHandler";
 
@@ -51,10 +51,55 @@ async function getHomeData() {
   };
 }
 
+// "Handpicked For You": these featured suits first, topped up from the
+// Premium Branded collection so the row always has products in it.
+const HANDPICKED_SLUGS = [
+  "mocha-brown-embroidered-farshi-suit-set",
+  "black-embroidered-farshi-suit-set",
+  "navy-blue-embroidered-farshi-suit-set",
+  "maroon-embroidered-farshi-suit-set",
+];
+const HANDPICKED_FILL_CATEGORY = "premium-branded-collection";
+const HANDPICKED_COUNT = 8;
+
+function toHandpicked(p: any): HandpickedProduct | null {
+  const image = p?.mainImageUrl || p?.imageUrl || p?.images?.[0]?.url;
+  const price = Number(p?.discountPrice || p?.price);
+  if (!p?.slug || !image || !price || p.isActive === false) return null;
+  return { id: p.id, name: p.name, slug: p.slug, image, price };
+}
+
+async function getHandpicked(): Promise<HandpickedProduct[]> {
+  const api = process.env.NEXT_PUBLIC_API_URL || "https://api.khatooncollection.in/api";
+  const [featured, fill] = await Promise.all([
+    Promise.all(
+      HANDPICKED_SLUGS.map((slug) =>
+        fetchWithReporting(`${api}/publicproducts/slug/${slug}`, `handpicked-${slug}`)
+      )
+    ),
+    fetchWithReporting(
+      `${api}/publicproducts?limit=${HANDPICKED_COUNT}&category=${HANDPICKED_FILL_CATEGORY}`,
+      "handpicked-fill"
+    ),
+  ]);
+
+  const out: HandpickedProduct[] = [];
+  const seen = new Set<string>();
+  for (const p of [...featured.map((r) => r?.data), ...(Array.isArray(fill?.data) ? fill.data : [])]) {
+    const item = toHandpicked(p);
+    if (item && !seen.has(item.slug)) {
+      seen.add(item.slug);
+      out.push(item);
+    }
+  }
+  return out.slice(0, HANDPICKED_COUNT);
+}
+
 export default async function HomePage() {
-  const [{ sliderData, categoriesData, bannerData, productsData }, instagramFeed] = await Promise.all([
+  const [{ sliderData, categoriesData, bannerData, productsData }, instagramFeed, handpicked] = await Promise.all([
     getHomeData(),
     getInstagramFeed(6),
+    getHandpicked(),
   ]);
 
   return (
@@ -63,7 +108,8 @@ export default async function HomePage() {
       <CategoryStrip initialData={categoriesData} />
       <TwoBannerGrid initialData={bannerData} />
       <NewArrivalsClearance initialData={productsData} />
-      <ReviewsSection />
+      <InstagramReels feed={instagramFeed} />
+      <HandpickedSection products={handpicked} />
       <ServicePaymentSection />
     </main>
   );
