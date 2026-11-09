@@ -10,5 +10,5 @@ npm run dev      # http://localhost:5173/
 npm run build    # dist/ (deploy/deploy.sh builds and publishes it automatically)
 ```
 
-Pages: Overview, Orders (+ detail), Abandoned checkouts, Customers, Products.
-Product editing, categories, coupons, reviews and banners still open in the classic dashboard.
+Pages: Overview, Orders (+ detail), Abandoned checkouts, Customers, Products (+ add/edit/duplicate).
+Product add/edit is in the new dashboard; categories, coupons, reviews and banners still open in the classic dashboard.

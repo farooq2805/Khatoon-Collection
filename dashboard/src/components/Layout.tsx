@@ -73,7 +73,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       label: "Catalogue",
       items: [
         { to: "/products", label: "Products", icon: <Shirt className={icon} /> },
-        { to: CLASSIC("/products/new"), label: "Add product", icon: <Plus className={icon} />, external: true },
+        { to: "/products/new", label: "Add product", icon: <Plus className={icon} /> },
         { to: CLASSIC("/categories"), label: "Categories", icon: <FolderTree className={icon} />, external: true },
       ],
     },

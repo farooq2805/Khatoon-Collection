@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ExternalLink, Pencil, Plus, Search, Shirt } from "lucide-react";
 import { api, listFrom, STORE_URL } from "../lib/api";
 import { inr } from "../lib/format";
@@ -30,8 +30,6 @@ type Product = {
 
 type Filter = "all" | "active" | "hidden" | "low" | "out";
 
-// Product editing still lives in the classic dashboard (same login).
-const classic = (path: string) => `${window.location.origin}${path}`;
 
 const imageOf = (p: Product) =>
   p.mainImageUrl || p.imageUrl || (Array.isArray(p.images) && p.images[0] ? (typeof p.images[0] === "string" ? p.images[0] : p.images[0].url) : null);
@@ -101,9 +99,9 @@ export default function Products() {
         title="Products"
         subtitle={`${count("active")} live on the store · ${count("hidden")} hidden`}
         actions={
-          <a href={classic("/products/new")} className="btn-primary">
+          <Link to="/products/new" className="btn-primary">
             <Plus className="h-4 w-4" /> Add product
-          </a>
+          </Link>
         }
       />
       {error && <div className="mb-4"><ErrorNote message={error} /></div>}
@@ -185,9 +183,9 @@ export default function Products() {
                         <a href={`${STORE_URL}/products/${p.slug}`} target="_blank" rel="noreferrer" className="btn-ghost px-2" title="View on store">
                           <ExternalLink className="h-4 w-4" />
                         </a>
-                        <a href={classic(`/products/${p.id}/edit`)} className="btn-ghost px-2" title="Edit">
+                        <Link to={`/products/${p.id}/edit`} className="btn-ghost px-2" title="Edit">
                           <Pencil className="h-4 w-4" />
-                        </a>
+                        </Link>
                       </td>
                     </tr>
                   );

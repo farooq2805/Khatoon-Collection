@@ -13,6 +13,7 @@ import OrderDetail from "./pages/OrderDetail";
 import Abandoned from "./pages/Abandoned";
 import Customers from "./pages/Customers";
 import Products from "./pages/Products";
+import ProductEditor from "./pages/ProductEditor";
 
 function Protected() {
   const { user, ready } = useAuth();
@@ -38,6 +39,8 @@ createRoot(document.getElementById("root")!).render(
             <Route path="abandoned" element={<Abandoned />} />
             <Route path="customers" element={<Customers />} />
             <Route path="products" element={<Products />} />
+            <Route path="products/new" element={<ProductEditor />} />
+            <Route path="products/:id/edit" element={<ProductEditor />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

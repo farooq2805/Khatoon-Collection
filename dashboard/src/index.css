@@ -52,6 +52,22 @@
 }
 
 @layer components {
+  .rich-text:empty::before {
+    content: attr(data-placeholder);
+    @apply text-neutral-400;
+  }
+  .rich-text h3 {
+    @apply mb-1 mt-2 text-base font-semibold;
+  }
+  .rich-text ul {
+    @apply list-disc pl-5;
+  }
+  .rich-text ol {
+    @apply list-decimal pl-5;
+  }
+  .rich-text p {
+    @apply mb-1.5;
+  }
   .table-head th {
     @apply bg-neutral-50/70 px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-neutral-500 uppercase;
   }
