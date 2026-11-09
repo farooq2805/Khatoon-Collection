@@ -29,6 +29,17 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+
+  // Order emails load product photos from khatooncollection.in/api/media/...
+  // (e.g. /api/media/image-proxy); those endpoints live on the API.
+  async rewrites() {
+    return [
+      {
+        source: "/api/media/:path*",
+        destination: "https://api.khatooncollection.in/api/media/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
