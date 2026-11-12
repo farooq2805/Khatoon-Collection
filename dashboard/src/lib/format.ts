@@ -64,3 +64,9 @@ export function usableImage(url?: string | null): string | null {
   if (/res\.cloudinary\.com\/(techsrow|ifm9ihwo)\//.test(url)) return null;
   return url;
 }
+
+/** Small resized copy of a product photo (served by the store's /api/thumb). */
+export function thumbUrl(url: string, width: number): string {
+  if (!/^https:\/\/api\.khatooncollection\.in\//.test(url)) return url;
+  return `https://khatooncollection.in/api/thumb?w=${width}&url=${encodeURIComponent(url)}`;
+}

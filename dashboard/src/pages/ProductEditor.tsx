@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { ArrowLeft, Copy, ExternalLink, ImagePlus, Loader2, Plus, Star, Trash2, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { api, listFrom, STORE_URL } from "../lib/api";
 import { uploadImage } from "../lib/upload";
-import { usableImage } from "../lib/format";
+import { thumbUrl, usableImage } from "../lib/format";
 import RichText from "../components/RichText";
 import { ErrorNote, Spinner } from "../components/ui";
 
@@ -616,7 +616,7 @@ export default function ProductEditor() {
                 {form.images.map((img, i) => (
                   <div key={img.url + i} className={`group relative overflow-hidden rounded-xl border-2 ${img.isMain ? "border-rose-brand" : "border-transparent"}`}>
                     <div className="aspect-[3/4] bg-brand-50">
-                      {usableImage(img.url) ? <img src={img.url} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-xs text-red-500">Broken</div>}
+                      {usableImage(img.url) ? <img src={thumbUrl(img.url, 400)} alt="" loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-xs text-red-500">Broken</div>}
                     </div>
                     {img.isMain && <span className="absolute left-1.5 top-1.5 rounded-full bg-rose-brand px-2 py-0.5 text-[10px] font-bold text-white">MAIN</span>}
                     <div className="absolute inset-x-0 bottom-0 flex justify-between bg-gradient-to-t from-black/60 to-transparent p-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100">

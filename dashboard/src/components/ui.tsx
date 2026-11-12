@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Loader2, Package } from "lucide-react";
-import { usableImage } from "../lib/format";
+import { thumbUrl, usableImage } from "../lib/format";
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
@@ -53,13 +53,14 @@ export function StatusBadge({ status }: { status: string }) {
 
 export function Thumb({ src, alt, size = 40 }: { src?: string | null; alt: string; size?: number }) {
   const url = usableImage(src);
+  const [failed, setFailed] = useState(false);
   return (
     <div
       className="flex flex-none items-center justify-center overflow-hidden rounded-lg bg-brand-50 ring-1 ring-line"
       style={{ width: size, height: Math.round(size * 1.25) }}
     >
-      {url ? (
-        <img src={url} alt={alt} loading="lazy" className="h-full w-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
+      {url && !failed ? (
+        <img src={thumbUrl(url, Math.min(800, size * 3))} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-cover" onError={() => setFailed(true)} />
       ) : (
         <Package className="h-4 w-4 text-brand-200" />
       )}
